@@ -30,8 +30,8 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, ...)
     perc <- scala[seq(5,p,2)][1,]
     if (any(is.na(perc))) stop("TVScale.dbf is incorrect, contains NA values!")
           d.f <- data.frame(code=code[,1], perc = as.numeric(perc))
-          print(paste("Cover code used: ", tvscale[i, 2], sep = ""), quote=FALSE)
-          write.table(t(d.f[d.f$code!='0',]), col.names = FALSE, sep = "\t", quote = FALSE)
+          cat('\n Cover code used: ', as.character(tvscale[i, 2]), '\n')
+          write.table(t(d.f), col.names = FALSE, sep = "\t", quote = FALSE)
           obs[[i]]["COVER_PERC"] <- d.f$perc[match(obs[[i]][,"COVER_CODE"], d.f$code)]
       }
   }

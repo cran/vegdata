@@ -33,4 +33,4 @@ data.frame of site variables.
 \email{jansen@uni-greifswald.de}
         }
 
-\keyword{misc}
+\keyword{misc, survey}

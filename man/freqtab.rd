@@ -7,13 +7,14 @@ Make relative or absolute frequency tables.
 }
 
 \usage{
-freqtab(veg, clust, relfr = TRUE, limit = 0, dec = 0, ...) 
+freqtab(veg, clust, relfr = TRUE, sort, limit = 0, dec = 0, ...) 
 }
 
 \arguments{
 \item{veg}{Vegetation dataframe}
 \item{clust}{Vector with cluster information with length equal to number of rows of veg}
 \item{relfr}{Relative or absolute frequency}
+\item{sort}{Vector of cluster names to sort columns}
 \item{limit}{Frequency limit}
 \item{dec}{Number of decimals}
 \item{...}{additional arguments}

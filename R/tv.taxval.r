@@ -5,9 +5,9 @@ genus = c('delete','preserve'), quiet = FALSE, sysPath = FALSE, ...)
 
     syn <- match.arg(syn)
     subdiv <- match.arg(subdiv)
-#    seg <- match.arg(seg)
-#    ssp <- match.arg(ssp)
-    ag <- match.arg(ag)
+#   seg <- match.arg(seg)
+#   ssp <- match.arg(ssp)
+    ag <- match.arg(ag)   
     mono <- match.arg(mono)
     genus <- match.arg(genus)
         
@@ -17,30 +17,39 @@ genus = c('delete','preserve'), quiet = FALSE, sysPath = FALSE, ...)
     cat("Original number of taxa:", length(unique(obs$SPECIES_NR)),'\n')
     if(missing(refl)) refl <- tv.refl(db[1], tv_home)
     species <- tax('all', refl=refl, tax=TRUE, sysPath=sysPath, ...)
-
+  
     ### functions   
-adapt <- function(expr, mess, column, column2=c("SPECIES_NR", "ABBREVIAT", "AGG", "AGG_NAME")) {    
+adapt <- function(expr, mess, column, column2=c("SPECIES_NR", "ABBREVIAT", "Freq_Member","AGG", "AGG_NAME","Freq_Agg")) {    
     obsspec <- unique(obs$SPECIES_NR)
+    species$AGG_RANK <- species$RANK[match(species$AGG,species$SPECIES_NR)]
     temp <- species[eval(expr) & species$SPECIES_NR %in% obsspec,]
     if(column=='AGG') temp[,c('AGG','AGG_NAME')] <- species[match(temp$VALID_NR,species$SPECIES_NR),c('AGG','AGG_NAME')]
     vec <- temp[match(obs$SPECIES_NR, temp$SPECIES_NR), column]
     if (sum(vec > 0, na.rm = TRUE) > 0) {
         obs$SPECIES_NR <- replace(obs$SPECIES_NR, which(vec > 0), vec[!is.na(vec)])
+        temp$Freq_Member <- fr[match(temp$SPECIES_NR, fr[,1]),2]; temp$Freq_Member[is.na(temp$Freq_Member)] <- 0
+        temp$Freq_Agg <- fr[match(temp$AGG, fr[,1]),2]; temp$Freq_Agg[is.na(temp$Freq_Agg)] <- 0
+        
         cat('\n', nrow(temp), mess, 'found in dataset, adapted \n')
-        if(!quiet) print(temp[, column2]) } else 
+        if(!quiet) print(temp[, column2]) 
+        } else 
           cat('No', mess, 'to adapt. \n')
     obs
     }
 
-confl <- function(expr, column, column2=c("SPECIES_NR", "ABBREVIAT", "AGG", "AGG_NAME"), mess, comb='at species level') {
+confl <- function(expr, column, column2=c("SPECIES_NR", "ABBREVIAT", "Freq_Member","AGG", "AGG_NAME","Freq_Agg"), mess, comb='at species level') {
     obsspec <- unique(obs$SPECIES_NR)
-    tem <- species[eval(expr) & species$SPECIES_NR %in% obsspec, column2]
+    tem <- species[eval(expr) & species$SPECIES_NR %in% obsspec, ]
     temp <- tem[tem[[column]] %in% obsspec, ]
     tmp <- temp[match(obs$SPECIES_NR, temp$SPECIES_NR),column]
     if (nrow(temp)> 0) {
        obs$SPECIES_NR <- replace(obs$SPECIES_NR, which(tmp > 0), tmp[!is.na(tmp)])
-       if(!quiet) {cat('\n', nrow(temp), mess,'found also',comb,'in dataset, combined',comb, '\n')
-       print(temp) }
+       if(!quiet) {
+        temp$Freq_Member <- fr[match(temp$SPECIES_NR, fr[,1]),2]
+        temp$Freq_Agg <- fr[match(temp[,column], fr[,1]),2]
+        cat('\n', nrow(temp), mess,'found also',comb,'in dataset, combined',comb, '\n')
+        print(temp[,column2]) 
+	}
       } else if(!quiet) cat('\n No conflicting', mess, '. \n')
     obs
     }
@@ -49,46 +58,48 @@ preserve <- function(mess) {
     cat('\n', mess, 'preserved! \n')
     obs
     }
+##########################
+
+fr <- as.data.frame(table(obs$SPECIES_NR))
 
 obs <- switch(syn,
-  conflict= confl(expr=expression(species$SYNONYM == TRUE), column='VALID_NR', column2=c("SPECIES_NR", "ABBREVIAT", "VALID_NR", "VALID_NAME"), mess='Synonyms', comb='as standard taxa'),
-  adapt =   adapt(expr=expression(species$SYNONYM == TRUE), column='VALID_NR', column2=c("SPECIES_NR", "ABBREVIAT", "VALID_NR", "VALID_NAME"), mess='Synonyms'),
+  conflict= confl(expr=expression(species$SYNONYM == TRUE), column='VALID_NR', column2=c("SPECIES_NR", "ABBREVIAT", "Freq_Member","VALID_NR", "VALID_NAME", "Freq_Agg"), mess='Synonyms', comb='as standard taxa'),
+  adapt =   adapt(expr=expression(species$SYNONYM == TRUE), column='VALID_NR', column2=c("SPECIES_NR", "ABBREVIAT", "Freq_Member","VALID_NR", "VALID_NAME", "Freq_Agg"), mess='Synonyms'),
   preserve = preserve('Synonyms'),
   )
-    
+
+fr <- as.data.frame(table(obs$SPECIES_NR))
+   
 obs <- switch(subdiv,
-    conflict = confl(expr=expression(species$RANG %in% c('FOR','VAR','SGR','SSP','ZUS')), column='AGG', mess="Variants, forms, subspecies etc."),
-    adapt = adapt(expr=expression(species$RANG %in% c('FOR','VAR','SGR','SSP','ZUS')),  column='AGG', mess='Variants, forms, subspecies etc.'),
+    conflict = confl(expr=expression(species$RANK %in% c('FOR','VAR','SGR','SSP','ZUS')), column='AGG', mess="Variants, forms, subspecies etc."),
+    adapt = adapt(expr=expression(species$RANK %in% c('FOR','VAR','SGR','SSP','ZUS')),  column='AGG', mess='Variants, forms, subspecies etc.'),
     preserve = preserve('Variants, forms, subspecies etc.'),
   )
+
+
+fr <- as.data.frame(table(obs$SPECIES_NR))
 
 obs <- switch(ag,
     preserve = preserve('Aggregates'),
     conflict = {
-  obsspec <- unique(obs$SPECIES_NR)
-  # Valid aggregates in Specieslist
-  AG <- species$SPECIES_NR[species$RANG %in% c('AGG','AG2','SEC','SGE','SER','SSE') & species$SYNONYM == FALSE]
-  # Obs-Species which are member of aggregates
-  agg.member <- species[species$AGG %in% AG & species$SPECIES_NR %in% obsspec, c("SPECIES_NR","ABBREVIAT", "AGG", "AGG_NAME")]
-  # agg.members which aggregates are also in dataset
-  conf <- agg.member[agg.member$AGG %in% obsspec,]
-  fr.member <- as.data.frame(table(match(obs$SPECIES_NR, conf$SPECIES_NR)))
-  fr.agg <- as.data.frame(table(match(obs$SPECIES_NR, conf$AGG)))
-  if(nrow(conf) == 0) cat("\n No conflicting aggregates found.\n") else {
-    cat("\n",  nrow(conf), "members of occurring aggregates in dataset, aggregated: \n")
-    if(!quiet) print(conf)
-   obs$SPECIES_NR <- replace(obs$SPECIES_NR, which(!is.na(match(obs$SPECIES_NR, conf$SPECIES_NR))), conf$AGG[match(obs$SPECIES_NR, conf$SPECIES_NR)][!is.na(match(obs$SPECIES_NR, conf$SPECIES_NR))])
-   }
-    obs     },
-      adapt = {
-  obsspec <- unique(obs$SPECIES_NR)
-  AG <- species$SPECIES_NR[species$RANG %in% c('AGG','AG2','SEC','SGE','SER','SSE') & species$SYNONYM == FALSE]
-  agg.member <- species[species$AGG %in% AG & species$SPECIES_NR %in% obsspec, c("SPECIES_NR","ABBREVIAT", "AGG", "AGG_NAME")]
-    cat("\n",  nrow(agg.member), "members of aggregates in dataset, aggregated: \n")
-    if(!quiet) print(agg.member)
-   obs$SPECIES_NR <- replace(obs$SPECIES_NR, which(!is.na(match(obs$SPECIES_NR, agg.member$SPECIES_NR))), agg.member$AGG[match(obs$SPECIES_NR, agg.member$SPECIES_NR)][!is.na(match(obs$SPECIES_NR, agg.member$SPECIES_NR))])
-    obs}
-      )
+	obsspec <- unique(obs$SPECIES_NR)
+	# Valid aggregates in Specieslist
+	AG <- species$SPECIES_NR[species$RANK %in% c('AGG','AG2','SEC','SGE','SER','SSE') & species$SYNONYM == FALSE]
+	# Obs-Species which are member of aggregates
+	agg.member <- species[species$AGG %in% AG & species$SPECIES_NR %in% obsspec, c("SPECIES_NR","ABBREVIAT", "AGG", "AGG_NAME")]
+	# agg.members which aggregates are also in dataset
+	conf <- agg.member[agg.member$AGG %in% obsspec,]
+	conf$Freq_Member <- fr[match(conf$SPECIES_NR, fr[,1]),2]
+	conf$Freq_Agg <- fr[match(conf$AGG, fr[,1]),2]
+	conf <- conf[,c(1,2,5,3,4,6)]
+	if(nrow(conf) == 0) cat("\n No conflicting aggregates found.\n") else {
+	  cat("\n",  nrow(conf), "members of occurring aggregates in dataset, aggregated: \n")
+	  if(!quiet) print(conf)
+	  obs$SPECIES_NR <- replace(obs$SPECIES_NR, which(!is.na(match(obs$SPECIES_NR, conf$SPECIES_NR))), conf$AGG[match(obs$SPECIES_NR, conf$SPECIES_NR)][!is.na(match(obs$SPECIES_NR, conf$SPECIES_NR))])
+	}
+	  obs     },
+      adapt = adapt(expr=expression(species$AGG_RANK == 'AGG'), column='AGG', column2=c("SPECIES_NR", "ABBREVIAT", "Freq_Member","AGG", "AGG_NAME", "Freq_Agg"), mess='Aggregates'),
+  ) #c('AGG','AG2','SEC','SGE','SER','SSE')
      
 if (mono %in% c("lower", "higher")) {
     obsspec <- unique(obs$SPECIES_NR)
@@ -107,6 +118,19 @@ if (mono %in% c("lower", "higher")) {
         obsspec <- unique(obs$SPECIES_NR)
       } } else cat('\n No monotypic taxa found. \n\n')
   } else cat('\n Monotypic taxa preserved! \n\n')
+
+  ## Delete 
+  if(genus == 'delete') {
+    obsspec <- unique(obs$SPECIES_NR)
+    gat <- species[species$RANK %in% c('GAT','FAM', 'UKL', 'ORD', 'ABT', 'KLA', 'ROOT', 'UAB'), c("SPECIES_NR", "ABBREVIAT")]
+    if (any(gat$SPECIES_NR %in% obsspec)) {
+      cat('\n',sum(gat$SPECIES_NR %in% obsspec), "Undetermined genera or above found in dataset, deleted:",'\n')
+      if(!quiet) print(gat[gat$SPECIES_NR %in% obsspec, ])
+      } else cat('\n',"No undetermined genera or above found.",'\n')
+    obs <- obs[!obs$SPECIES_NR %in% gat$SPECIES_NR, ]
+  } else cat('\n Undetermined genera and above preserved! \n')
+    
+cat('\n Number of taxa after validation:', length(unique(obs$SPECIES_NR)),'\n\n')
 
 ### Critical species
 ## Pseudonyms
@@ -137,17 +161,5 @@ if (mono %in% c("lower", "higher")) {
       if(!quiet) print(u[order(u$to_check),])
    }
 
-## Delete 
-  if(genus == 'delete') {
-    obsspec <- unique(obs$SPECIES_NR)
-    gat <- species[species$RANG %in% c('GAT','FAM', 'UKL', 'ORD', 'ABT', 'KLA', 'ROOT', 'UAB'), c("SPECIES_NR", "ABBREVIAT")]
-    if (any(gat$SPECIES_NR %in% obsspec)) {
-      cat('\n',sum(gat$SPECIES_NR %in% obsspec), "Undetermined genera or above found in dataset, deleted:",'\n')
-      if(!quiet) print(gat[gat$SPECIES_NR %in% obsspec, ])
-      } else cat('\n',"No undetermined genera or above found.",'\n')
-    obs <- obs[!obs$SPECIES_NR %in% gat$SPECIES_NR, ]
-  } else cat('\n Undetermined genera and above preserved! \n')
-    
-cat('\n Number of taxa after validation:', length(unique(obs$SPECIES_NR)),'\n\n')
 obs
 }

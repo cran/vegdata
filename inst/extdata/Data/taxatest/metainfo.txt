@@ -1,0 +1,16 @@
+### Source: Fantasy
+### Remarks #######################################
+# Artificial dataset for test and demonstration of taxonomic adjustment within package vegdata
+
+### Header data    			###################################
+RELEVE_NR								Plot number
+Cover abundance scale		Braun/Blanquet (old) and Braun/Blanquet (new)
+
+---------------- End of predefined fields, begin of user defined attributes         -------------------
+
+# No additional plot header attributes
+
+---------------- Plot-Species attributes (saved as additional columns in tvabund.dbf ------------------
+Season									Season of multitemporal survey the plant occurred
+Microrel								Microrelief within survey area populated by the plant
+Flower									Number of flowers

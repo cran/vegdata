@@ -1,0 +1,16 @@
+citHeader("To cite package 'vegdata' in publications use:")
+
+citEntry(entry="Manual",
+	title ="vegdata: Vegetation Data Access and Evaluation",
+	author = personList(as.person("Florian Jansen")),
+	year = 2008,
+	note = paste("R package version", packageDescription("vegdata")$Version),
+	url = "http://geobot.botanik.uni-greifswald.de/portal/",
+
+	textVersion =
+	paste("Jansen, F. (2008). ", 
+	"vegdata: Vegetation Data Access and Evaluation ", 
+	"version ", packageDescription("vegdata")$Version, 
+ 	". http://geobot.botanik.uni-greifswald.de/portal", sep="")
+)
+ 

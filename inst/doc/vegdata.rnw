@@ -1,0 +1,289 @@
+\documentclass[a4paper]{article}
+%\VignetteIndexEntry{vegdata}
+%\VignetteDepends{vegan, labdsv, akima}
+
+\usepackage[ansinew]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[sort&compress]{natbib}
+\usepackage[german, english]{babel}
+\usepackage{hyperref}
+\usepackage{graphics}
+\usepackage[english=american]{csquotes}
+\usepackage{SweaveSlides}
+\usepackage[left=30mm,right=20mm]{geometry}
+\author{Florian Jansen}
+\title{Vegetation data access and evaluation of taxon names \\
+Version 0.1}
+
+\begin{document}
+%\setkeys{Gin}{width=\textwidth}
+<<prep, echo=FALSE>>=
+options(width=80,digits=2)
+@
+%Sys.setlocale("LC_TIME", "de_DE.iso8859")
+
+\maketitle
+
+\begin{abstract}
+
+\noindent
+An example session to show the usage of R library \textit{vegdata}. \\
+After installation of package vegdata you can run this script with
+<<eval=FALSE>>=
+vignette('vegdata')
+@
+
+The package can be downloaded from \url{http://geobot.botanik.uni-greifswald.de/download/}. 
+It is not yet available through official R-cran Sites.
+
+%\paragraph{Citation} Please cite the package as \\
+% Jansen, F. (2008) vegdata: Vegetation Data Access and Evaluation, version 0.0.20. http://geobot.botanik.uni-greifswald.de/portal
+%\nocite{Jansen2008a}
+\end{abstract}
+
+
+\section{Provided functionality}
+
+ \subsection{Taxonomic evaluation}
+	One of the most important step in using vegetation data (from different sources) is to take care about the taxonomic content of the used taxon names. That is, to make sure, that exactly one (correct and valid) name defines one biological entity. Most researchers remember to convert synonyms to valid names, but in many cases the care about e.g. monotypic subspecies or ambiguous taxonomic levels, is lacking.
+	The package offers the function \code{tv.taxval()} with options for the adjustment of formas, synonyms, monotypic taxa, subspecies, members of aggregates and undetermined genera.
+	
+  \subsection{Cover standardization}
+	Turboveg provides different abundance codes and all kinds of user defined cover codes can easily be added. For vegetation analysis an unique platform is needed which will mostly be the percentage cover of the observed area, so for every abundance code class the mean cover percentage is defined in Turboveg.
+	Since different scales can occur in a database and the storage format of the code table in Turboveg is somewhat strange, the function \code{tv.coverperc()} provides automatic conversion.
+	
+  \subsection{Layer aggregation}
+	The main sample unit in vegetation science is a so called relev\'{e}. A Braun-Blanquet relev\'{e} is a sample of names and coverage (abundance) of species in a specified area (usually between 1 an 1000 sqm). It contains (is intended to contain) a  complete list of phytoautotrophic plants (or a special guild) in that area.
+	The information can be stored in a three-column list of relev\'{e} ID, Taxon ID and performance measure (e.g. cover code).
+	
+	Often additional information about the kind of occurrence of the specific plants is wanted.
+	In Turboveg one additional column for the most widespread attribute is default: growth height classes. E.g. in a forest it is of interest, if a woody species reaches full height (tree layer) or occurs only as a small individual (herb layer).
+	Other attributes like micro location (hummock or depression, rock or dead wood), development stage (juvenile or not, age, flowering status etc.) or the month of survey in a multi-seasonal survey could be of interest and can be added in Turboveg.
+	For analysis you may want to differentiate species growing in different layers. Function \code{tv.veg()} provides options for species-plot attribute handling.
+
+
+  \subsection{Vegetation matrix}
+	Turboveg stores relev\'{e}s as a list of occurrences (s. above) but almost all functions and programs for vegetation analyses are using plot / species tables with a 0 value for non-occurrence (measured absence).
+	Function \code{tv.veg()} inflates the Turboveg list to matrix format.
+
+
+\section{Examples}
+
+  Maybe the best way to introduce into the functionalities of the package is a session with example code.
+
+\subsection{Preparations}
+
+  You can download the package from \url{http://geobot.botanik.uni-greifswald.de/download}.  \\
+  Please ensure the right path to the R installation directory on your local computer.
+  For a default Windows installation the procedure can look like this:
+
+
+We load the library as usual into our R environment.
+<<load, results=hide>>=
+library(vegdata)
+@
+
+If you want to use the taxonomic standard list for Germany, please look at: \url{'http://geobot.botanik.uni-greifswald.de/portal/reflist'}
+
+<<load rel,eval=FALSE>>=
+download.file('http://geobot.botanik.uni-greifswald.de/download/GermanSL%201.1/species.zip', file.path(tempdir(),'vegdata.zip'), method='internal', mode='wb')
+zip.unpack(file.path(tempdir(),'vegdata.zip'), file.path(tv.home(),'Species'))
+@
+
+The package includes some example datasets and the taxonomic reference list Germansl 1.1, which can be loaded with option sysPath=TRUE. To get a better idea about the intended functionality of the code you can copy the datasets into your local Turboveg directory structure (see Turboveg help) and omit option "sysPath=TRUE". \\
+
+<<elbaue.2, eval=FALSE>>=
+download.file('http://geobot.botanik.uni-greifswald.de/download/GermanSL%201.1/elbaue.zip', file.path(tempdir(),'elbaue.zip'), method='internal', mode='wb')
+zip.unpack(file.path(tempdir(),'elbaue.zip'), file.path(tv.home(),'Species'))
+@
+
+Define your Turboveg Database (for general information about database structure see Turboveg Help). The function tries to guess the path of Turboveg installation (for Windows and Linux with Wine), please specify explicit in case of trouble.
+
+
+\paragraph{Main functions}
+
+The package contains two main functions: \\
+
+\textbf{tv.veg()} is a wrapper for other functions to support the database load from Turboveg, taxonomic amendment, cover unification, layer combination and matrix generation.
+
+\textbf{tv.site()} will load the site (header) data and does some basic corrections.
+
+But first look at the metainfo which should always be created for every Turboveg database. We recommend a simple text format stored in the (Turboveg) database directory which can than be loaded by:
+
+<<metainfo,eval=FALSE>>=
+## Plot data
+metainfo('database_name')
+@
+
+
+\subsection{Site data}
+
+<<site.echo, eval=TRUE>>=
+require(vegdata)
+db <- 'taxatest'
+site <- tv.site(db, sysPath=TRUE)
+@
+
+The function \textbf{tv.site()} is quite straightforward. After loading the file tvhabita.dbf of the specified database, warnings are given for plots without specified relev\'{e} area or date and the fields are checked if they are empty (a lot of predefined header fields in Turboveg are often unused) or contain probably mistakable 0 values in numerical fields, due to DBase deficiencies (DBase can not handle NA = not available values reliably).
+It is stated in the output, if you have to check 0 values.
+
+
+\subsection{Vegetation data}
+
+Now we care about the species occurrencies data. \\
+Simple loading of species observation data from Turboveg is done by function \textbf{tv.obs()}
+
+<<obs>>=
+## Load data
+obs <- tv.obs(db, sysPath=TRUE)
+head(obs)
+@
+
+Data is stored in Turboveg as a flat table of occurrency values, that is one species-plot occurrence per row. Field \textbf{RELEVENR} contains the plot number, \textbf{SPECIESNR} the taxon codes, \textbf{COVERCODE} the performance code and all other columns show species-plot attributes like growth hight classes.
+
+
+\subsubsection{Names and entities}
+
+If you want to know the species name for a species number or shortletter or vice versa you can use:
+<<tax>>=
+tax('ACERNEG', sysPath=TRUE)
+tax(27, tax=TRUE, sysPath=TRUE)
+@
+
+As stated in the beginning the care about the taxonomic entegrity of your database should stay at the beginning of every vegetation analyses. For Turboveg databases with taxnomic reference list GermanSL (versions 0.9, 1.0 or 1.1) this can be done semi-automatic.
+
+To run the taxonomic adjustments of the example dataset use \textbf{tv.taxval()}
+<<taxval>>=
+obs <- tv.taxval(db, obs, sysPath=TRUE)
+@
+
+Have a look at \textbf{?tv.taxval} or \textbf{args(tv.taxval)} for options.
+
+Taxonomic evaluation of vegetation data sets can only be performed with checklists containing appropriate taxonomic information (see tax.dbf and monotypic-D.dbf for GermanSL 1.1 \cite{Jansen2008}. \\
+If your database is not referenced with GermanSL you can not use \textbf{tv.taxval} and you have to execute \textbf{tv.veg()} with option tax=FALSE or convert your database to GermanSL (Export to XML in Turboveg and re-import choosing the new GermanSL) assuming you have a central european database. You can download the reference list in different formats from: \\
+\url{http://geobot.botanik.uni-greifswald.de/portal/reflist}. \\[5mm]
+
+German SL is based upon the \textbf{taxon views} (\cite{Berendsohn1995} of available checklists but contains more than 16,000 synonyms which can be used to switch between different taxon views. 
+
+
+
+
+To deal with a different taxonomic concept than the one used in GermanSL, you can use the option \textbf{concept}. For this a file is necessary indicating the new synonymy status, valid names and new aggregation. Within the package only a small example list (\textbf{korneck1996.dbf}) for the taxonomic view of \textit{Armeria maritima} from \citep{Korneck1996} is implemented. Please compare the following examples.
+
+<<taxatest1, eval=FALSE, results=hide>>=
+tv.taxval('taxatest', quiet = TRUE, sysPath=TRUE)
+tv.taxval('taxatest', concept='korneck1996', quiet = TRUE, sysPath=TRUE)
+@
+
+
+\subsubsection{Cover values}
+
+Cover is coded in Turboveg as an alphanumeric code. Different codes can be combined by using the mean cover percentage per cover class. Function \textbf{tv.coverperc} will do this job according to the definitions in \emph{Turboveg/Popup/tvscale.dbf}.
+<<cover>>=
+head(obs)
+obs <- tv.coverperc(db, obs, sysPath=TRUE)
+head(obs)
+@
+
+
+\subsubsection{Pseudo-species, layer combinations and vegetation matrix}
+
+\textbf{tv.veg()} is a wrapper for the above mentioned functions and produces a vegetation matrix with releves as rows and species as columns. 
+Additionally care about species-plot attribute differentiation and combination, the inflation of a vegetation matrix and the handling of species names is provided.
+
+If we have more than one occurrence of the same species in a plot, e.g. because tree species growing as young stands and adult specimens were differentiated according to growth hight classes we have to create either pseudo-species which differntiate the occurrences in the resulting vegetation matrix or to combine species occurrences from different layers. For the latter we can use different calculations i.e. mean, max, min or first value. If we assume an independent occurrence of a species in different layers, a tree with a cover of 50\% in tree layer and 50\% in herb layer can be accounted with an overall cover of 75\%. This is done with option lc = 'layer , the default. \\
+If you want to differentiate species according to layer or other species-plot attributes you can specify which attributes should be used for differentiation, and how pseudo-species should be labelled (e.g. speciesname.layercode). Two example data frames for layer differentiation are included in the package. lc.0 uses all Turboveg layers (0 to 9) for pseudo-species differentiation. lc.1 combines tree layers and shrub layers to a maximum of three pseudo-species per taxon.
+
+<<pseudo>>=
+lc.1
+@
+<<layer, results=hide>>=
+veg <- tv.veg(db, lc = "sum", comb = list(lc.1,c('LAYER')), dec = 1, quiet=TRUE, sysPath=TRUE)
+@
+<<layerdiff>>=
+veg[,1:7]
+@
+
+
+If you want to use only presence/absence information in your analyses you can do: \\
+<<pres-abs>>=
+veg[veg > 0] <- 1
+@
+
+
+\subsection{Additional functions}
+
+\textbf{freqtab} produces a relative or absolute frequency table of a vegetation table classification with the possibility to filter according to threshold values.
+
+<<elbaue>>=
+db <- 'elbaue'
+veg <- tv.veg(db, quiet=TRUE, sysPath=TRUE)
+site <- tv.site(db, sysPath=TRUE)
+cluster <- site$MGL < -100
+@
+
+<<freqtab>>=
+freqtab(veg, cluster, limit = 20, relfr = TRUE, sysPath=TRUE)
+@
+
+Use  help(package='vegdata') for a complete list of available functions and data sets in vegdata.
+
+At \url{http://geobot.botanik.uni-greifswald.de/download/} a development version of package vegdata is available with additionla functionalities (but less stability).
+
+The package vegdata serves only as a helper for further analysis of vegetation data which can already be done by powerful R packages like vegan.
+But with the functions shown above we are now ready to execute all kinds of analyses in the wide area of vegetation analyses. 
+
+\subsection{NMDS}
+
+For instance we can do a 
+``Nonmetric Multidimensional Scaling with Stable Solution from Random Starts Axis Scaling and Species Scores''
+which is a wrapper for Kruskal's Non-metric Multidimensional Scaling \citep{Cox19942001} from Jari Oksanen \citep{Oksanen2008}.
+
+<<nmds, results=hide>>=
+## Data analyses
+library(vegan)
+veg.nmds <- metaMDS(veg, distance = "bray", trymax = 5, autotransform =FALSE, noshare = 1, expand = TRUE, trace = 2)
+plot(veg.nmds)
+@
+
+To show the result in comparison with environmental measurements we do some magic.
+
+<<nmdsplotfun>>=
+library(labdsv)
+library(akima)
+
+nmds.plot <- function(nmds, site, disp, var1, var2) {
+ var.1 <- site[, var1]
+ var.2 <- site[, var2]
+ lplot <- nrow(nmds$points)
+ lspc <- nrow(nmds$species)
+ samp <- sample(1:lspc, lspc/5)
+ stems <- colSums(veg)
+ filled.contour(interp(nmds$points[, 1], nmds$points[, 2], var.1), ylim = c(-1, 1.1), xlim = c(-1.4, 1.4), 
+    color.palette = topo.colors, xlab = var1, ylab = var2, main = paste("NMDS of vegetation"), 
+    key.title = title(main = var1, cex.main = 0.8, line = 1, xpd = NA), 
+    plot.axes = { axis(1);  axis(2)
+      points(veg.nmds$points[, 1], veg.nmds$points[, 2], xlab = "", ylab = "", pch = 19)
+      points(veg.nmds$species[, 1], veg.nmds$species[, 2], xlab = "", ylab = "", col = 2, pch = '+')
+      ordisurf(veg.nmds, var.2, col = 4, choices = c(1, 2), add = TRUE)
+      orditorp(veg.nmds, display = disp, pcol = "gray", pch = "+", pos=3)
+      legend("topright", paste("gam of ", var2), col = 4, lty = 1)
+   }
+  )
+}
+@
+
+
+<<nmdsplot, fig=TRUE>>= 
+print(nmds.plot(veg.nmds, site, disp='species', var1="MGL", var2="SDGL"))
+@
+
+
+The first axis of our NMDS plot show the influence of mean groundwater level on the patterns of the dataset. \textit{Glyceria maxima} is marking the wet side of the gradient, whereas \textit{Cnidium dubium} \textit{Agrostis capillaris} or \textit{Galium verum agg,} occur only at low mean groundwater level. The second axis can be assigned to the fluctuation of water levels measured as standard deviation of mean groundwater level. Species indicating high water fluctuation are \textit{Agrostis stolonifera} or \textit{Alopecurus geniculatus} whereas \textit{Carex vesicaria} occurrs only at more balanced situations.
+
+
+%\bibliographystyle{D:/Institut/Literatur/Bibref/ecol_let} \bibliography{D:/Institut/Literatur/bioind}
+\bibliographystyle{ecol_let}
+\bibliography{vegdata}
+
+\end{document}

@@ -1,2 +1,5 @@
+version 0.1.1 Novermber 2009
+  * updated vignette
+  * function metainfo is now called tv.metainfo
 version 0.1 November 2009
   * First CRAN version

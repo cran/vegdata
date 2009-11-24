@@ -31,7 +31,7 @@ unc <- function(obs, column, uncrow, i, ...) {
       obs <- obs[!obs$SPECIES_NR %in% spc,]
       }
     if(missing(refl)) refl <- tv.refl(db[1], tv_home = tv_home, ...)
-print(refl)
+    cat('Taxonomic reference list: ',refl, '\n')
     if(tax) obs <- tv.taxval(obs=obs, refl = refl, tv_home = tv_home, sysPath = sysPath, ...)
     if(!is.null(uncertain)) {
       cat('frequency of uncertainty levels')

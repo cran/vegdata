@@ -60,8 +60,8 @@ if(quiet) { options(warn=-1) }
   if (any(null)) {
     cat(paste('\n', "The following numeric fields contain 0 values:", '\n'))
   print(names(site)[null], quote = FALSE)
-  cat('\nPlease check if these are really measured as 0 values \n or if they are not measured and wrongly assigned \n because of Dbase restrictions. \n')
- cat("If so, use something like: \n site$Column_name[site$Column_name==0] <- NA \n summary(site[,c('", paste(names(site)[null], 
+  cat('\n Please check if these are really measured as 0 values or if they are not measured \n and wrongly assigned because of Dbase restrictions. \n')
+ cat(" If so, use something like: \n site$Column_name[site$Column_name==0] <- NA \n summary(site[,c('", paste(names(site)[null], 
       collapse = "','"), "')]) \n", sep = "")
        
           }

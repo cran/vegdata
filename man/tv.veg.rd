@@ -55,4 +55,4 @@ tv.veg('taxatest', uncertain=list('DET_CERT', data.frame(0:2,c('pres','agg','del
         }
 
 
-\keyword{misc}
+\keyword{misc,manip,survey}

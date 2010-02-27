@@ -1,5 +1,11 @@
-version 0.1.1 Novermber 2009
+version 0.1.5 March 2010
+  * function tv.compRefl rewritten
+  * default values in tv.taxval changed
+  * GermanSL updated to version 1.1.3
+
+version 0.1.1 November 2009
   * updated vignette
   * function metainfo is now called tv.metainfo
+
 version 0.1 November 2009
   * First CRAN version

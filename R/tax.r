@@ -1,3 +1,21 @@
+sub.abbr <- function(x) {
+#  loc <- Sys.getlocale(category='LC_CTYPE')
+#  Sys.setlocale("LC_ALL","C")
+    iconv(x, "latin1", "")
+    x <- sub('\ ag[.]', ' agg.', x, perl=TRUE, useBytes=TRUE)
+    x <- sub('\ subsp[.]', ' ssp.', x, perl=TRUE, useBytes=TRUE)
+    x <- sub('\ v[.]\ ', ' var.', x, perl=TRUE, useBytes=TRUE)
+    x <- sub('\ s[.]l[.]', ' s. l.', x, perl=TRUE, useBytes=TRUE)
+    x <- sub('\ s[.]str[.]', ' s. str.', x, perl=TRUE, useBytes=TRUE)
+    x <- sub('\ s[.]\ str[.]', ' sensustricto', x, perl=TRUE, useBytes=TRUE)
+    x <- sub('\ s[.]\ l[.]', ' sensulato', x, perl=TRUE, useBytes=TRUE)
+    x <- sub('\ s[.]\ ', ' ssp. ', x, fixed=TRUE, useBytes=TRUE)
+    x <- sub('\ sensustricto', ' s. str.', x, perl=TRUE, useBytes=TRUE)
+    x <- sub('\ sensulato', ' s. l.', x, perl=TRUE, useBytes=TRUE)
+#  Sys.setlocale(category='LC_CTYPE', locale=loc)
+    x
+}
+
 tax <- function(x, refl='Germansl 1.1', tv_home, syn = FALSE, tax = FALSE, concept = NULL, ...) {
   if(missing(tv_home)) tv_home <- tv.home(...)
   if(missing(refl)) refl <- tv.refl(...)
@@ -5,6 +23,8 @@ tax <- function(x, refl='Germansl 1.1', tv_home, syn = FALSE, tax = FALSE, conce
   dbf <- if(tax) 'tax.dbf' else 'species.dbf'
  if(file.access(paste(tv_home, 'Species', refl, dbf, sep='/'))) stop(paste('Taxonomic evaluation list (',dbf, ') of ', refl, 'not available')) else 
   species <- read.dbf(paste(tv_home, 'Species', refl, dbf, sep='/'))
+  species$ABBREVIAT <- sub.abbr(species$ABBREVIAT)
+  if(tax) species$VALID_NAME <- sub.abbr(species$VALID_NAME)
   # Taxon concepts
   if(!is.null(concept)) {
     conc <- read.dbf(paste(tv_home, 'Species', refl, paste(concept,'dbf',sep='.'), sep='/'))
@@ -32,5 +52,6 @@ tax <- function(x, refl='Germansl 1.1', tv_home, syn = FALSE, tax = FALSE, conce
    if(length(l) == 0) stop('No species found!') 
    l } else species 
 } 
-spc <- function(...) print('spc() is depreacated, please use function tax() instead')
+
+spc <- function(...) print('Function spc() is depreacated, please use function tax() instead')
 

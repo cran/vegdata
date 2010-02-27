@@ -11,7 +11,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, ...)
       RelScale <- tv.site(db, tv_home, quiet = TRUE)[, c("RELEVE_NR", "COVERSCALE")]
       options(ow)
       }
-  if (missing(obs)) 
+  if (missing(obs))
       obs <- tv.obs(db, tv_home)
   obs$COVERSCALE <- RelScale$COVERSCALE[match(obs$RELEVE_NR, RelScale$RELEVE_NR)]
   g <- obs$COVERSCALE

@@ -34,7 +34,7 @@ if(quiet) { options(warn=-1) }
   if(n>0) warning(paste(n, 'releves without survey area'))
 
   ### Conversion of factors
-  ind <- apply(site, 2, is.factor)
+  # ind <- sapply(site, is.factor)
     for(i in c(1,2,4,5,7,8,10:ncol(site))) site[,i] <- type.convert(as.character(site[,i]), ...)
       site$SURF_AREA[site$SURF_AREA==0] <- NA        
 ### 

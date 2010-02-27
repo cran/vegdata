@@ -9,7 +9,7 @@
     refl.1 <- tv.refl(db[1])
       for(i in 2:length(db)) {
       refl.i <- tv.refl(db[i])
-      if(refl.1 != refl.i) stop('Differing Taxonomic reference lists!')
+      if(refl.1 != refl.i) stop('Differing taxonomic reference lists used in your databases!')
       obs.tmp <- read.dbf(paste(tv_home, 'Data', db[i],'tvabund.dbf',sep='/'))
       if(any(unique(obs$RELEVE_NR) %in% unique(obs.tmp$RELEVE_NR))) stop('Datasets are using equal releve number(s), aborting!')
       if(any(!names(obs) %in%  names(obs.tmp))) {

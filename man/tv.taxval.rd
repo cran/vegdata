@@ -1,16 +1,16 @@
 \name{tv.taxval}
 \alias{tv.taxval}
 
-\title{Taxonomic emendation of vegetation data.}
+\title{Handling of taxon names in vegetation data.}
 
 \description{
 Performs taxonomic valuation of species names according to synonomy, taxonomic level, unambiguity of biotic content etc.
 Necessary prerequisite is information about taxonomic status (synonomy) and hierarchy (next higher aggregat).
- Until now only applicable for reference list 'GermanSL' applicable in Germany and adjacent countries.
+ Until now only applicable for reference list 'GermanSL' (>= vers. 1.1, see References Section), which is applicable in Germany and adjacent countries.
 }
 
 \usage{
-tv.taxval(db, obs, refl, tv_home, concept, syn = c('adapt','conflict','preserve'), subdiv = c('conflict', 'adapt', 'preserve'), ag = c('conflict', 'preserve', 'adapt'), mono = c('lower','higher', 'preserve'), monolist = "monotypic-D", genus = c('delete','preserve'), quiet = FALSE, sysPath = FALSE, ...)
+tv.taxval(db, obs, refl, tv_home, concept, syn = c('adapt','conflict','preserve'), subdiv = c('conflict', 'adapt', 'preserve'), ag = c('conflict', 'adapt', 'preserve'), mono = c('lower','higher','all', 'preserve'), monolist = "monotypic-D", uncertain = NULL, genus = c('preserve','delete'), quiet = FALSE, sysPath = FALSE, ...)
 }
 \arguments{
 \item{db}{a name of a Turboveg database directory containing \code{tvabund.dbf}, \code{tvhabita.dbf} and \code{twin.set}}
@@ -23,6 +23,7 @@ tv.taxval(db, obs, refl, tv_home, concept, syn = c('adapt','conflict','preserve'
 \item{ag}{Treatment of aggregates between species and genus level, see details}
 \item{mono}{Should monotypic taxa be combined at subspecies = \option{lower} or species level = \option{higher}}
 \item{monolist}{Name of monotypic species list, must be in dbase format and in the same directory as the reference list, e.g. \code{"monotypic-D"} for the area of germany.}
+\item{uncertain}{List of length two, first the column name of uncertainty information, second a dataframe with uncertainty value and in column two one of 'delete','aggregate','preserve', see example.}
 \item{genus}{Delete or preserve taxa determined only on genus level.}
 \item{quiet}{Suppress messages about changed names.}
 \item{sysPath}{Usage of package system files or normal Turboveg installation files.}

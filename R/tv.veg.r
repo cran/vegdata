@@ -1,24 +1,5 @@
-tv.veg <- function (db, tv_home, tax = TRUE, convcode = TRUE, lc = c("layer","mean","max","sum","first"), 
-pseudo = list(lc.1,'LAYER'), values = "COVER_PERC", concept, names = c('short','long'), dec = 0, obs, refl, spc, site, RelScale, uncertain = NULL, sysPath = FALSE, ...) 
+tv.veg <- function (db, tv_home, tax = TRUE, convcode = TRUE, lc = c("layer","mean","max","sum","first"), pseudo = list(lc.1,'LAYER'), values = "COVER_PERC", concept, names = c('short','long'), dec = 0, obs, refl, spc, site, RelScale, sysPath = FALSE, ...) 
 {
-### functions  
-unc <- function(obs, column, uncrow, i, ...) {
-  un <- match.arg(as.character(uncrow[[2]]),c('delete','aggregate','preserve','ignore'))
-  if(un == 'delete') {
-    cat('\n deleting species occurrences of uncertainty level ',as.character(uncrow[[1]]))
-    obs <- obs[obs[,column] != uncrow[[1]],]
-   }
-  if(un == 'aggregate') {
-    cat('\n changing species occurrences to coarser level for uncertainty level ', as.character(uncrow[[1]]))
-    sp <- obs$SPECIES_NR[obs[,column] == uncrow[[1]]]
-    taxa <- species[species$SPECIES_NR %in% sp,]  #tax(sp, refl=refl, tax=TRUE, sysPath=sysPath, ...)
-    taxa$AGG <- species$AGG[match(taxa$VALID_NR,species$SPECIES_NR)] 
-    for(n in 1:nrow(taxa)) obs$SPECIES_NR[obs$SPECIES_NR == taxa[n,'SPECIES_NR'] & obs[,column] == uncrow[[1]]] <- taxa[n,'AGG']
-   }
-  if(un %in% c('preserve','ignore')) {cat('\n preserving species occurrences of uncertainty level ',as.character(uncrow[[1]]))
-   }
-  obs
- }
 
     lc <- match.arg(lc)
     names = match.arg(names)
@@ -33,13 +14,7 @@ unc <- function(obs, column, uncrow, i, ...) {
     if(missing(refl)) refl <- tv.refl(db[1], tv_home = tv_home, ...)
     cat('Taxonomic reference list: ',refl, '\n')
     if(tax) obs <- tv.taxval(obs=obs, refl = refl, tv_home = tv_home, sysPath = sysPath, ...)
-    if(!is.null(uncertain)) {
-      cat('frequency of uncertainty levels')
-      print(table(obs[,uncertain[[1]]]))
-    species <- tax('all', refl = refl, tax=TRUE, tv_home=tv_home, sysPath=sysPath, ...)
-      for(i in 1:nrow(uncertain[[2]])) obs <- unc(obs, uncertain[[1]], uncertain[[2]][i,])
-      cat('\n')
-     }
+
     if(convcode) {
         cat(paste('\n converting cover code ... \n'))
         if(missing(RelScale)) {      
@@ -64,16 +39,15 @@ unc <- function(obs, column, uncrow, i, ...) {
     layerfun <- function(x) round((1 - prod(1 - x/100)) * 100, dec)
     results <- switch(lc, 
       layer = tapply(obs[, values], list(rowlab, collab), layerfun),
-      mean = tapply(obs[, values], list(rowlab, collab), mean), 
-      max = tapply(obs[, values], list(rowlab, collab), max), 
-      sum = tapply(obs[, values], list(rowlab, collab), sum),
+      mean  = tapply(obs[, values], list(rowlab, collab), mean), 
+      max   = tapply(obs[, values], list(rowlab, collab), max), 
+      sum   = tapply(obs[, values], list(rowlab, collab), sum),
       first = tapply(obs[, values], list(rowlab, collab), first.word) )
     results[is.na(results)] <- 0
     results <- as.data.frame(results)
     if(names %in% c('short','long') & is.null(pseudo)) {
       cat(paste('\n',"replacing species numbers with ",names, "names ...",'\n',sep=''))
-      species <- species[species$SYNONYM==FALSE,]
-#tax(as.numeric(colnames(results)), tv_home=tv_home, refl = refl, sysPath=sysPath, ...)
+      species <- tax(as.numeric(colnames(results)), tax=FALSE, refl = refl, tv_home=tv_home, sysPath=sysPath, ...)
       if(names=='short') colnames(results) <- species$LETTERCODE[match(colnames(results), species$SPECIES_NR)]
       if(names=='long') colnames(results) <- gsub(' ','_', species$ABBREVIAT[match(colnames(results), species$SPECIES_NR)] )
         }
@@ -86,7 +60,7 @@ unc <- function(obs, column, uncrow, i, ...) {
       if(names=='long') coln <- gsub(' ','_', species$ABBREVIAT[match(as.numeric(colspc), species$SPECIES_NR)]) 
       cn <- replace(coln, which(ll != 0), paste(coln, ll, sep = ".")[ll != 0])
       colnames(results) <- cn
-      cat(paste('\n',"replacing species numbers with shortletters ...", '\n'))
+      cat('\n replacing species numbers with ', names, ' names ... \n')
     }
    if (any(is.na(colnames(results)))) 
     warning("Some taxa without names, check reference list!")

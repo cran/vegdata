@@ -7,7 +7,7 @@
 It is a wrapper for \code{tv.obs}, \code{tv.taxval}, \code{tv.coverperc}.}
 
 \usage{
-tv.veg(db, tv_home, tax = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo = list(lc.1, "LAYER"), values='COVER_PERC', concept, names=c('short','long'), dec = 0, obs, refl, spc, site, RelScale, uncertain = NULL, sysPath = FALSE, ...)
+tv.veg(db, tv_home, tax = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo = list(lc.1, "LAYER"), values='COVER_PERC', concept, names=c('short','long'), dec = 0, obs, refl, spc, site, RelScale, sysPath = FALSE, ...)
 }
 
 \arguments{
@@ -26,7 +26,6 @@ tv.veg(db, tv_home, tax = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "s
 \item{spc}{If you want to pick a subset of species.}
 \item{site}{Dataframe with site informations.}
 \item{RelScale}{Vector with Cover Scale code per Releve.}
-\item{uncertain}{List of length two, first the column name of uncertainty information, second a dataframe with uncertainty value and in column two one of 'delete','aggregate','preserve', see example.}
 \item{sysPath}{Load system files instead of Turboveg files.}
 \item{...}{additional arguments for included functions}
 }
@@ -34,7 +33,7 @@ tv.veg(db, tv_home, tax = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "s
 \details{
 \code{layer} means, the different layers are combined assuming there independence (a species occuring in two layers with a cover of 50\% will result in a overall cover of 75\%. \code{sum} will sum up cover values of all layers
 
-\code{comb} means, which layers should be combined?. Give a list of first the name of the combination data.frame and second the columns for combination, each as character vectors (see \code{?lc.0} and \code{?lc.1} for examples) Use for example \code{comb = list('lc.1',c('LAYER'))}.
+With option \code{pseudo} you can decide, which layers should be combined. Give a list with a combination data.frame  (see \code{\link{lc}} and second the name of the column for combination. For an example see \code{comb = list(lc.1,c('LAYER'))}. Option pseudo=NULL will prevent any layer aggregation.
 For further details see also \code{\link{tv.coverperc}} and \code{\link{tv.taxval}}.
   }
 
@@ -44,10 +43,13 @@ Function returns an object of class matrix with (combined) cover values.
 
 \examples{
 \dontrun{vignette("vegdata")}
-# If you have a local Turboveg installation try for a beginning tv.veg('your databasename').
+# If you have a local Turboveg installation try for a beginning tv.veg('your databasename', tax=FALSE).
+args(tv.veg)
+args(tv.taxval)
+
 veg <- tv.veg('taxatest', sysPath=TRUE)
 names(veg)
-tv.veg('taxatest', uncertain=list('DET_CERT', data.frame(0:2,c('pres','agg','del'))), sysPath=TRUE)
+tv.veg('taxatest', uncertain=list('DET_CERT', data.frame(0:2,c('pres','agg','agg'))), pseudo=list(lc.0,'LAYER'), genus = 'delete', sysPath=TRUE)
 }
 
 \author{Florian Jansen

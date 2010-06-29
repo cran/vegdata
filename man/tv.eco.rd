@@ -3,7 +3,7 @@
 \title{Load ecological species traits from Turboveg reference list}
 
 \usage{
-tv.eco(db, eco = 'ecodbase', refl, tv_home) 
+tv.eco(db, eco = 'ecodbase.dbf', refl, tv_home) 
 }
 
 \arguments{

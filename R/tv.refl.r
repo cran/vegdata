@@ -1,10 +1,10 @@
-tv.refl <- function(db, tv_home, refl='Germansl 1.1', sysPath = FALSE, ...) {
+tv.refl <- function(db, tv_home, refl='Germansl 1.1', sysPath = FALSE) {
 
   capwords <- function(s, strict = FALSE) {
       cap <- function(s) paste(toupper(substring(s,1,1)), {s <- substring(s,2); if(strict) tolower(s) else s}, sep = "", collapse = " " )
       sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))
   }
-  fun <- function(tmprefl, ...) {
+  fun <- function(tmprefl) {
     try(refl <- match.arg(tmprefl,list.files(paste(tv_home,'Species',sep='/')) ), silent=TRUE)
     if(exists('refl')) refl
   }

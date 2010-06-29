@@ -34,6 +34,7 @@ adapt <- function(expr, mess, column, column2=c("SPECIES_NR", "ABBREVIAT", "Freq
         } else 
           cat('No', mess, 'to adapt. \n')
     obs
+## Subsuming elements into higher rank observations when adapt or confl chosen. Has to be added into code!!
     }
 
 confl <- function(expr, column, column2=c("SPECIES_NR", "ABBREVIAT", "Freq_Member","AGG", "AGG_NAME","Freq_Agg"), mess, comb='at higher level') {
@@ -111,7 +112,7 @@ obs <- switch(ag,
 	  obs$SPECIES_NR <- replace(obs$SPECIES_NR, which(!is.na(match(obs$SPECIES_NR, conf$SPECIES_NR))), conf$AGG[match(obs$SPECIES_NR, conf$SPECIES_NR)][!is.na(match(obs$SPECIES_NR, conf$SPECIES_NR))])
 	}
 	  obs     },
-      adapt = adapt(expr=expression(species$AGG_RANG == 'AGG'), column='AGG', column2=c("SPECIES_NR", "ABBREVIAT", "Freq_Member","AGG", "AGG_NAME", "Freq_Agg"), mess='Aggregates'),
+    adapt = adapt(expr=expression(species$AGG_RANG == 'AGG'), column='AGG', column2=c("SPECIES_NR", "ABBREVIAT", "Freq_Member","AGG", "AGG_NAME", "Freq_Agg"), mess='Aggregates'),
   ) #c('AGG','AG2','SEC','SGE','SER','SSE')
      
 if (mono %in% c("lower", "higher", "all")) {

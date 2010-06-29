@@ -1,5 +1,6 @@
-tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, ...) 
+tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, pa = FALSE, ...) 
 {
+  if(pa) obs$COVER_PERC <- 1 else {
   if (missing(tv_home)) 
       tv_home <- tv.home(...)
   if(missing(tvscale)) 
@@ -15,7 +16,10 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, ...)
       obs <- tv.obs(db, tv_home)
   obs$COVERSCALE <- RelScale$COVERSCALE[match(obs$RELEVE_NR, RelScale$RELEVE_NR)]
   g <- obs$COVERSCALE
-  if(any(is.na(g))) stop('Some occurences without valid Coverscale value.')
+  if(any(is.na(g)))  {
+    print(obs[is.na(g),])
+    stop('Above releve number(s) without valid Coverscale value.')
+    }
   obs <- split(obs, g, drop = FALSE)
   for (i in names(obs)) {
       if (i == "00") 
@@ -35,6 +39,8 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, ...)
           obs[[i]]["COVER_PERC"] <- d.f$perc[match(obs[[i]][,"COVER_CODE"], d.f$code)]
       }
   }
-  unsplit(obs, g)
+  obs <- unsplit(obs, g)
+  }
+  obs
 }
 

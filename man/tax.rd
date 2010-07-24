@@ -2,7 +2,7 @@
 \alias{tax}
 \alias{spc}
 
-\title{Query of taxonomic refernce list including concept synonomy.}
+\title{Query of taxonomic reference list including concept synonomy.}
 
 \usage{
 tax(x, refl='Germansl 1.1', tv_home, syn = FALSE, tax = FALSE, concept = NULL, ...)
@@ -34,8 +34,6 @@ For illustration the concept of \emph{Armeria maritima} from Korneck 1996 is inc
 \dontrun{
 tax{27} }
 tax(27, sysPath=TRUE)
-tax(20583, tax=TRUE, sysPath=TRUE)
-tax(20583, concept='korneck1996', sysPath=TRUE)
 }
 
 \author{Florian Jansen

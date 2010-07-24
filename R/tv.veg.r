@@ -3,7 +3,7 @@ tv.veg <- function (db, tv_home, tax = TRUE, convcode = TRUE, lc = c("layer","me
 
     lc <- match.arg(lc)
     names = match.arg(names)
-    if(missing(tv_home)) tv_home <- tv.home(sysPath=sysPath)
+    if(missing(tv_home)) tv_home <- tv.home(sysPath=sysPath, ...)
     if(missing(obs)) obs <- tv.obs(db, tv_home)
     if(suppressWarnings(any(obs < -1e+05, na.rm = TRUE))) 
       cat(paste("\n WARNING! Values less than -100,000. \n WARNING! tvabund.dbf may be corrupt. \n WARNING! Please correct by reexporting e.g. with OpenOffice."), quote = FALSE)
@@ -11,7 +11,7 @@ tv.veg <- function (db, tv_home, tax = TRUE, convcode = TRUE, lc = c("layer","me
       cat('\n Selecting species ... \n')
       obs <- obs[!obs$SPECIES_NR %in% spc,]
       }
-    if(missing(refl)) refl <- tv.refl(db[1], tv_home = tv_home, ...)
+    if(missing(refl)) refl <- tv.refl(db[1], tv_home = tv_home)
     cat('Taxonomic reference list: ',refl, '\n')
     if(tax) obs <- tv.taxval(obs=obs, refl = refl, tv_home = tv_home, sysPath = sysPath, ...)
 
@@ -19,7 +19,7 @@ tv.veg <- function (db, tv_home, tax = TRUE, convcode = TRUE, lc = c("layer","me
         cat(paste('\n converting cover code ... \n'))
         if(missing(RelScale)) {      
           RelScale <- tv.site(db, tv_home=tv_home, quiet = TRUE, sysPath)[, c("RELEVE_NR", "COVERSCALE")]
-          obs <- tv.coverperc(obs=obs, RelScale = RelScale, tv_home = tv_home) 
+          obs <- tv.coverperc(obs=obs, RelScale = RelScale, tv_home = tv_home, ...) 
           } else  {obs <- tv.coverperc(db[1], obs, tv_home = tv_home, ...)
              }
       } else {

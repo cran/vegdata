@@ -17,7 +17,7 @@ if(quiet) { options(warn=-1) }
   }
 
     ### Time
-    if(all(is.na(site$DATE))) warning('No dates specified!') else {
+    if(any(is.na(site$DATE))) warning(sum(is.na(site$DATE)), 'releves without date') else {
     site$DATE <- gsub('/','',site$DATE)
 #      Date <- rep('no date', nrow(site))
     index <- nchar(as.character(site$DATE))==4

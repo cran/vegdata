@@ -1,16 +1,17 @@
+
 citHeader("To cite package 'vegdata' in publications use:")
 
-citEntry(entry="Manual",
-	title ="vegdata: Vegetation Data Access and Evaluation",
-	author = personList(as.person("Florian Jansen")),
-	year = 2009,
-	note = paste("R package version", packageDescription("vegdata")$Version),
-	url = "http://geobot.botanik.uni-greifswald.de/portal/",
+citEntry(entry="article",
+  	title = "Plant names in vegetation databases - a neglected source of bias", 
+	DOI = "10.1111/j.1654-1103.2010.01209.x", 
+	journal = "Journal of Vegetation Science", 
+	author = "Jansen F and Dengler J", 
+	year = "2010", 
+	pages = "1-8",
 
 	textVersion =
-	paste("Jansen, F. (2009). ", 
-	"vegdata: Vegetation Data Access and Evaluation ", 
-	"version ", packageDescription("vegdata")$Version, 
- 	". http://geobot.botanik.uni-greifswald.de/portal", sep="")
+	paste("Jansen F, Dengler J (2010) Plant names in vegetation databases - a neglected source of bias.
+	    Journal of Vegetation Science, Early View, DOI:10.1111/j.1654-1103.2010.01209.x")
 )
  
+citFooter("Thank you for using 'indicspecies'")

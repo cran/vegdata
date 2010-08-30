@@ -52,7 +52,10 @@ tax <- function(x, refl='Germansl 1.1', tv_home, syn = FALSE, tax = FALSE, conce
    if(syn == FALSE & !is.numeric(x)) l <- l[l$SYNONYM == FALSE,]
    l <- l[!is.na(l$ABBREVIAT),]
    if(length(l) == 0) stop('No species found!') 
-   l } else species 
+   l } else {
+    species
+    if(!syn) species <- species[species$SYNONYM == FALSE,]
+  }
 } 
 
 spc <- function(...) print('Function spc() is depreacated, please use function tax() instead')

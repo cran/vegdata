@@ -1,3 +1,8 @@
+version 0.2 Sept 2010
+  * function freqtab replaced by the more powerful function syntab (with optional usage of function multipatt (package indicspecies))
+  * Turbowin root path (tv_home) is now stored as global R option, see options('tv_home') and investigated during package loading
+  * possible character conversion between encodings for tv.site
+
 version 0.1.5 March 2010
   * function tv.compRefl rewritten
   * default values in tv.taxval changed

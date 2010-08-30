@@ -14,7 +14,7 @@
 
 \author{Florian Jansen}
 \title{Vegetation data access and evaluation of taxon names \\
-Version 0.1.1}
+Version 0.2}
 
 \begin{document}
 %\setkeys{Gin}{width=\textwidth}
@@ -34,7 +34,7 @@ After installation of package vegdata you can run this script with
 vignette('vegdata')
 @
 
-The functions within the package expect an installation (more precisely the directory structure) of the vegetation database program Turboveg for Windows (see \url{'http://www.synbiosys.alterra.nl/turboveg/'} and \cite{Hennekens2001}.
+Most package functions expect an installation, or more precisely the directory structure, of the vegetation database program Turboveg for Windows (see \url{'http://www.synbiosys.alterra.nl/turboveg/'} and \cite{Hennekens2001}.
 \end{abstract}
 
 \section{Preliminary notes}
@@ -44,16 +44,16 @@ The functions within the package expect an installation (more precisely the dire
 \section{Provided functionality}
 
  \subsection{Taxonomic evaluation}
-	One of the most important step in using vegetation data (from different sources) is to take care about the taxonomic content of the used taxon names. That is, to make sure, that exactly one (correct and valid) name defines one biological entity. Most researchers remember to convert synonyms to valid names, but in many cases the care about e.g. monotypic subspecies or ambiguous taxonomic levels, is lacking.
+	One of the most important step in using vegetation data (from different sources) is to take care about the taxonomic content of the used taxon names. That is, to make sure, that exactly one (correct and valid) name defines one biological entity. Most researchers remember to convert synonyms to valid names but in many cases the care about e.g. monotypic subspecies or ambiguous taxonomic levels, is lacking.
 	The package offers the function \code{tv.taxval()} with options for the adjustment of formas, synonyms, monotypic taxa, subspecies, members of aggregates and undetermined genera.
 	
   \subsection{Cover standardization}
 	Turboveg provides different abundance codes and all kinds of user defined cover codes can easily be added. For vegetation analysis an unique platform is needed which will mostly be the percentage cover of the observed area, so for every abundance code class the mean cover percentage is defined in Turboveg.
-	Since different scales can occur in a database and the storage format of the code table in Turboveg is somewhat strange, the function \code{tv.coverperc()} provides automatic conversion.
+	Since different scales can occur in a database and the storage format of the code table in Turboveg is somewhat strange, the function \code{tv.coverperc()} provides automatic conversion for convenience.
 	
   \subsection{Layer aggregation}
-	The main sample unit in vegetation science is a so called relev\'{e}. A Braun-Blanquet relev\'{e} is a sample of names and coverage (abundance) of species in a specified area (usually between 1 an 1000 sqm). It contains (is intended to contain) a  complete list of phytoautotrophic plants (or a special guild) in that area.
-	The information can be stored in a three-column list of relev\'{e} ID, Taxon ID and performance measure (e.g. cover code).
+	The most frequently used sample unit in vegetation science is the so called relev\'{e}. A Braun-Blanquet relev\'{e} is a sample of names and coverage (abundance) of species in a specified area (usually between 1 an 1000 sqm) at a specific time. It contains (at least is intended to contain) a  complete list of phytoautotrophic plants (or a defined subset) in that plot.
+	This information can be stored in a three-column list of relev\'{e} ID, Taxon ID and performance measure (e.g. cover code).
 	
 	Often additional information about the kind of occurrence of the specific plants is wanted.
 	In Turboveg one additional column for the most widespread attribute is default: growth height classes. E.g. in a forest it is of interest, if a woody species reaches full height (tree layer) or occurs only as a small individual (herb layer).
@@ -62,13 +62,13 @@ The functions within the package expect an installation (more precisely the dire
 
 
   \subsection{Vegetation matrix}
-	Turboveg stores relev\'{e}s as a list of occurrences (s. above) but almost all functions and programs for vegetation analyses are using plot / species tables with a 0 value for non-occurrence (measured absence).
-	Function \code{tv.veg()} inflates the Turboveg list to matrix format with plots in rows and species in columns. Column names can be either species numbers, species lettercodes or full names (with underscores instead of blanks).
+	Turboveg stores relev\'{e}s as a list of occurrences (s. above) but almost all functions and programs for vegetation analyses are using plot / species crosstabulations with a 0 value for non-occurrence = observed absence.
+	Function \code{tv.veg()} inflates the Turboveg list to matrix format with plots in rows and species in columns. Column names can be either species numbers, species lettercodes (default) or full names (with underscores instead of blanks).
 
 
 \section{Examples}
 
-  Maybe the best way to introduce into the functionalities of the package is a session with example code.
+  Maybe the best way to introduce you into the functionalities of the package is a session with example code.
 
 \subsection{Preparations}
 
@@ -76,7 +76,6 @@ We load the library as usual into our R environment.
 <<load, results=hide>>=
 library(vegdata)
 @
-
 
 The package includes some example datasets and the taxonomic reference list Germansl 1.1, which can be loaded either with option sysPath=TRUE or after copying it to the ``Data'' and ``Species'' directories of your Turbowin installation. \\
 
@@ -195,7 +194,7 @@ veg[veg > 0] <- 1
 
 \subsection{Additional functions}
 
-\code{freqtab()} produces a relative or absolute frequency table of a vegetation table classification with the possibility to filter according to threshold values. To exemplify the function we use the second dataset implemented the package. It is the demonstration dataset from \citep{Leyer2007}, a selection of grasland relev\'{e}s from the floodplains of the river Elbe.
+\code{syntab()} produces a relative or absolute frequency table of a vegetation table classification with the possibility to filter according to threshold values. To exemplify the function we use the second dataset implemented the package. It is the demonstration dataset from \citep{Leyer2007}, a selection of grasland relev\'{e}s from the floodplains of the river Elbe.
 
 <<elbaue, results=hide>>=
 db2 <- 'elbaue'
@@ -212,8 +211,8 @@ cluster[site$MGL < -25 & site$MGL >= -100] <- 'wet'
 cluster[site$MGL >= -25] <- 'very.wet'
 @
 
-<<freqtab>>=
-freqtab(veg, cluster, limit = 30, sort=c('dry', 'wet', 'very.wet'), relfr = TRUE, sysPath=TRUE)
+<<syntab>>=
+syntab(veg, cluster, limit = 30, sort=c('dry', 'wet', 'very.wet'), relfr = TRUE, sysPath=TRUE)
 @
 
 Use  help(package='vegdata') for a complete list of available functions and data sets in vegdata.

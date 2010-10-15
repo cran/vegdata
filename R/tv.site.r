@@ -1,4 +1,4 @@
-tv.site <- function (db, tv_home, quiet = FALSE, sysPath = FALSE, ...) 
+tv.site <- function (db, tv_home, quiet = FALSE, sysPath = FALSE, iconv, ...) 
 {
 ow <- options('warn')
 if(quiet) { options(warn=-1) }
@@ -17,7 +17,7 @@ if(quiet) { options(warn=-1) }
   }
 
     ### Time
-    if(any(is.na(site$DATE))) warning(sum(is.na(site$DATE)), 'releves without date') else {
+    if(any(is.na(site$DATE))) warning(sum(is.na(site$DATE)), ' releves without date') else {
     site$DATE <- gsub('/','',site$DATE)
 #      Date <- rep('no date', nrow(site))
     index <- nchar(as.character(site$DATE))==4
@@ -31,11 +31,12 @@ if(quiet) { options(warn=-1) }
     }
   ### Survey Area
   n <- sum(site$SURF_AREA == 0 | is.na(site$SURF_AREA))
-  if(n>0) warning(paste(n, 'releves without survey area'))
+  if(n>0) warning(paste(n, ' releves without survey area'))
 
   ### Conversion of factors
   # ind <- sapply(site, is.factor)
-    for(i in c(1,2,4,5,7,8,10:ncol(site))) site[,i] <- type.convert(as.character(site[,i]), ...)
+if(!missing(iconv)) if(!is.null(iconv)) for(i in c(1,2,4,5,7,8,10:ncol(site))) site[,i] <- type.convert(iconv(as.character(site[,i]), iconv[1],iconv[2]), ...) 
+if(missing(iconv)) for(i in c(1,2,4,5,7,8,10:ncol(site))) site[,i] <- type.convert(as.character(site[,i]), ...)
       site$SURF_AREA[site$SURF_AREA==0] <- NA        
 ### 
       fun <- function(x) all(is.na(x))

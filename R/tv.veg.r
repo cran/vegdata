@@ -1,6 +1,5 @@
 tv.veg <- function (db, tv_home, tax = TRUE, convcode = TRUE, lc = c("layer","mean","max","sum","first"), pseudo = list(lc.1,'LAYER'), values = "COVER_PERC", concept, names = c('short','long'), dec = 0, obs, refl, spc, site, RelScale, sysPath = FALSE, ...) 
 {
-
     lc <- match.arg(lc)
     names = match.arg(names)
     if(missing(tv_home)) tv_home <- tv.home(sysPath=sysPath, ...)
@@ -18,7 +17,7 @@ tv.veg <- function (db, tv_home, tax = TRUE, convcode = TRUE, lc = c("layer","me
     if(convcode) {
         cat(paste('\n converting cover code ... \n'))
         if(missing(RelScale)) {      
-          RelScale <- tv.site(db, tv_home=tv_home, quiet = TRUE, sysPath)[, c("RELEVE_NR", "COVERSCALE")]
+          RelScale <- tv.site(db, tv_home=tv_home, quiet = TRUE, sysPath, iconv=NULL)[, c("RELEVE_NR", "COVERSCALE")]
           obs <- tv.coverperc(obs=obs, RelScale = RelScale, tv_home = tv_home, ...) 
           } else  {obs <- tv.coverperc(db[1], obs, tv_home = tv_home, ...)
              }

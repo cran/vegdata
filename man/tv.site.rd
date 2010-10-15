@@ -3,7 +3,7 @@
 \title{Load site data from Turboveg Database}
 
 \usage{
-tv.site(db, tv_home, quiet=FALSE, sysPath = FALSE, ...)
+tv.site(db, tv_home, quiet=FALSE, sysPath = FALSE, iconv, ...)
 }
 
 \arguments{
@@ -11,6 +11,7 @@ tv.site(db, tv_home, quiet=FALSE, sysPath = FALSE, ...)
   \item{tv_home}{Turbowin installation path. Optional, if Turbowin is either on "C:/turbowin" or "C:/Programme/Turbowin".}
   \item{quiet}{Suppress messages}
   \item{sysPath}{Load system files instead of Turboveg files.}
+  \item{iconv}{If you get an error about unrecognized symbols, you may want to convert characters from one encoding to another. Please provide a character vector of length two with the names of source and target encoding, see \code{\link{iconv}}}
   \item{...}{Additional options like \code{dec} for type.convert}
 }
 

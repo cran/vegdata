@@ -14,7 +14,7 @@ subdiv = c('conflict', 'adapt', 'preserve'), ag = c('conflict', 'adapt','preserv
     if(missing(obs))   obs <- tv.obs(db, tv_home)
     cat("Original number of taxa:", length(unique(obs$SPECIES_NR)),'\n')
     if(missing(refl)) refl <- tv.refl(db[1], tv_home)
-    species <- tax('all', refl=refl, tax=TRUE, sysPath=sysPath, tv_home=tv_home, ...)
+    species <- tax('all', refl=refl, syn=TRUE, tax=TRUE, sysPath=sysPath, tv_home=tv_home, ...)
   
     ### functions   
 adapt <- function(expr, mess, column, column2=c("SPECIES_NR", "ABBREVIAT", "Freq_Member","AGG", "AGG_NAME","Freq_Agg")) {    

@@ -3,7 +3,7 @@
 \title{Load site data from Turboveg Database}
 
 \usage{
-tv.site(db, tv_home, quiet=FALSE, sysPath = FALSE, iconv, ...)
+tv.site(db, tv_home, quiet=FALSE, sysPath = FALSE, iconv, common.only = TRUE,...)
 }
 
 \arguments{
@@ -12,6 +12,7 @@ tv.site(db, tv_home, quiet=FALSE, sysPath = FALSE, iconv, ...)
   \item{quiet}{Suppress messages}
   \item{sysPath}{Load system files instead of Turboveg files.}
   \item{iconv}{If you get an error about unrecognized symbols, you may want to convert characters from one encoding to another. Please provide a character vector of length two with the names of source and target encoding, see \code{\link{iconv}}}
+  \item{common.only}{Import only header data which occur in all databases with the same name.}
   \item{...}{Additional options like \code{dec} for type.convert}
 }
 

@@ -1,3 +1,12 @@
+version 0.5.4 Jan 2012
+  * columns stat and p.value added in syntab if using multipatt
+  * improved parents()
+
+version 0.5.3 Jan 2012
+  * bug in syntab if using cluster vector without levels
+  * function reShape.veg makes observation data frame from vegetation matrix
+  * bug in tv.refl choosing sometimes the wrong automatic reference list
+
 version 0.5.1 Okt 2011
   * Profiling: Performance of tv.veg, tax and taxval has been improved (a run of tv.veg('elbaue') was around 10 sec and is now 3 sec
 
@@ -7,7 +16,7 @@ version 0.5 Okt 2011
 version 0.4 Sept 2011
   * major improvements and bugfixes
   * new function syn to find the name swarm of a species
-  * new function comb.taxa to manually manipulate species in vegetation frame
+  * new function comb.taxa to manually manipulate species in vegetation frames
   * updatet vignette
 
 version 0.3.2 July 2011

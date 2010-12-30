@@ -12,7 +12,7 @@
 \usage{
 tax(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, ...)
 childs(x, refl, species, gen = 4, tree = FALSE, quiet = FALSE, ...)
-parents(x, refl, species, quiet = FALSE, ...)
+parents(x, refl, species, rank, ...)
 syn(x, refl, species, quiet = FALSE, ...)
 }
 
@@ -27,6 +27,7 @@ syn(x, refl, species, quiet = FALSE, ...)
 \item{gen}{Number of child generations to return, defaults to all.}
 \item{quiet}{Hide screen messages.}
 \item{tree}{Opens a gWidgets window with interactive taxonomic tree view. Requires package gWidgets.}
+\item{rank}{Taxonomical level of parentship to find.}
 \item{...}{additional attributes}
 }
 

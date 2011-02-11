@@ -2,6 +2,7 @@
 \alias{lc}
 \alias{lc.0}
 \alias{lc.1}
+\alias{lc.all}
 
 \title{Templates for pseudo-species according to Turboveg layer informations.}
 
@@ -36,6 +37,21 @@ layer \tab  comb \cr
  4 \tab Shrub \cr
  5 \tab Shrub \cr
  6 \tab Shrub \cr
+ 7 \tab 0 \cr
+ 8 \tab 0 \cr
+ 9 \tab 0 \cr
+}
+
+\code{lc.all} = Do not use any layer differentiation.
+\tabular{rr}{
+layer \tab comb \cr
+ 0 \tab 0 \cr
+ 1 \tab 0 \cr
+ 2 \tab 0 \cr
+ 3 \tab 0 \cr
+ 4 \tab 0 \cr
+ 5 \tab 0 \cr
+ 6 \tab 0 \cr
  7 \tab 0 \cr
  8 \tab 0 \cr
  9 \tab 0 \cr

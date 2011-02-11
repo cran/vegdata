@@ -1,7 +1,7 @@
 tv.biblio <- function(x, site, quiet=FALSE, tv_home, ...) {
   if(missing(tv_home)) tv_home <- tv.home(...)
 
-  biblio <- read.dbf(paste(tv_home, 'Popup', 'tvrefenc.dbf', sep='/'), as.is=TRUE)
+  biblio <- read.dbf(file.path(tv_home, 'Popup', 'tvrefenc.dbf'), as.is=TRUE)
   if(!missing(site)) {
     freq <- table(site$REFERENCE) 
     biblio$NBREL <- as.integer(freq[match(biblio$REFERENCE, names(freq))] )

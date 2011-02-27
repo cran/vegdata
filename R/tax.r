@@ -10,7 +10,7 @@ store <- local({
 # As dBase is DOS, Umlaute  are  stored  using  a  different  code  table
 #    (namely ASCII) than most modern unices (namely ANSI).  If you encounter
 #    such a file, I would recommend piping the output through recode(1) with
-#    ibmpc:latin1 as it’s argument.
+#    ibmpc:latin1 as its argument.
 sub.abbr <- function(...) tax.abbr(...)
 tax.abbr <- function(x) {
 #  loc <- Sys.getlocale(category='LC_CTYPE')
@@ -124,61 +124,77 @@ return(species)
 #  ls(pos='package:vegdata')
 
 ##### Child taxa of a taxon
-childs <- function (x, refl, species, gen=4, tree=FALSE, quiet=FALSE, ...) {
+childs <- function (x, refl, species, gen=4, tree=FALSE, quiet=FALSE, syn=FALSE, ...) {
  if(missing(species)) species <- tax("all", verbose = TRUE, refl = refl, syn = FALSE)
  if(length(x)>1) warning('More than one species selected, using only the first.')
   x <- x[1]
-  if(is.character(x)) x <- species[match(x, species$ABBREVIAT),'SPECIES_NR']
-#    x <- tax(x, refl=tv.refl(refl), strict=TRUE, syn = FALSE)$SPECIES_NR	# too many ressources used
+  # if(is.character(x)) x <- species[match(x, species$ABBREVIAT),'SPECIES_NR']
+  x <- tax(x, refl=tv.refl(refl=refl), syn = FALSE)$SPECIES_NR	# too many ressources used
 
   if(tree) {
     require(gWidgets)
    if(length(find.package('gWidgetstcltk', quiet=TRUE)) == 0) warning('Please install gWidgetstcltk.')
     root <- childs(x, gen=1)
+    if(!is.null(root)) {
     offspring <- function(path, ...) {
-    ll <- root
-    for(i in path)
-	    ll <- childs(i, gen=1, tree=FALSE, quiet=TRUE)
-    off <- logical(nrow(ll))
-    for(n in 1:nrow(ll)) off[n] <- !is.null(childs(ll$SPECIES_NR[n], quiet=TRUE))
-	  out <- data.frame(Name=ll$ABBREVIAT,
-		        hasOffspring=off,
-		        Rang=ll$RANG,
-		        Nr=ll$SPECIES_NR,
-		        stringsAsFactors=FALSE)
+      ll <- root
+      for(i in path)
+  	    ll <- childs(i, gen=1, tree=FALSE, quiet=TRUE, syn=syn)
+      off <- logical(nrow(ll))
+      for(n in 1:nrow(ll)) off[n] <- !is.null(childs(ll$SPECIES_NR[n], quiet=TRUE))
+      if(syn) out <- data.frame(
+                Name=ll$ABBREVIAT,
+    		        hasOffspring=off,
+    		        Rang=ll$RANG,
+                Synonym=ll$SYNONYM,
+    		        stringsAsFactors=FALSE
+               ) else
+  	  out <- data.frame(
+              Name=ll$ABBREVIAT,
+  		        hasOffspring=off,
+  		        Rang=ll$RANG,
+  		        Nr=ll$SPECIES_NR,
+  		        stringsAsFactors=FALSE
+             )
       out
     }
     w <- gwindow(paste("Taxonomic Tree of", species$ABBREVIAT[species$SPECIES_NR==x]))
     tr <- gtree(offspring=offspring, container=w)  
     addHandlerDoubleclick(tr, handler=function(h,...) {
-      print(childs(svalue(h$obj), gen=1)[,c('SPECIES_NR','LETTERCODE','ABBREVIAT','GRUPPE','RANG','AGG','SECUNDUM','EDITSTATUS')])
+      print(childs(svalue(h$obj), gen=1, syn=syn , quiet=TRUE)[, c('SPECIES_NR' , 'LETTERCODE' , 'ABBREVIAT' , 'GRUPPE' , 'RANG' , 'SYNONYM', 'AGG' , 'SECUNDUM' , 'EDITSTATUS')])
       })
-  } else {
+  }} else {
     x <- species[match(x, species$SPECIES_NR),'VALID_NR']
     x <- species[match(x, species$SPECIES_NR),]
-    Agg <- species[which(species$AGG == x$SPECIES_NR),]
-    if(nrow(Agg)==0) {
-    if(!quiet) cat(x$ABBREVIAT, 'has no childs.\n') 
-  } else 
-  {
-
-    Agg$GENERATION <- 1
-    ag2 <- Agg
+    if(syn) {
+          ch <- species[which(species$AGG == x$SPECIES_NR),'SPECIES_NR']
+          ch <- do.call(rbind, lapply(ch, function(x) syn(x, quiet=TRUE)))
+         } else ch <- species[which(species$AGG == x$SPECIES_NR),]
+    if(is.null(ch)) { if(!quiet) cat(x$ABBREVIAT, 'has no childs.\n')
+                    } else
+    if(nrow(ch)==0) {
+        if(!quiet) cat(x$ABBREVIAT, 'has no childs.\n') 
+  } else {
+    ch$GENERATION <- 1
+    ch2 <- ch
     t <- 1
     repeat {
       t <- t+1
-      ag2 <- species[which(species$AGG %in% ag2$SPECIES_NR),]
-      if(nrow(ag2)== 0 ) break
-      ag2$GENERATION <- t
-      Agg <- rbind(Agg, ag2)
+      if(syn) {
+        ch2 <- species[which(species$AGG == x$SPECIES_NR),'SPECIES_NR']
+        ch2 <- do.call(rbind, lapply(ch2, function(x) syn(x, quiet=TRUE)))
+     } else  ch2 <- species[which(species$AGG %in% ch2$SPECIES_NR),]
+      if(nrow(ch2)== 0 ) break
+      ch2$GENERATION <- t
+      ch <- rbind(ch, ch2)
       if(gen <= t) break
     }
-    if(!is.null(gen)) Agg <- Agg[Agg$GENERATION <= gen,]
+    if(!is.null(gen)) ch <- ch[ch$GENERATION <= gen,]
     if(!quiet) {
-	cat('Childs of', x$ABBREVIAT, '(', x$SPECIES_NR, '):\n')
-	print(Agg[,c('SPECIES_NR','ABBREVIAT','RANG','SECUNDUM','AGG','GENERATION','EDITSTATUS')])
-      }
-    invisible(Agg)
+      	cat('Childs of', x$ABBREVIAT, '(', x$SPECIES_NR, '):\n')
+      	print(ch[,c('SPECIES_NR','ABBREVIAT','RANG','SECUNDUM','AGG','GENERATION','SYNONYM','EDITSTATUS')])
+    }
+    invisible(ch)
   }
  }
 }

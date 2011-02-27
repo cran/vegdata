@@ -1,9 +1,9 @@
-a6e6f7e2328984562bc6a7d25bfc5800 *DESCRIPTION
-3e63d7394082211af307f1da04442b14 *NAMESPACE
+843c5d4b24d1fb123aece823ac368dbb *DESCRIPTION
+51a1617ff015b5ac5d1424553692eb4a *NAMESPACE
 7bcb5c61417f0e3cba5301a031263ded *R/comb.species.r
 a3f52cb82d97dc03bba3ff74aaa7a138 *R/reShape.veg.r
 4a71162cb19259dc889dea336f6f2aa9 *R/syntab.r
-66baf314b8da3a978b483246f2b14ec2 *R/tax.r
+ef75eecb35f925ba90528a1d38ccb1e1 *R/tax.r
 fde9c84d6625854f75d97ae5b2281392 *R/taxval.r
 0a1bab96f41af2044c11c1fb09e9b503 *R/tv.biblio.r
 de06d52848d9ec2465c66830089b8d3b *R/tv.compRefl.r
@@ -23,7 +23,7 @@ fbb05d61134754a7d9453f17d38b4d21 *R/tv.obs.r
 bc89d79416bb8ced441c5bcdf45d7a0e *data/lc.1.csv.gz
 fd46801e2d464ef1a98ec58a62232fa0 *data/lc.all.csv.gz
 590da4acd3d0cf62580a083d65a3b30e *inst/CITATION
-ca0eac5c796bc1d6f388eabff31f5e46 *inst/ChangeLog
+11fa6d625dc73470c583907631ba6942 *inst/ChangeLog
 701d32972f66a6cc11eaebc1b8730046 *inst/doc/vegdata.Rnw
 f3cee25e03f6b92d641709154d7c91ed *inst/doc/vegdata.pdf
 2056c74414fd1e3eae4042021a254e5d *inst/tvdata/Data/elbaue/TvAdmin.dbf
@@ -44,7 +44,7 @@ f345fe76c9d65cc4c33f9cfe1bd1cb05 *inst/tvdata/Popup/tvscale.dbf
 7a47d8ff414290082a75e815b531b1f7 *man/elbaue.Rd
 6ed9fed55737f3a75b5c76b83a98e18b *man/lc.Rd
 c6035dda5fd41f6169a2f490f4175a23 *man/syntab.Rd
-5755f18f299b43ef92aa7fc01d4e50e5 *man/tax.Rd
+15972cc239bd1e610146a40d2af0b207 *man/tax.Rd
 2b0a1225142136178455d3abd4bcb2e2 *man/taxval.Rd
 052503b9c28db8a726313b171a62724a *man/tv.biblio.Rd
 13d16d81faa4a0da2373badba46727a9 *man/tv.comprefl.Rd

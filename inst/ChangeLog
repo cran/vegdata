@@ -1,10 +1,13 @@
+version 0.5.7 March 2012
+  * function childs now also with synonyms
+
 version 0.5.6 March 2012
   * bug in taxval concerning the coarsening of taxonomic levels
-  * improved encoding of native names etc.
+  * slightly improved encoding of native names
 
 version 0.5.4 Jan 2012
   * columns stat and p.value added in syntab if using multipatt
-  * improved parents()
+  * improved function parents
 
 version 0.5.3 Jan 2012
   * bug in syntab if using cluster vector without levels

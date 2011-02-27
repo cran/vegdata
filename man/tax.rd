@@ -11,7 +11,7 @@
 
 \usage{
 tax(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, ...)
-childs(x, refl, species, gen = 4, tree = FALSE, quiet = FALSE, ...)
+childs(x, refl, species, gen = 4, tree = FALSE, quiet = FALSE, syn = FALSE, ...)
 parents(x, refl, species, rank, ...)
 syn(x, refl, species, quiet = FALSE, ...)
 }
@@ -20,14 +20,14 @@ syn(x, refl, species, quiet = FALSE, ...)
 \item{x}{Species number, lettercode or species name}
 \item{refl}{Taxonomic reference list}
 \item{verbose}{Load tax.dbf with additional taxonomic information (e.g. Secundum) instead of species.dbf}
-\item{syn}{Return also matching synonyms.}
-\item{concept}{Name of alternatice taxon view file within the reference list directory.}
+\item{syn}{Return also synonym names}
+\item{concept}{Name of alternatice taxon view file within the reference list director}
 \item{strict}{Exact match or partial matching with \code{\link{grep}}}
-\item{species}{Taxonomic reference list (dataframe according to tax() output. If not given, tax(...) will be used.}
-\item{gen}{Number of child generations to return.}
-\item{quiet}{Hide screen messages.}
-\item{tree}{Opens a gWidgets window with interactive taxonomic tree view. Requires package gWidgets.}
-\item{rank}{Taxonomical level of parentship to find.}
+\item{species}{Taxonomic reference list (dataframe according to tax() output. If not given, tax(...) will be used}
+\item{gen}{Number of child generations to return}
+\item{quiet}{Hide screen messages}
+\item{tree}{Opens a gWidgets window with interactive taxonomic tree view. Requires package gWidgets}
+\item{rank}{Taxonomical level of parentship to find}
 \item{...}{additional attributes}
 }
 

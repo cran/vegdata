@@ -3,10 +3,11 @@
 export(childs,comb.species,parents,reShape.veg, syn,syntab,tax,taxval)
 
 ## export regular functions with dot names
-export(tv.biblio,tv.compRefl,tv.coverperc,tv.db,tv.eco,tv.home,tv.metainfo,tv.mono,tv.obs,tv.refl,tv.site,tv.veg,tv.write, sub.abbr)
+export(tv.biblio,tv.compRefl,tv.coverperc,tv.db,tv.traits,tv.home,tv.metainfo,tv.mono,tv.obs,tv.refl,tv.site,tv.veg,tv.write, sub.abbr)
 
 ## Export .Deprecated functions (to be removed later)
 # export(agg, spc, tv.taxval)
+export(tv.eco)
 
 ## do NOT export the following internal functions
 ## export(vw.con,first.word}

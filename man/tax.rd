@@ -24,7 +24,7 @@ syn(x, refl, species, quiet = FALSE, ...)
 \item{concept}{Name of alternatice taxon view file within the reference list directory.}
 \item{strict}{Exact match or partial matching with \code{\link{grep}}}
 \item{species}{Taxonomic reference list (dataframe according to tax() output. If not given, tax(...) will be used.}
-\item{gen}{Number of child generations to return, defaults to all.}
+\item{gen}{Number of child generations to return.}
 \item{quiet}{Hide screen messages.}
 \item{tree}{Opens a gWidgets window with interactive taxonomic tree view. Requires package gWidgets.}
 \item{rank}{Taxonomical level of parentship to find.}

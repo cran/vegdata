@@ -17,7 +17,7 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
     if(missing(obs)) obs <- tv.obs(db, tv_home)
 #     if(suppressWarnings(any(obs < -1e+05, na.rm = TRUE))) 
 #       cat("\n WARNING! Values less than -100,000. \n WARNING! tvabund.dbf may be corrupt. \n WARNING! Please correct by reexporting e.g. with OpenOffice.")
-    if(!missing(spc)) { 
+    if(!missing(spc)) {
       cat('\n Selecting species ... \n')
       obs <- obs[obs$SPECIES_NR %in% spc,]
       }
@@ -34,7 +34,7 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
 	  if(missing(db)) stop('\nEither database name or a vector with CoverScale per releve has to be permitted, to cope with Cover Scale information\n')
           RelScale <- tv.site(db, tv_home=tv_home, quiet = TRUE, iconv=NULL)[, c("RELEVE_NR", "COVERSCALE")]
           obs <- tv.coverperc(obs=obs, RelScale = RelScale, tv_home = tv_home, ...) 
-          } else  obs <- tv.coverperc(db[1], obs, tv_home = tv_home, ...)
+          } else  obs <- tv.coverperc(obs, RelScale, ...)
       } else {
       if (!any(names(obs) == values)) stop(paste(values, " could not be found.")) 
           obs[,values] <- type.convert(as.character(obs[,values]))
@@ -60,11 +60,13 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
       first = tapply(obs[, values], list(rowlab, collab), first.word) )
     results[is.na(results)] <- 0
     results <- as.data.frame(results)
+
 ## Names
     if(spcnames %in% c('short','long')) {
       cat('\n replacing species numbers with ', spcnames, ' names ... \n')
       if(is.null(pseudo)) {
-	species <- tax(as.numeric(colnames(results)), verbose=FALSE, syn=FALSE, refl = refl, tv_home=tv_home, ...)
+        print(as.numeric(colnames(results)))
+	species <- tax(as.numeric(colnames(results)), verbose=TRUE, syn=FALSE, refl = refl, tv_home=tv_home, ...)
 	if(spcnames=='short') colnames(results) <- species$LETTERCODE[match(colnames(results), species$SPECIES_NR)]
 	if(spcnames=='long') colnames(results) <- gsub(' ','_', species$ABBREVIAT[match(colnames(results), species$SPECIES_NR)] )
        } else {

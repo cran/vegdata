@@ -12,11 +12,11 @@
 \usepackage[english=american]{csquotes}
 \usepackage[left=25mm,right=20mm,top=35mm,bottom=35mm]{geometry}
 \usepackage{tikz}
-\usepackage{pgflibraryshapes}
+\usetikzlibrary{shapes}
 
 \author{Florian Jansen}
 \title{Vegetation data access and taxonomic harmonization \\
-Version 0.4}
+Version 0.5}
 
 % \renewcommand{\Sinput}[1]{\small{\color{#1}{rgb}{0,0,0.56}}}
 % \definecolor{Sinput}{rgb}{0,0,0.56}
@@ -225,11 +225,11 @@ This condensed format shows only presences of species observations. Every specie
 \caption{Steps of taxonomic interpretation}
 \end{figure}
 
-\subsection{Explaining function taxval}
+\subsection{Function taxval}
 
 We are using the taxonomic reference list GermanSL \citep{Jansen2008} which contains not only information about synonymy of species names, but also about the taxonomic hierarchy. This enables several semi-automatic enhancements of the taxonomic information stored in your vegetation database. If your database is not referenced to GermanSL (and can not be converted), you have to dismiss function \texttt{taxval} (option tax=FALSE in \texttt{tv. veg}) and do the taxonomic harmonization by hand (function \texttt{comb.species}).
 
-<<taxval>>=
+<<taxval, eval=TRUE>>=
 obs.taxval <- taxval(obs.tax, db=db, mono='lower')
 @
 
@@ -260,10 +260,12 @@ Completely independent from the questions of correct taxonomic naming of a speci
 
 \subsection{Coarsening to a specific taxonomic level}
 If you want only species in your analyses and no other taxonomic level use \texttt{taxval(obs, ag='adapt', rank='SPE')}. All hierarchical levels below the species level (including the above specified monotypic subspecies) are set to species level in this case.
-<<FAM>>=2
-tmp <- taxval(obs.tax, db=db, maxtaxlevel='FAM', ag='adapt', rank='FAM')
+<<coarsen, eval=TRUE, results=hide>>=
+tmp <- taxval(obs.tax, refl='GermanSL 1.2', ag='adapt', rank='FAM')
 tmp$Taxon <-  species$ABBREVIAT[match(tmp$SPECIES_NR, species$SPECIES_NR)]
-tmp[order(tmp$Taxon),9:10]
+@
+<<print.coarsen>>=
+tmp[order(tmp$Taxon),c('Name','Taxon')]
 @
 
 Check \texttt{?taxval} and \texttt{args(taxval)} for more options than the default.
@@ -272,7 +274,7 @@ Check \texttt{?taxval} and \texttt{args(taxval)} for more options than the defau
 \subsection{Implementing other taxon views}
 
 If you wish to use another taxonomic concept than the default, you can use a conversion table to change synonymy etc. to catch your needs. 
-<<eval=FALSE>>=
+<<taxonviews, eval=FALSE>>=
 newtaxa <- tv.taxval(obs, db, concept='korneck1996')
 @
 
@@ -388,30 +390,108 @@ library(RMySQL)
 @
 
 
-To prevent incompatibilities with Windows users who want to use Turboveg data but no VegetWeb data and who are not able or willing to install RMySQL, I excluded the VegetWeb functions from package vegdata, but they can be downloaded from my site:
+To prevent incompatibilities with Windows users who want to use Turboveg data but no VegetWeb data and who are not able or willing to install RMySQL, I excluded the VegetWeb functions from package vegdata, but they can be downloaded from the following website:
 
-<<>>=
+<<eval=FALSE>>=
 source('http://geobot.botanik.uni-greifswald.de/download/r_package/vegetweb.r')
 @
 
-<<vwsite>>=
-vw.site()
-@
+\begin{Schunk}
+\begin{Sinput}
+> vw.site()
+\end{Sinput}
+\begin{Soutput}
+ No query string specified. 
+ You can select vegetation plots from VegetWeb with queries like
+	  query="Projekt='T271'" 
+ This will select all releves from project T271, i.e Dengler 2007 Tuexenia.
+ If you want to see which selection parameters are available, try: 
+ con <- vw.con() 
+ dbListFields(con, "beobachtung")
+ summary(dbGetQuery(con, "SELECT pH FROM beobachtung")) 
+ dbGetQuery(con, "SELECT * FROM projekt") 
+ etc. 
+\end{Soutput}
+\end{Schunk}
 \texttt{vw.site} and \texttt{veg} are the user interface to retrieve data from VegetWeb respectively an open access mirror of the original BfN Server at the University of Greifswald (mirrored every Sunday).
 
-<<con, eval=FALSE>>=
-con <- vw.con()
-dbListTables(con)
-url.show('http://planto.de/OekoArt/ModellLog.php')
-@
+\begin{Schunk}
+\begin{Sinput}
+> con <- vw.con()
+> dbListTables(con)
+> url.show("http://planto.de/OekoArt/ModellLog.php")
+\end{Sinput}
+\end{Schunk}
 
-Get names of VegetWeb tables and look for the Entity Relationship Diagram.
+Gets names of VegetWeb tables and look for the Entity Relationship Diagram.
 
-<<>>=
-con <- vw.con()
-dbListFields(con, "beobachtung")
-dbGetQuery(con, "SELECT * FROM projekt")[1:2]
-@
+\begin{Schunk}
+\begin{Sinput}
+> con <- vw.con()
+> dbListFields(con, "beobachtung")
+\end{Sinput}
+\begin{Soutput}
+ [1] "Beobachtungs_ID"               "Beobachtungscode"              "Plotcode"                     
+ [4] "Vorbeobachtung"                "Projekt"                       "DatumVon"                     
+ [7] "Datum"                         "Moosidentifikation"            "Flechtenidentifikation"       
+[10] "Deckungsmethode"               "Deckungsmethode2"              "Nutzung"                      
+[13] "Anteil Streuschicht"           "Anteil offene Wasserfläche"    "Anteil Fels"                  
+[16] "Anteil Skelett"                "Anteil offener Boden"          "Deckung Baumschicht"          
+[19] "Deckung Strauchschicht"        "Deckung Feldschicht"           "Deckung Kryptogamenschicht"   
+[22] "Deckung Schwimmblattschicht"   "Deckung Wasserpflanzenschicht" "Höhe Baumschicht"          
+[25] "Höhe Strauchschicht"           "Höhe Feldschicht"              "Höhe Kryptogamenschicht"   
+[28] "Tiefe Wasserpflanzen"          "Bemerkung"                     "Erheber"                      
+[31] "Digitalisierer"                "Zitat"                         "Zitattabelle"                 
+[34] "Zitataufnahme"                 "Verband"                       "Assoziation"                  
+[37] "Gesellschaftsbezeichnung"      "Subassoziation"                "Sukzessionsstatus"            
+[40] "Bestandsalter"                 "Biozönotische Aspekte"         "Hydrologie"                   
+[43] "Grundwasserflurabstand"        "Uferentfernung"                "Bodenart"                     
+[46] "Bodentyp"                      "Humusform"                     "pH"                           
+[49] "Phosphor"                      "Kalium"                        "Magnesium"                    
+[52] "N-Gehalt"                      "Biotoptyp"                     "Pflegemaßnahmen"           
+[55] "Düngung"                       "Schutz"                        "Temperatur"                   
+[58] "User"                          "Modified"                     
+\end{Soutput}
+\begin{Sinput}
+> dbGetQuery(con, "SELECT * FROM projekt")[1:2]
+\end{Sinput}
+\begin{Soutput}
+   Projekt                                                         Projektname
+1     Bohn                       Vegetationsaufnahmen bodensaurer Buchenwälder
+2     BgWd                                                Bergwald - Datenbank
+3     T252                                                   Tüxenia 25 Becker
+4     T251                                                          Tüxenia 25
+5     T253                                                 Tüxenia 25 Bültmann
+6     T262                                                          Tüxenia 26
+7     T264                                                          Tüxenia 26
+8     T254                                                    Tüxenia 25 Fuchs
+9     T255                                                  Tüxenia 25 Gehlken
+10    T269                                                          Tüxenia 26
+11    T261                                                          Tüxenia 26
+12    T268                                                          Tüxenia 26
+13    T256                                            Tüxenia 25 Otte und Maul
+14    T265                                                          Tüxenia 26
+15    T266                                                          Tüxenia 26
+16    T282                              Die Schwermetall-Vegetation des Harzes
+17    T292    Populationsstruktur und Vergesellschaftung von Dictamnus albus L.
+18    T275                                                   Tüxenia 27 Huntke
+19    T274                                       Tüxenia 27 Krämer u. Fartmann
+20    T273                                                  Tüxenia 27 Brandes
+21    T272                                                   Tüxenia 27 Klauck
+22    T271                                                  Tüxenia 27 Dengler
+23    T263                                                          Tüxenia 26
+24    T276                                                   Tüxenia 27 Becker
+25    T281                      Die Allmendeweide "NSG Kanzelstein bei Eibach"
+26    T291 Verbreitung, Vergesellschaftung und Ökologie von Lathraea squamaria
+27    T293              Trittgesellschaften der nordrhein-westfälischen Dörfer
+28    T294              Succession and management of calcareous dry grasslands
+29  SYPF10                    Synopsis der Pflanzengesellschaften Deutschlands
+30    vNWR                                          Naturwaldreservate Bayerns
+31   LANUV  LINFOS-Daten Landesamt für Natur, Umwelt und Verbraucherschutz NRW
+32    T302                                           Tüxenia 30 Schmitt et al.
+\end{Soutput}
+\end{Schunk}
+
 
 <<>>=
 query <- "Projekt='T302'"
@@ -420,11 +500,10 @@ query <- "Projekt='T302'"
 Since several years all authors of \textbf{Tuexenia} are committed to give their published data to VegetWeb. Therefore we can quite easily download the data from e.g.: \\
 Schmitt, Fartmann, Hoelzel 2010 Phytosociology and ecology of \emph{Gladiolus palustris} in southern Bavaria, Tuexenia 30, p. 105-128.
 
-<<>>=
+<<eval=FALSE>>=
 site <- vw.site(query)
 site.coord <- site[!is.na(site$"Geografische Breite"),]
 @
-
 
 \section{Additional functions}
 
@@ -477,10 +556,6 @@ The package \emph{vegdata} serves mostly as a helper for the analysis of vegetat
 
 \subsection{Plot coordinates of vegetation relev\'{e}s into an interactive Google Map}
 
-<<>>=
-library(googleVis)
-site.coord$loc <- paste(site.coord[,29], site.coord[,28], sep=':')
-@
 If you do not have geodesic coordinates as used in Google Earth (EPSG-Code 4326), you can convert coordinates with R packages rgdal.
 
 <<eval=FALSE>>=
@@ -495,17 +570,18 @@ site.coord$loc <- paste(site.coord$lat, site.coord$long, sep=':')
 @
 
 To give some information we will create Tips:
-<<>>=
+<<eval=FALSE>>=
 site.coord$tip <- paste(paste('Releve_NR:', site.coord$RELEVE_NR), paste('Table:',site.coord$TABLE_NR), paste('Nr. in table:', site.coord$NR_IN_TAB), site.coord$DATE, landuse=site.coord$NUTZUNG, site.coord$Assoziation, site.coord$Erheber, paste('Locality:', site.coord[,26]), paste('Longitude:', site.coord[,28]), paste('Latitude:', site.coord[,29]), sep='<BR>')
 @
-and the produced map will be open in your standard web browser.
+and the produced map will open in your standard web browser.
+
 <<eval=FALSE, fig=FALSE>>=
 places <- gvisMap(site.coord, 'loc', 'tip', options=list(showTip=TRUE, showLine=FALSE, enableScrollWheel=TRUE, mapType='hybrid', useMapTypeControl=TRUE, width=1000, height=800))
 plot(places)
 @
 \begin{figure}
-\includegraphics[width=6cm]{gVis}
-\caption{Spatial distribution of vegetation plots from a VegetWeb project. The map is interactive and zoomable.}
+\includegraphics[width=04cm]{googleVis}
+\caption{Spatial distribution of vegetation plots from a VegetWeb project. The map is interactive and scalable.}
 \end{figure}
 
 

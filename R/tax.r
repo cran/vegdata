@@ -11,11 +11,11 @@ store <- local({
 #    (namely ASCII) than most modern unices (namely ANSI).  If you encounter
 #    such a file, I would recommend piping the output through recode(1) with
 #    ibmpc:latin1 as it’s argument.
-
-sub.abbr <- function(x) {
+sub.abbr <- function(...) tax.abbr(...)
+tax.abbr <- function(x) {
 #  loc <- Sys.getlocale(category='LC_CTYPE')
 #  Sys.setlocale("LC_ALL","C")
-    iconv(x, "latin1", "")
+    x <- iconv(x, "437", "")
     x <- sub('\ ag[.]', ' agg.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ ssp[.]', ' subsp.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ v[.]\ ', ' var. ', x, perl=TRUE, useBytes=TRUE)
@@ -102,7 +102,10 @@ if(is.null(store(reflist))) { # load.species(refl=refl, verbose = verbose)
   for(i in which(sapply(species, is.factor))) species[,i] <- as.character(species[,i]) # ob nötig?
   for(i in which(sapply(species, is.character))) Encoding(species[,i]) <- 'latin1' # ob nötig?
   species$ABBREVIAT <- sub.abbr(species$ABBREVIAT)
-  if(verbose) species$VALID_NAME <- sub.abbr(species$VALID_NAME)
+  if(verbose) {
+    species$VALID_NAME <- sub.abbr(species$VALID_NAME)
+    if('NATIVENAME' %in% names(species)) species$NATIVENAME <- iconv(species$NATIVENAME, iconvlist()[5], '')
+  }
   store(reflist, species)
   } else {
 #     cat('Using stored list', reflist, '\n')
@@ -130,7 +133,7 @@ childs <- function (x, refl, species, gen=4, tree=FALSE, quiet=FALSE, ...) {
 
   if(tree) {
     require(gWidgets)
-    if(!'gWidgetstcltk' %in% installed.packages()) warning('Please install gWidgetstcltk.')
+   if(length(find.package('gWidgetstcltk', quiet=TRUE)) == 0) warning('Please install gWidgetstcltk.')
     root <- childs(x, gen=1)
     offspring <- function(path, ...) {
     ll <- root
@@ -183,7 +186,7 @@ childs <- function (x, refl, species, gen=4, tree=FALSE, quiet=FALSE, ...) {
 
 ## Parents of a taxon
 parents <- function (x, refl, species, rank, ...) {
-if(!is.numeric(x) & !is.integer(x)) x <- tax(x, strict=TRUE, syn=FALSE, refl, ...)['SPECIES_NR']
+  if(!is.numeric(x) & !is.integer(x)) x <- tax(x, strict=TRUE, syn=FALSE, refl, ...)['SPECIES_NR']
   # stop('x must be numeric or integer (use tax() to find Species numbers).')
   taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), ordered=TRUE)
 
@@ -213,7 +216,7 @@ lo <- function(y,p) {
 }
     
 if(!missing(rank)) {
-    if(!rank %in% taxlevels) stop(c('Rank must be one of', ranks))
+    if(!rank %in% taxlevels) stop(c('Rank must be one of', rank))
       if(taxlevels[match(rank, taxlevels)] <= taxlevels[match(y$RANG, taxlevels)]) {
         warning('Species is equal oo higher rank than specified parent level.')
         p <- c(ABBREVIAT='')

@@ -1,4 +1,4 @@
-tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, ...) 
+tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...) 
 {
   if (missing(tv_home)) 
       tv_home <- tv.home()
@@ -9,16 +9,16 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, ...)
   if (missing(RelScale)) {
       ow <- options('warn')
       options(warn = -1)
-      RelScale <- tv.site(db, tv_home, quiet = TRUE)[, c("RELEVE_NR", "COVERSCALE")]
+      RelScale <- tv.site(db, tv.home(), quiet = TRUE)[, c("RELEVE_NR", "COVERSCALE")]
       options(ow)
       }
   if (missing(obs))
-      obs <- tv.obs(db, tv_home)
+      obs <- tv.obs(db, tv.home(), quiet=TRUE)
   obs$COVERSCALE <- RelScale$COVERSCALE[match(obs$RELEVE_NR, RelScale$RELEVE_NR)]
   g <- obs$COVERSCALE
   if(any(is.na(g)))  {
-    print(obs[is.na(g),])
-    stop('These releve numbers are without valid CoverScale value.')
+    print(unique(obs[is.na(g),'COVER_CODE']))
+    stop('These releves miss a cover scale value in the header data.')
     }
   obs <- split(obs, g, drop = FALSE)
   for (i in names(obs)) {
@@ -32,14 +32,16 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, ...)
       code <- t(scala[seq(4,(p-1),2)])
       perc <- scala[seq(5,p,2)][1,]
       d.f <- data.frame(code=code[,1], perc = as.numeric(perc))
-      cat('\n Cover code used: ', as.character(tvscale[i, 2]), '\n')
-      write.table(t(d.f), col.names = FALSE, sep = "\t", quote = FALSE)
+      if(!quiet) {
+        cat('\n Cover code used: ', as.character(tvscale[i, 2]), '\n')
+        write.table(t(d.f), col.names = FALSE, sep = "\t", quote = FALSE)
+      }
       obs[[i]]["COVER_PERC"] <- d.f$perc[match(obs[[i]][,"COVER_CODE"], d.f$code)]
   }
   }
   obs <- unsplit(obs, g)
   if(any(is.na(obs$COVER_PERC))) {
-      print(obs[is.na(obs$COVER_PERC),])
+      print(obs[is.na(obs$COVER_PERC),'COVER_CODE'])
       stop("Invalid cover codes, please check tvabund.dbf and tvscale.dbf!")
   }
   obs

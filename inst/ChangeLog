@@ -1,4 +1,4 @@
-version 0.5.5 March 2012
+version 0.5.6 March 2012
   * bug in taxval concerning the coarsening of taxonomic levels
   * improved encoding of native names etc.
 

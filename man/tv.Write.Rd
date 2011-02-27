@@ -9,7 +9,7 @@ tv.write(x, site, name, cover = c("code", "perc"), overwrite = FALSE, ...)
 }
 
 \arguments{
-  \item{x}{Either observations data.frame with RELEVE_NR, SPECIES_NR and COVER_CODE columns or vegetation m,atrix of class \"veg\".}
+  \item{x}{Either observations data.frame with RELEVE_NR, SPECIES_NR and COVER_CODE columns or vegetation matrix of class "veg".}
   \item{site}{Header data for plots.}
   \item{name}{Name of the database.}
   \item{cover}{Use of covercodes or (mean) cover percentages, see Details.}

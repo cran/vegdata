@@ -385,14 +385,11 @@ I have written functions, which provide the possibility to access the data store
 \end{enumerate}
 
 If you run into trouble see \url{http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL}.
-<<RMySQL>>=
-library(RMySQL)
-@
-
 
 To prevent incompatibilities with Windows users who want to use Turboveg data but no VegetWeb data and who are not able or willing to install RMySQL, I excluded the VegetWeb functions from package vegdata, but they can be downloaded from the following website:
 
-<<eval=FALSE>>=
+<<RMySQL, eval=FALSE>>=
+library(RMySQL)
 source('http://geobot.botanik.uni-greifswald.de/download/r_package/vegetweb.r')
 @
 

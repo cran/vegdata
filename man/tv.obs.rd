@@ -19,6 +19,14 @@ tv.obs(db, tv_home, ...)
 
 \seealso{\code{\link{tv.veg}}}
 
+\examples{
+\dontrun{
+# Turboveg installation needed
+obs <- tv.obs('taxatest')
+head(obs)
+}
+}
+
 \author{Florian Jansen \email{jansen@uni-greifswald.de}      }
 
 \keyword{misc, survey}

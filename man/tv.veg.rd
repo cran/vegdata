@@ -7,13 +7,13 @@
 It is a wrapper for \code{tv.obs}, \code{tv.taxval}, \code{tv.coverperc}.}
 
 \usage{
-tv.veg(db, tv_home, tax = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo = list(lc.1, "LAYER"), values='COVER_PERC', concept, spcnames=c('short','long','numbers'), dec = 0, obs, refl, spc, site, RelScale, sysPath = FALSE, ...)
+tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo = list(lc.1, "LAYER"), values='COVER_PERC', concept, spcnames=c('short','long','numbers'), dec = 0, pa=FALSE, obs, refl, spc, site, RelScale, sysPath = FALSE, ...)
 }
 
 \arguments{
 \item{db}{Name of your Turboveg database. Directory name containing tvabund.dbf, tvhabita.dbf and tvwin.set. Please specify pathnames below (if you sorted your databases in subfolders) but not above Turbowin/Data.}
 \item{tv_home}{Turbowin installation path.}
-\item{tax}{Should taxonomic valuation (see \code{\link{tv.taxval}}) be performed?}
+\item{taxval}{Should taxonomic valuation (see \code{\link{tv.taxval}}) be performed?}
 \item{convcode}{Should cover code be converted to percentage values?}
 \item{lc}{Layer combination type. Possible values: layer (default), sum, mean or max, see details}
 \item{pseudo}{List for layer combinations, see details}
@@ -21,6 +21,7 @@ tv.veg(db, tv_home, tax = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "s
 \item{concept}{Name of alternative taxon concept list, see \code{vignette(vegdata)}}
 \item{spcnames}{Should species numbers be replaced by shortletters or real names?}
 \item{dec}{Number of decimals for cover values in the resulting vegetation matrix.}
+\item{pa}{logical, reduce response information to presence/absence}
 \item{obs}{Observations, optional}
 \item{refl}{Taxonomic reference list, optional}
 \item{spc}{If you want to pick a subset of species.}
@@ -42,14 +43,15 @@ Function returns an object of class matrix with (combined) cover values.
 }
 
 \examples{
-\dontrun{vignette("vegdata")}
-# If you have a local Turboveg installation try for a beginning tv.veg('your databasename', tax=FALSE).
+\dontrun{vignette("vegdata")
+# If you have Turboveg installed on your computer try for a beginning tv.veg('databasename', tax=FALSE).
 args(tv.veg)
 args(tv.taxval)
 
 veg <- tv.veg('taxatest', sysPath=TRUE)
 names(veg)
 tv.veg('taxatest', uncertain=list('DET_CERT', data.frame(0:2,c('pres','agg','agg'))), pseudo=list(lc.0,'LAYER'), genus = 'delete', sysPath=TRUE)
+}
 }
 
 \author{Florian Jansen

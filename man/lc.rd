@@ -27,7 +27,7 @@ layer \tab comb \cr
  9 \tab 9 \cr
 }
 
-\code{lc.1} = Default layer combination. Differenciates tree and shrub layers, all other layers are combined.
+\code{lc.1} = Default layer combination in \code{\link{tv.veg}}. Differenciates tree and shrub layers, all other layers are combined.
 \tabular{rr}{
 layer \tab  comb \cr
  0 \tab 0 \cr

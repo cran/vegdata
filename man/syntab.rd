@@ -9,7 +9,7 @@ Make relative or absolute frequency tables.
 }
 
 \usage{
-syntab(veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, limit=0, mupa=FALSE, alpha=0.05, minstat=0, dec=0, ...) 
+syntab(veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, limit=0, mupa=NULL, alpha=0.05, minstat=0, dec=0, ...)
 }
 
 \arguments{
@@ -19,31 +19,29 @@ syntab(veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, limit=0,
 \item{fullnames}{Replace rownames (LETTERCODES) with full scientific names.}
 \item{limit}{Minimum value to display.}
 \item{dec}{Number of decimals in result.}
-\item{mupa}{Use multipatt function from package indispecies to detect significance of cluster association strength.}
+\item{mupa}{Either logical for (not) using multipatt from package indispecies to detect significance of cluster association strength or supply output from previous use of multipatt.}
 \item{alpha}{Significance threshold.}
 \item{minstat}{Minimal indicator value}
 \item{...}{additional arguments}
 }
 
-\author{Florian Jansen
-\email{jansen@uni-greifswald.de}
-        }
+\author{Florian Jansen \email{jansen@uni-greifswald.de} }
+
 \examples{
+data(elbaue)
 
-veg <- tv.veg('elbaue', sysPath=TRUE)
-site <- tv.site('elbaue', sysPath=TRUE)
-
-clust <- vector('integer', nrow(site))
-clust[site$MGL < -50 & site$SDGL < 50] <- 1
-clust[site$MGL < -50 & site$SDGL >= 50] <- 2
-clust[site$MGL >= -50 & site$SDGL >= 50] <- 3
-clust[site$MGL >= -50 & site$SDGL < 50] <- 4
-syntab(veg, clust, limit=30)
+clust <- vector('integer', nrow(elbaue.env))
+clust[elbaue.env$MGL < -50 & elbaue.env$SDGL < 50] <- 1
+clust[elbaue.env$MGL < -50 & elbaue.env$SDGL >= 50] <- 2
+clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL >= 50] <- 3
+clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL < 50] <- 4
+# syntab(elbaue, clust, limit=30)
 
 levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
 
-syntab(veg, clust, limit=30, mupa=TRUE)
-
+\dontrun{
+syntab(elbaue, clust, limit=30, mupa=TRUE)
+}
 }
 
 \keyword{misc}

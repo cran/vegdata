@@ -1,10 +1,9 @@
-tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, pa = FALSE, ...) 
+tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, ...) 
 {
-  if(pa) obs$COVER_PERC <- 1 else {
   if (missing(tv_home)) 
       tv_home <- tv.home(...)
   if(missing(tvscale)) 
-      tvscale <- read.dbf(paste(tv_home, "Popup", "tvscale.dbf", sep = "/"))
+      tvscale <- read.dbf(file.path(tv_home, "Popup", "tvscale.dbf"))
   tvscale <- tvscale[!is.na(tvscale$SCALE_NR),]
   rownames(tvscale) <- tvscale[, 1]
   if (missing(RelScale)) {
@@ -39,8 +38,10 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, pa = FALSE, ...)
   }
   }
   obs <- unsplit(obs, g)
+  if(any(is.na(obs$COVER_PERC))) {
+      print(obs[is.na(obs$COVER_PERC),])
+      stop("Invalid cover codes, please check tvabund.dbf and tvscale.dbf!")
   }
-  if(any(is.na(obs$COVER_PERC))) stop("Invalid cover codes, please check tvabund.dbf and tvscale.dbf!")
   obs
 }
 

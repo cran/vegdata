@@ -24,13 +24,13 @@ tv.compRefl(refl1, refl2, tv_home, check.nr=FALSE, verbose=FALSE, Sink=TRUE, new
 }
 
 \references{
-Jansen and Dengler 2008 GermanSL - eine universelle taxonomische Referenzliste fuer Vegetationsdatenbanken.}
+Jansen, F. and Dengler, J. (2010) Plant names in vegetation databases - a neglected source of bias. Journal of Vegetation Science, 21, 1179-1186.}
 
 \author{Florian Jansen
 }
 
 \seealso{
-\code{\link{tax}}, \code{\link{agg}}
+\code{\link{tax}}
 }
 
 \keyword{utilities}

@@ -3,14 +3,14 @@
     # Observations
     cat(paste('reading observations ...', '\n'))
 #    if(is.list(db)) obs <- vw.query(db, 'obs') else
-    obs <- read.dbf(paste(tv_home, 'Data', db[1],'tvabund.dbf',sep='/'))
+    obs <- read.dbf(file.path(tv_home, 'Data', db[1],'tvabund.dbf'))
     # Combine multiple databases
     if(length(db)>1) {
     refl.1 <- tv.refl(db[1])
       for(i in 2:length(db)) {
 	refl.i <- tv.refl(db[i])
 	if(refl.1 != refl.i) stop('Differing taxonomic reference lists used in the databases!')
-	obs.tmp <- read.dbf(paste(tv_home, 'Data', db[i],'tvabund.dbf',sep='/'))
+	obs.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvabund.dbf'))
 	if(any(unique(obs$RELEVE_NR) %in% unique(obs.tmp$RELEVE_NR))) stop('Overlap of releve numbers between the databases!')
 	if(any(!names(obs) %in%  names(obs.tmp))) {
 	  ind.obs <- match(names(obs), names(obs.tmp), nomatch = 0)

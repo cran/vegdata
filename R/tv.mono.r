@@ -14,7 +14,7 @@ MEMB_NAME=taxa$ABBREVIAT[match(AG,taxa$AGG)], MEMB_RANG=taxa$RANG[match(AG,taxa$
 # mono$AGG_RANG[i] <- as.character(taxa[taxa$AGG == AG[i],7])
 #  }
 #csv(mono, paste(tv_home,'species',refl,'monotypic-D.csv',sep='/'))
-if(write) write.dbf(mono, paste(tv_home,'species',refl,'monotypic-D.dbf',sep='/')) else mono
+if(write) write.dbf(mono, 'monotypic-D.dbf') else mono
 }
 # head(mono)
 

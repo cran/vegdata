@@ -1,12 +1,12 @@
-tv.veg <- function (db, tv_home, tax = TRUE, convcode = TRUE, lc = c("layer","mean","max","sum","first"), pseudo = list(lc.1,'LAYER'), values = "COVER_PERC", concept, spcnames = c('short','long','numbers'), dec = 0, obs, refl, spc, site, RelScale, sysPath = FALSE, ...) 
+tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer","mean","max","sum","first"), pseudo = list(lc.1,'LAYER'), values = "COVER_PERC", concept, spcnames = c('short','long','numbers'), dec = 0, pa = FALSE, obs, refl, spc, site, RelScale, sysPath = FALSE, ...) 
 {
 ## Checks
     lc <- match.arg(lc)
     spcnames = match.arg(spcnames)
     if(missing(tv_home)) tv_home <- tv.home(sysPath=sysPath, ...)
     if(missing(obs)) obs <- tv.obs(db, tv_home)
-    if(suppressWarnings(any(obs < -1e+05, na.rm = TRUE))) 
-      cat("\n WARNING! Values less than -100,000. \n WARNING! tvabund.dbf may be corrupt. \n WARNING! Please correct by reexporting e.g. with OpenOffice.")
+#     if(suppressWarnings(any(obs < -1e+05, na.rm = TRUE))) 
+#       cat("\n WARNING! Values less than -100,000. \n WARNING! tvabund.dbf may be corrupt. \n WARNING! Please correct by reexporting e.g. with OpenOffice.")
     if(!missing(spc)) { 
       cat('\n Selecting species ... \n')
       obs <- obs[obs$SPECIES_NR %in% spc,]
@@ -15,11 +15,11 @@ tv.veg <- function (db, tv_home, tax = TRUE, convcode = TRUE, lc = c("layer","me
 ## Taxa
     if(missing(refl)) refl <- tv.refl(db[1], tv_home = tv_home)
     cat('Taxonomic reference list: ',refl, '\n')
-    if(tax) obs <- tv.taxval(obs=obs, refl = refl, tv_home = tv_home, sysPath = sysPath, ...)
+    if(taxval) obs <- taxval(obs=obs, refl = refl, tv_home = tv_home, sysPath = sysPath, ...)
 ## CoverCode
-    if(convcode) {
+    if(convcode){
         cat('\n converting cover code ... \n')
-        if(missing(RelScale)) {      
+        if(missing(RelScale)) {     
           RelScale <- tv.site(db, tv_home=tv_home, quiet = TRUE, sysPath, iconv=NULL)[, c("RELEVE_NR", "COVERSCALE")]
           obs <- tv.coverperc(obs=obs, RelScale = RelScale, tv_home = tv_home, ...) 
           } else  {obs <- tv.coverperc(db[1], obs, tv_home = tv_home, ...)
@@ -68,7 +68,11 @@ tv.veg <- function (db, tv_home, tax = TRUE, convcode = TRUE, lc = c("layer","me
    }
    if (any(is.na(colnames(results)))) warning("Some taxa without names, check reference list!")
 ## Result
+#   results <- results[, order(names(results))]
    class(results) <- c("veg", "data.frame")
-   results <- results[, order(names(results))]
-   results
+   if(pa) {
+      results <- as.data.frame(ifelse(results > 0, 1,0))
+      class(results) <- c("veg", "data.frame")
+    }
+   return(results)
 }

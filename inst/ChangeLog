@@ -1,7 +1,15 @@
+
+version 0.3 May 2011
+  * directory permission of extdata changed
+  * Access to the German National Vegetation databse "VegetWeb" (http://www.floraweb.de/vegetation) through new functions vw.obs, vw.site and vw.veg (alpha stage!)
+  * New tv.write function to write Turboveg databases
+  * the taxonomic reference list GermanSL has been outsourced, to be downloaded from http://geobot.botanik.uni-greifswald.de/download, if needed
+  * child and parent relationships through new functions child() and parents()
+  * aggregation of taxa in tv.taxval is now possible through all taxonomic ranks, see vignette
+
 version 0.2.1 November 2010
   * bug in tv.taxval due to changed default syn value in tax corrected
-  * option pa in tv.coverperc to produce presence/absence vegetation data
-  * tv.site with option to import also non-common variables of multiple databases
+  * new option pa in tv.coverperc to produce presence/absence vegetation data
 
 version 0.2 Sept 2010
   * function freqtab replaced by the more powerful function syntab (with optional usage of function multipatt (package indicspecies))

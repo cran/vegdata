@@ -1,4 +1,5 @@
-tv.taxval <- function (db, obs, refl, concept, syn = c('adapt','conflict','preserve'), ag = c('conflict', 'adapt', 'preserve'), rank, mono = c('lower','higher','all','preserve'), monolist = "monotypic-D", uncertain = NULL, maxtaxlevel = 'ROOT', quiet = FALSE, sysPath = FALSE, ...)
+
+taxval <- function (obs, refl, db, concept=NULL, syn = c('adapt','conflict','preserve'), ag = c('conflict', 'adapt', 'preserve'), rank, mono = c('higher','lower','preserve'), monolist = "monotypic-D", uncertain = NULL, maxtaxlevel = 'ROOT', quiet = FALSE, sysPath = FALSE, ...)
 {
   syn <- match.arg(syn)
   ag <- match.arg(ag)
@@ -7,7 +8,9 @@ tv.taxval <- function (db, obs, refl, concept, syn = c('adapt','conflict','prese
   if(missing(obs))   obs <- tv.obs(db, tv_home)
   cat("Original number of names:", length(unique(obs$SPECIES_NR)),'\n')
   if(missing(refl)) refl <- tv.refl(db[1], tv_home)
-  species <- tax('all', refl=refl, syn=TRUE, tax=TRUE, sysPath=sysPath, tv_home=tv_home, ...)
+  species <- tax('all', refl=refl, syn=TRUE, tax=TRUE, sysPath=sysPath, tv_home=tv_home, concept=concept, ...)
+  taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), ordered=TRUE)
+
 
 ##############################
 ### define functions   
@@ -25,7 +28,7 @@ tv.taxval <- function (db, obs, refl, concept, syn = c('adapt','conflict','prese
         cat('\n', nrow(temp), mess, 'found in dataset, adapted \n')
         if(!quiet) print(temp[, column2], row.names = FALSE) 
         } else 
-          cat('No', mess, 'to adapt. \n')
+          cat('\nNo', mess, 'to adapt. \n')
     obs	# Subsuming elements into higher rank observations when adapt or confl chosen. Has to be added into code!!
   }
 
@@ -70,13 +73,11 @@ obs <- switch(syn,
 fr <- as.data.frame(table(obs$SPECIES_NR))
 
 ## Maximum taxonomic level
-taxlevels <- factor(c('ZUS','VAR','SSP','SPE','SGE','SSE','SER','SEC','AGG','AG2','GAT','FAM','ORD','UKL','KLA','UAB','ABT','ROOT'), levels= c('ZUS','VAR','SSP','SPE','SGE','SSE','SER','SEC','AGG','AG2','GAT','FAM','ORD','UKL','KLA','UAB','ABT','ROOT'), ordered=TRUE)
-
 obsspec <- unique(obs$SPECIES_NR)
 if(maxtaxlevel %in% taxlevels) {
   toohigh <- obsspec[species$RANG[match(obsspec, species$SPECIES_NR)] %in% taxlevels[taxlevels > maxtaxlevel]]
   if(length(toohigh) > 0) {
-    cat('\nTaxa higher than specified maximal taxonomic level:',maxtaxlevel,'found. Deleted.\n')
+    cat('\n', length(toohigh), 'taxa higher than specified maximal taxonomic level:',maxtaxlevel,'found. Deleted.\n')
     print(species[species$SPECIES_NR %in% toohigh, c('SPECIES_NR','ABBREVIAT','SECUNDUM')],row.names=FALSE)
     obs <- obs[!obs$SPECIES_NR %in% toohigh,]
   } else cat('\nNo taxa higher than', maxtaxlevel,'found.\n')
@@ -92,16 +93,17 @@ obs <- switch(ag,
     conflict = { # Subsuming elements into higher rank observations when adapt or confl chosen.
       mess='child taxa'
       repeat{
-      obsspec <- unique(obs$SPECIES_NR)
-      temp <- findchilds(obsspec, species)
-      ch <- temp[temp %in% obsspec]
-      if(length(ch) != 0) {
-  	cat('\n', length(ch), mess, 'found in dataset, adapted \n')
-	nested <- species[match(ch, species$SPECIES_NR),]
-  	if(!quiet) print(nested[,c('SPECIES_NR','ABBREVIAT','AGG','AGG_NAME')], row.names = FALSE) 
-	index <- match(obs$SPECIES_NR, nested$SPECIES_NR)
-	obs$SPECIES_NR[!is.na(index)] <- replace(obs$SPECIES_NR[!is.na(index)], index[!is.na(index)], nested$AGG )
-	} else break 
+	obsspec <- unique(obs$SPECIES_NR)
+	temp <- findchilds(obsspec, species)
+	ch <- temp[temp %in% obsspec]
+	if(length(ch) != 0) {
+	  cat('\n', length(ch), mess, 'found in dataset, adapted \n')
+	  nested <- species[match(ch, species$SPECIES_NR),]
+	  if(!quiet) print(nested[,c('SPECIES_NR','ABBREVIAT','AGG','AGG_NAME')], row.names = FALSE)
+	  index <- match(obs$SPECIES_NR, nested$SPECIES_NR)
+	  repl <- !is.na(index)
+	  obs$SPECIES_NR[repl] <- nested$AGG[index][repl]
+	  } else break
       }
       obs },
     adapt = {
@@ -119,32 +121,35 @@ fr <- as.data.frame(table(obs$SPECIES_NR))
 #     preserve = preserve('Variants, forms, subspecies etc.'),
 #   )
 
-
 ## Monotypic taxa     
-if (mono %in% c("lower", "higher", "all")) {
-    obsspec <- unique(obs$SPECIES_NR)
-    if (file.access(paste(tv_home, 'Species', refl, paste(monolist, "dbf", sep = "."), sep = "/"))) 
-        warning("List of monotypic taxa not available!") else Mono <- read.dbf(paste(tv_home, 'Species', refl, paste(monolist, "dbf", sep = "."), sep = "/"))
-    if (mono == "lower")  tmp <- Mono$MEMBER_NR[match(obs$SPECIES_NR, Mono$AGG_NR)]
-    if (mono == "all") 	tmp <- Mono$AGG_NR[match(obs$SPECIES_NR, Mono$MEMBER_NR)]
-    if (mono == "higher") {
-	  tmp <- Mono$AGG_NR[match(obs$SPECIES_NR, Mono$MEMBER_NR)]
-	  tmp[!Mono$MEMB_RANG[match(tmp, Mono$AGG_NR)] %in% c('FOR','VAR','ZUS','SSP')] <- NA
-      }
-    if (sum(tmp > 0, na.rm = TRUE) > 0) {
+if (mono %in% c("lower", "higher")) {
+     obsspec <- unique(obs$SPECIES_NR)
+    if (file.access(file.path(tv_home, 'Species', refl, paste(monolist, "dbf", sep = ".")))) 
+        warning("List of monotypic taxa not available!") else
+	  Mono <- read.dbf(file.path(tv_home, 'Species', refl, paste(monolist, "dbf", sep = ".")))
+#     if (mono == "higher") {
+# 	  tmp <- Mono$AGG_NR[match(obs$SPECIES_NR, Mono$MEMBER_NR)]
+# 	  tmp[!Mono$MEMB_RANG[match(tmp, Mono$AGG_NR)] %in% taxlevels[taxlevels < 'SPE']] <- NA	# Universeller schreiben
+#       }
+#     if (mono == "lower")  tmp <- Mono$MEMBER_NR[match(obs$SPECIES_NR, Mono$AGG_NR)]
+#     if (mono == "all") 	tmp <- Mono$AGG_NR[match(obs$SPECIES_NR, Mono$MEMBER_NR)]
+#     if (sum(tmp > 0, na.rm = TRUE) > 0) {
+# 	  tmp <- tmp[!is.na(tmp)]
+
       repeat{
-        obs$SPECIES_NR <- replace(obs$SPECIES_NR, which(tmp > 0), tmp[!is.na(tmp)])
-        cat(paste('\n',length(unique(tmp[!is.na(tmp)])), "Monotypic taxa found in dataset, species converted to", mono, "rank.",'\n'))
-        if(!quiet) print(Mono[Mono$AGG_NR %in% obsspec, ], row.names = FALSE)
         if (mono == "lower")    tmp <- Mono$MEMBER_NR[match(obs$SPECIES_NR, Mono$AGG_NR)]
-	if (mono == "all") 	tmp <- Mono$AGG_NR[match(obs$SPECIES_NR, Mono$MEMBER_NR)]
+#	if (mono == "all") 	tmp <- Mono$AGG_NR[match(obs$SPECIES_NR, Mono$MEMBER_NR)]
         if (mono == "higher") {
 	    tmp <- Mono$AGG_NR[match(obs$SPECIES_NR, Mono$MEMBER_NR)]
-	    tmp[!Mono$MEMB_RANG[match(tmp, Mono$AGG_NR)] %in% c('FOR','VAR','ZUS','SSP')] <- NA
+	    tmp[!Mono$MEMB_RANG[match(tmp, Mono$AGG_NR)] %in% taxlevels[taxlevels < 'SPE']] <- NA # Universeller schreiben
 	    }
-        if(sum(tmp > 0, na.rm = TRUE) == 0) break
+       if(sum(tmp > 0, na.rm = TRUE) == 0) {cat('\nNo (more) monotypic taxa found.\n'); break}
+       cat(paste('\n',nrow(Mono[Mono$AGG_NR %in% obsspec, ]), "monotypic taxa found in dataset, set to", mono, "rank.",'\n'))
+       # if(!quiet) print(species[match(tmp, species$SPECIES_NR),c('SPECIES_NR','ABBREVIAT','AGG','AGG_NAME')])
+       if(!quiet) print(Mono[Mono$AGG_NR %in% obsspec, ], row.names = FALSE)	# & Mono$AGG_NR %in% tmp => schon in Aggregierung gelöst!
+        obs$SPECIES_NR <- replace(obs$SPECIES_NR, which(tmp > 0), tmp[!is.na(tmp)])
         obsspec <- unique(obs$SPECIES_NR)
-      } } else if(mono=='higher') cat('\nNo monotypic taxa below species level found.\n') else cat('\nNo monotypic taxa found.\n')
+      }
   } else cat('\nMonotypic taxa preserved!\n')
 
 ## Uncertainty
@@ -170,9 +175,8 @@ if (mono %in% c("lower", "higher", "all")) {
     cat('\n')
    }
 
-   
 
-cat('\nNumber of taxa after validation:', length(unique(obs$SPECIES_NR)),'\n\n')
+cat('\nNumber of taxa after validation:', length(unique(obs$SPECIES_NR)),'\n')
 
 ### Critical species
 # Pseudonyms
@@ -208,4 +212,6 @@ cat('\nNumber of taxa after validation:', length(unique(obs$SPECIES_NR)),'\n\n')
 return(obs)
 }
 
+
+tv.taxval <- function()  cat('Deprecated function. Use taxval() instead\n')
 

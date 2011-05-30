@@ -22,26 +22,31 @@ sub.abbr <- function(x) {
    return(x)  
 }
 
-tax <- function(x, refl, syn = FALSE, tax = FALSE, concept = NULL, ...) {
-  tv_home <- tv.home(...)
-  if(missing(refl)) refl <- tv.refl(...)
+tax <- function(x, refl, verbose = FALSE, syn = FALSE, concept = NULL, sysPath=FALSE, ...) {
+  tv_home <- tv.home(sysPath=sysPath)
+  if(missing(refl)) refl <- tv.refl(tv_home=tv_home, sysPath=sysPath)
   if(!is.null(concept)) {
       cat('\n Taxon concept', concept, 'used.\n\n')
-      tax=TRUE
+      verbose=TRUE
     }
 #   if(is.null(type)) type <- if(is.numeric(x) | is.integer(x)) 'number'
-  dbf <- if(tax) 'tax.dbf' else 'species.dbf'
- if(file.access(file.path(tv_home, 'Species', refl, dbf))) if(refl %in% c('GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2')) {
-    cat('\nTaxonomic evaluation list (',dbf, ') of ', refl, 'not available. \n')
-    cat('I will try to download the reference now.\n\n')
-    version <- paste('version',substr(refl,10,nchar(refl)),sep='')
-    download.file(paste('http://geobot.botanik.uni-greifswald.de/download/GermanSL',version,'GermanSL.zip',sep='/'), file.path(tv_home, 'Species','GermanSL.zip'))
-    unzip(file.path(tv_home, 'Species/GermanSL.zip'), exdir=file.path(tv_home, 'Species'))
- } else cat('\nTaxonomic evaluation list (',dbf, ') of ', refl, 'not available')
+  dbf <- if(verbose) 'tax.dbf' else 'species.dbf'
+  supportedReflists <- c('GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2')
+  supportedReflists <- c(supportedReflists, sub(' ', '', supportedReflists))
+  supportedReflists <- c(supportedReflists, tolower(supportedReflists))
+  if(file.access(file.path(tv_home, 'Species', refl, dbf))) {
+    if(refl %in% supportedReflists) {
+	cat('\nTaxonomic evaluation list (',dbf, ') of', refl, 'not available.\n')
+	cat('I will try to download the reference now.\n\n')
+	version <- paste('version',substr(refl, 10, nchar(refl)),sep='')
+	download.file(paste('http://geobot.botanik.uni-greifswald.de/download/GermanSL',version,'GermanSL.zip',sep='/'), file.path(tv_home, 'Species','GermanSL.zip'))
+	unzip(file.path(tv_home, 'Species/GermanSL.zip'), exdir=file.path(tv_home, 'Species'))
+    } else cat('\nTaxonomic evaluation list (',dbf, ') of ', refl, 'not available.\n')
+  }
   species <- read.dbf(file.path(tv_home, 'Species', refl, dbf))
   species$ABBREVIAT <- sub.abbr(species$ABBREVIAT)
-  if(tax) species$VALID_NAME <- sub.abbr(species$VALID_NAME)
-  # Taxon concepts
+  if(verbose) species$VALID_NAME <- sub.abbr(species$VALID_NAME)
+  ## Taxon concepts
   if(!is.null(concept)) {
     species$ABBREVIAT <- as.character(species$ABBREVIAT)
     species$VALID_NAME <- as.character(species$VALID_NAME)
@@ -53,20 +58,14 @@ tax <- function(x, refl, syn = FALSE, tax = FALSE, concept = NULL, ...) {
 #    levels(species$ABBREVIAT) <- c(levels(species$ABBREVIAT), levels(conc$ABBREVIAT))
     species$ABBREVIAT[match(conc$SPECIES_NR,species$SPECIES_NR,nomatch = 0)] <- co$ABBREVIAT[match(conc$SPECIES_NR,co$SPECIES_NR,nomatch = 0)]
 #    levels(species$VALID_NAME) <- c(levels(species$VALID_NAME), levels(conc$VALID_NAME))
-#warning('leveltest')
     species$VALID_NAME[match(conc$SPECIES_NR,species$SPECIES_NR,nomatch = 0)] <- co$VALID_NAME[match(conc$SPECIES_NR,co$SPECIES_NR,nomatch = 0)]
-#warning('leveltest')
     species$RANG[match(conc$SPECIES_NR,species$SPECIES_NR,nomatch = 0)] <- co$RANG[match(conc$SPECIES_NR,co$SPECIES_NR,nomatch = 0)]
-#warning('leveltest')
     species$AGG_NAME[match(conc$SPECIES_NR,species$SPECIES_NR,nomatch = 0)] <- co$AGG_NAME[match(conc$SPECIES_NR,co$SPECIES_NR,nomatch = 0)]
 #    levels(species$SECUNDUM) <- c(levels(species$SECUNDUM), levels(conc$SECUNDUM))
-#warning('leveltest')
     species$SECUNDUM[match(conc$SPECIES_NR,species$SPECIES_NR,nomatch = 0)] <- co$SECUNDUM[match(conc$SPECIES_NR,co$SPECIES_NR,nomatch = 0)]
     }
-#warning('leveltest')
 
-
-  if(refl %in% c('GermanSL 1.1','GermanSL 1.2') && tax==FALSE) species <- species[,c(1,2,4,5,7,8)]
+  if(refl %in% supportedReflists && verbose==FALSE) species <- species[,c('SPECIES_NR','LETTERCODE','ABBREVIAT','NATIVENAME','SYNONYM', 'VALID_NR')]
   if(x[1] != 'all') {
    if(is.numeric(x) | is.integer(x))   l <- species[match(x, species$SPECIES_NR),]
    if(is.character(x)) {
@@ -74,11 +73,12 @@ tax <- function(x, refl, syn = FALSE, tax = FALSE, concept = NULL, ...) {
     x <- unique(unlist(strsplit(x, ".", fixed = TRUE)))
     if(nchar(x[1]) == 7 & x[1] == toupper(x[1]))  {
 	print('Using Lettercodes.')
-	l <- species[species$LETTERCODE %in% x,] } else
+	l <- species[species$LETTERCODE %in% x,] 
+	if(syn == FALSE & !is.numeric(x)) l <- l[l$SYNONYM == FALSE,]
+	} else
     if(length(x)==1) l <- species[grep(x, species$ABBREVIAT),] else
     l <- species[species$ABBREVIAT %in% x,]
     }
-   if(syn == FALSE & !is.numeric(x)) l <- l[l$SYNONYM == FALSE,]
    if(length(l) == 0) stop('No species found!') 
 #   l <- l[!is.na(l$ABBREVIAT),]
    species <- l } else if(!syn) species <- species[species$SYNONYM == FALSE,]

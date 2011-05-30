@@ -1,9 +1,9 @@
 "tv.obs" <- function(db, tv_home, ...) {
     if(missing(tv_home)) tv_home <- tv.home(...)
     # Observations
-    cat(paste('reading observations ...', '\n'))
 #    if(is.list(db)) obs <- vw.query(db, 'obs') else
     obs <- read.dbf(file.path(tv_home, 'Data', db[1],'tvabund.dbf'))
+    cat(paste('reading observations ...', '\n'))
     # Combine multiple databases
     if(length(db)>1) {
     refl.1 <- tv.refl(db[1])

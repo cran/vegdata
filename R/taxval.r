@@ -4,11 +4,11 @@ taxval <- function (obs, refl, db, concept=NULL, syn = c('adapt','conflict','pre
   syn <- match.arg(syn)
   ag <- match.arg(ag)
   mono <- match.arg(mono)
-  tv_home <- tv.home(sysPath, ...)
-  if(missing(obs))   obs <- tv.obs(db, tv_home)
+  tv_home <- tv.home(sysPath)
+  if(missing(obs))   obs <- tv.obs(db=db, tv_home)
   cat("Original number of names:", length(unique(obs$SPECIES_NR)),'\n')
-  if(missing(refl)) refl <- tv.refl(db[1], tv_home)
-  species <- tax('all', refl=refl, syn=TRUE, tax=TRUE, sysPath=sysPath, tv_home=tv_home, concept=concept, ...)
+  if(missing(refl)) refl <- tv.refl(db[1], tv_home=tv_home)
+  species <- tax('all', refl=refl, syn=TRUE, verbose=TRUE, sysPath=sysPath, concept=concept, ...)
   taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), ordered=TRUE)
 
 
@@ -124,8 +124,9 @@ fr <- as.data.frame(table(obs$SPECIES_NR))
 ## Monotypic taxa     
 if (mono %in% c("lower", "higher")) {
      obsspec <- unique(obs$SPECIES_NR)
-    if (file.access(file.path(tv_home, 'Species', refl, paste(monolist, "dbf", sep = ".")))) 
-        warning("List of monotypic taxa not available!") else
+    if (file.access(file.path(tv_home, 'Species', refl, paste(monolist, "dbf", sep = ".")))) { 
+        warning("Care about monotypic taxa is choosen but specified list of monotypic taxa is not available!") 
+	} else {
 	  Mono <- read.dbf(file.path(tv_home, 'Species', refl, paste(monolist, "dbf", sep = ".")))
 #     if (mono == "higher") {
 # 	  tmp <- Mono$AGG_NR[match(obs$SPECIES_NR, Mono$MEMBER_NR)]
@@ -150,7 +151,7 @@ if (mono %in% c("lower", "higher")) {
         obs$SPECIES_NR <- replace(obs$SPECIES_NR, which(tmp > 0), tmp[!is.na(tmp)])
         obsspec <- unique(obs$SPECIES_NR)
       }
-  } else cat('\nMonotypic taxa preserved!\n')
+  } } else cat('\nMonotypic taxa preserved!\n')
 
 ## Uncertainty
   if(!is.null(uncertain)) {
@@ -213,5 +214,8 @@ return(obs)
 }
 
 
-tv.taxval <- function()  cat('Deprecated function. Use taxval() instead\n')
+tv.taxval <- function(...)  
+cat('########################################################\n
+tv.taxval is a deprecated function. Use taxval() instead\n
+########################################################')
 

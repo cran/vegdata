@@ -14,7 +14,7 @@ tv.refl <- function(refl, db, tv_home, sysPath = FALSE) {
       dbattr <- file.path(tv_home, 'Data', db,'tvwin.set')
       if(file.access(dbattr)==0) refl <-  sub('A\002', '', readBin(dbattr,what='character', n=3)[3]) else 
     stop('Database attribute file tvwin.set from database "', db, '" not available. Please specify name of taxonomic reference list!') 
-  } else  refl <- 'GermanSL 1.2'
+  } else  refl <- if(sysPath) 'GermanSL1.2' else 'GermanSL 1.2'
   if(!exists(refl)) refl <- fun(gsub(' ','',refl))
   if(tolower(substr(refl, 1,8)) == 'germansl')
   refl <- paste('GermanSL', substring(refl,9,nchar(refl)), sep='')

@@ -1,3 +1,7 @@
+version 0.3.1 May 2011
+  * bugs concerning the build-in datasets eliminated
+  * function tax and internal Turboveg example datasets improved
+  * a simple abundance transformation included in tv.veg
 
 version 0.3 May 2011
   * directory permission of extdata changed

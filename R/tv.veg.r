@@ -1,9 +1,10 @@
-tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer","mean","max","sum","first"), pseudo = list(lc.1,'LAYER'), values = "COVER_PERC", concept, spcnames = c('short','long','numbers'), dec = 0, pa = FALSE, obs, refl, spc, site, RelScale, sysPath = FALSE, ...) 
+tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer","mean","max","sum","first"), pseudo = list(lc.1,'LAYER'), values = "COVER_PERC", concept, spcnames = c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spc, site, RelScale, sysPath = FALSE, ...) 
 {
 ## Checks
     lc <- match.arg(lc)
+    cover.transform <- match.arg(cover.transform)
     spcnames = match.arg(spcnames)
-    if(missing(tv_home)) tv_home <- tv.home(sysPath=sysPath, ...)
+    if(missing(tv_home)) tv_home <- tv.home(sysPath=sysPath)
     if(missing(obs)) obs <- tv.obs(db, tv_home)
 #     if(suppressWarnings(any(obs < -1e+05, na.rm = TRUE))) 
 #       cat("\n WARNING! Values less than -100,000. \n WARNING! tvabund.dbf may be corrupt. \n WARNING! Please correct by reexporting e.g. with OpenOffice.")
@@ -11,11 +12,11 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
       cat('\n Selecting species ... \n')
       obs <- obs[obs$SPECIES_NR %in% spc,]
       }
-    if(lc=='first') require(Hmisc)
 ## Taxa
-    if(missing(refl)) refl <- tv.refl(db[1], tv_home = tv_home)
+    if(missing(refl)) refl <- tv.refl(db[1], tv_home = tv_home, sysPath=sysPath)
     cat('Taxonomic reference list: ',refl, '\n')
-    if(taxval) obs <- taxval(obs=obs, refl = refl, tv_home = tv_home, sysPath = sysPath, ...)
+    if(taxval) 
+	obs <- taxval(obs=obs, refl = refl, sysPath = sysPath, ...)
 ## CoverCode
     if(convcode){
         cat('\n converting cover code ... \n')
@@ -52,13 +53,13 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
     if(spcnames %in% c('short','long')) {
       cat('\n replacing species numbers with ', spcnames, ' names ... \n')
       if(is.null(pseudo)) {
-	species <- tax(as.numeric(colnames(results)), tax=FALSE, syn=FALSE, refl = refl, tv_home=tv_home, sysPath=sysPath, ...)
+	species <- tax(as.numeric(colnames(results)), verbose=FALSE, syn=FALSE, refl = refl, tv_home=tv_home, sysPath=sysPath, ...)
 	if(spcnames=='short') colnames(results) <- species$LETTERCODE[match(colnames(results), species$SPECIES_NR)]
 	if(spcnames=='long') colnames(results) <- gsub(' ','_', species$ABBREVIAT[match(colnames(results), species$SPECIES_NR)] )
         } else {
 	st <- unlist(strsplit(colnames(results), ".", fixed = TRUE))
 	colspc <- st[seq(1, length(st), 2)]
-	species <- tax(as.numeric(colspc), tax=FALSE, refl = refl, tv_home=tv_home, sysPath=sysPath, ...)
+	species <- tax(as.numeric(colspc), verbose=FALSE, refl = refl, tv_home=tv_home, sysPath=sysPath, ...)
 	ll <- st[seq(2, length(st), 2)]
 	if(spcnames=='short') coln <- as.character(species$LETTERCODE[match(as.numeric(colspc), species$SPECIES_NR)])
 	if(spcnames=='long') coln <- gsub(' ','_', species$ABBREVIAT[match(as.numeric(colspc), species$SPECIES_NR)]) 
@@ -70,9 +71,22 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
 ## Result
 #   results <- results[, order(names(results))]
    class(results) <- c("veg", "data.frame")
-   if(pa) {
-      results <- as.data.frame(ifelse(results > 0, 1,0))
+   if(cover.transform!='no') {
+      if(cover.transform == 'pa') results <- as.data.frame(ifelse(results > 0, 1,0))
+      if(cover.transform == 'sqrt') results <- as.data.frame(round(sqrt(results),dec))
+   }
       class(results) <- c("veg", "data.frame")
-    }
    return(results)
+}
+
+
+first.word <- function (x, i = 1, expr = substitute(x)) {
+    words <- if(!missing(x)) as.character(x)[1] else as.character(unlist(expr))[1]
+    if (i > 1) stop("i > 1 not implemented")
+    chars <- substring(words, 1:nchar(words), 1:nchar(words))
+    legal.chars <- c(letters, LETTERS, ".", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+    non.legal.chars <- (1:length(chars))[chars %nin% legal.chars]
+    if (!any(non.legal.chars)) return(words)
+    if (non.legal.chars[1] == 1) return(character(0))
+    substring(words, 1, non.legal.chars[1] - 1)
 }

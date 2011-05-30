@@ -1,4 +1,4 @@
-tv.home <- function(sysPath=FALSE, ...) {
+tv.home <- function(sysPath=FALSE) {
   if(sysPath) tv_home <- file.path(.path.package("vegdata"), "tvdata") else
   if(is.null(getOption('tv_home'))) {
     if(.Platform$OS.type == "unix") if(file.access(paste(Sys.getenv('HOME'),'/.wine/drive_c/Turbowin',sep=''))==0)

@@ -3,6 +3,7 @@
 \alias{tv.refl}
 \alias{sub.abbr}
 \alias{vw.con}
+\alias{first.word}
 
 \title{Internal vegdata functions}
 

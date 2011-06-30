@@ -5,15 +5,16 @@
 \title{Query of taxonomic reference list including concept synonomy.}
 
 \usage{
-tax(x, refl, syn = FALSE, tax = FALSE, concept = NULL, ...)
+tax(x, refl, verbose = FALSE, syn = FALSE, concept = NULL, sysPath = FALSE, ...)
 }
 
 \arguments{
 \item{x}{Species number, lettercode or species name}
 \item{refl}{Taxonomic reference list}
+\item{verbose}{Load tax.dbf with additional taxonomic information (e.g. Secundum) instead of species.dbf}
 \item{syn}{Prints also synonyms for shortletters.}
-\item{tax}{Load tax.dbf instead of species.dbf}
-\item{concept}{Name of alternatice taxon view file in reference list directory}
+\item{concept}{Name of alternatice taxon view file within the reference list directory.}
+\item{sysPath}{A small example reference list for dataset \code{elbaue} is available in the installation path of the package.}
 \item{...}{Other attributes}
 }
 

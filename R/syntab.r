@@ -4,7 +4,6 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
     type <- match.arg(type)
     if (missing(clust)) clust <- rep(1,nrow(veg))
     ncl <- length(unique(clust))
-    if(type=='assoc') mupa = TRUE
     cat(' Number of clusters: ', ncl, '\n')
     cat('Cluster frequency', as.vector(table(clust)),'\n')
     sp.veg <- split(veg, clust)
@@ -26,7 +25,6 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
     st[is.na(st)] <- 0
     names(st) <- levels(clust)
     if(ncl>1) st <- st[apply(st, 1, function(x) max(x, na.rm=TRUE) > limit),]
-
     if(!is.null(mupa) | class(mupa)=='multipatt' & ncl<1) {
       require(indicspecies)
       if(class(mupa)!='multipatt')
@@ -42,7 +40,7 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
     class(st) <- c('syntab','data.frame')
 
     if(fullnames) {
-      nam <- tax(rownames(st), tax=FALSE, ...)
+      nam <- tax(rownames(st), verbose=FALSE, ...)
       rownames(st) <- nam$ABBREVIAT[match(rownames(st), nam$LETTERCODE)]
       }
     print(st)

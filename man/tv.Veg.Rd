@@ -7,7 +7,7 @@
 It is a wrapper for \code{tv.obs}, \code{tv.taxval}, \code{tv.coverperc}.}
 
 \usage{
-tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo = list(lc.1, "LAYER"), values='COVER_PERC', concept, spcnames=c('short','long','numbers'), dec = 0, pa=FALSE, obs, refl, spc, site, RelScale, sysPath = FALSE, ...)
+tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo = list(lc.1, "LAYER"), values='COVER_PERC', concept, spcnames=c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spc, site, RelScale, sysPath = FALSE, ...)
 }
 
 \arguments{
@@ -21,7 +21,7 @@ tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max",
 \item{concept}{Name of alternative taxon concept list, see \code{vignette(vegdata)}}
 \item{spcnames}{Should species numbers be replaced by shortletters or real names?}
 \item{dec}{Number of decimals for cover values in the resulting vegetation matrix.}
-\item{pa}{logical, reduce response information to presence/absence}
+\item{cover.transform}{If you want to transform the abundancce values within your samples you can choose 'pa' for presence-absnece or 'squareroot' for the \code{dec} rounded square root.}
 \item{obs}{Observations, optional}
 \item{refl}{Taxonomic reference list, optional}
 \item{spc}{If you want to pick a subset of species.}

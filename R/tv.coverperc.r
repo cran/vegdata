@@ -18,7 +18,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, ...)
   g <- obs$COVERSCALE
   if(any(is.na(g)))  {
     print(obs[is.na(g),])
-    stop('Above releve number(s) without valid Coverscale value.')
+    stop('These releve numbers are without valid CoverScale value.')
     }
   obs <- split(obs, g, drop = FALSE)
   for (i in names(obs)) {

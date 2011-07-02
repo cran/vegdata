@@ -1,6 +1,6 @@
 childs <- function (x, refl, species, gen=NULL, quiet=FALSE, ...) {
 #maxlevel = c('GAT')
- if(missing(species)) species <- tax("all", tax = TRUE, refl = refl, syn = TRUE, ...)
+ if(missing(species)) species <- tax("all", verbose = TRUE, refl = refl, syn = TRUE, ...)
  if(is.character(x)) {
       if(nchar(x)[1]== 7) x <- species$SPECIES_NR[species$LETTERCODE %in% x] else
 	x <- species$SPECIES_NR[grep(x, species$ABBREVIAT)]
@@ -35,7 +35,7 @@ childs <- function (x, refl, species, gen=NULL, quiet=FALSE, ...) {
 
 parents <- function (x, refl, species, quiet=FALSE, ...) {
 #maxlevel = c('GAT')
- if(missing(species)) species <- tax("all", tax = TRUE, refl = refl, syn = TRUE, ...)
+ if(missing(species)) species <- tax("all", verbose = TRUE, refl = refl, syn = TRUE, ...)
  if(is.character(x)) {
       if(nchar(x)[1]== 7) x <- species$SPECIES_NR[species$LETTERCODE %in% x] else {
 	x <- species$SPECIES_NR[grep(x, species$ABBREVIAT)]

@@ -4,7 +4,6 @@ export(childs,comb.species,parents,syn,syntab,tax,taxval)
 
 ## export regular functions with dot names
 export(tv.biblio,tv.compRefl,tv.coverperc,tv.db,tv.eco,tv.home,tv.metainfo,tv.mono,tv.obs,tv.refl,tv.site,tv.veg,tv.write)
-export(vw.biblio,vw.con,vw.obs,vw.site,vw.veg)
 
 ## Export .Deprecated functions (to be removed later)
 # export(agg, spc, tv.taxval)

@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 %\VignetteIndexEntry{An R package for vegetation data access, formatting and taxonomic enhancement}
-%\VignetteDepends{vegan, labdsv, akima, gWidgets, R.utils, googleVis}
+%\VignetteDepends{vegan, labdsv, akima, gWidgets, R.utils, googleVis, RMySQL}
 %\VignetteKeyword{Vegetation}
 
 \usepackage[utf8]{inputenc}
@@ -354,7 +354,7 @@ will use the first name ('QUERROB') for the replacement column with the sum of t
 
 \section{Site data}
 
-\texttt{tv.site} will load the site (header) data and does some basic corrections caused by Turbovegs dBase format.
+\texttt{tv.site} will load the site (header) data and does some basic corrections caused by Turboveg dBase format.
 
 <<site.echo, eval=TRUE>>=
 site <- tv.site(db)
@@ -368,38 +368,47 @@ It is stated in the output, if you have to check and possibly correct 0 values.
 
 \section{VegetWeb, the National German vegetation plot repository}
 
-\texttt{vw.obs} and \texttt{vw.site} provide possibilities to access the data stored in VegetWeb, the German national vegetation database.
+I have written functions, which provide the possibility to access the data stored in VegetWeb, the German national vegetation database. VegetWeb is realised as MySQL database without API to access data directly. Therefore we need package RMySQL to make queries. Unfortunately there are no binary versions of RMySQL on CRAN any more. If you are working under Linux please install RMySQL with something like sudo apt-get install r-cran-rmysql. If you work with MS Windows you have to install RTools and the MySQL headers before you can compile RMySQL from source:
 
+\begin{enumerate}
+ \item Install RTools from \url{(http://www.murdoch-sutherland.com/Rtools/}
+ \item Install MySQL Connector C with installation option "full" from \url{http://dev.mysql.com/downloads/connector/c/} and copy the file libmysql.dll from the directory debug to the bin directory. Alternatively you can install a complete MySQL Server.
+ \item create a file Renviron.site in your R installation path in directory etc/ and add the correct path to your MySQL Connector installation e.g.: \\
+  \begin{verbatim}MYSQL_HOME=C:/PROGRAMME/MySQL/MySQL Connector C 6.0.\end{verbatim}
+  \item open R and type \\
+  install.packages('RMySQL', type='source')
+\end{enumerate}
+
+If you run into trouble see \url{http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL}.
 <<RMySQL>>=
 library(RMySQL)
 @
 
-\paragraph{Installation of RMySQL package under Windows OS}
 
-Whereas Linux OS normally include drivers to access MySQL databases this needs some installation and configuration for MS Windows operational systems. Installation under Windows requires installation of MySQl headers, eg. MySQL Server or ODBC Connector. See \url{http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL} \\
-Tip: If loading fails under MS Windows despite installed and running MySQL-Server (Error message 'loadNamespace' failed) try to insert
-\begin{verb} MYSQL_HOME="C:/Programme/MySQL/MySQL Server 5.0"\end{verb} (Please change to the correct path of your MySQL Installation) into a file named "Renviron.site" at <R-Installation-path>/etc and restart R or execute options($MYSQL_HOME=<MYSQL-PATH>$) before loading RMySQL.
+To prevent incompatibilities with Windows users who want to use Turboveg data but no VegetWeb data and who are not able or willing to install RMySQL, I excluded the VegetWeb functions from package vegdata, but they can be downloaded from my site:
+
+<<>>=
+source('http://geobot.botanik.uni-greifswald.de/download/r_package/vegetweb.r')
+@
 
 <<vwsite>>=
 vw.site()
 @
-vw.site() and vw.veg() are the user interface to retrieve data from VegetWeb respectively an open access mirror of the original BfN Server at the University of Greifswald (updated every Sunday).
+\texttt{vw.site} and \texttt{veg} are the user interface to retrieve data from VegetWeb respectively an open access mirror of the original BfN Server at the University of Greifswald (mirrored every Sunday).
 
 <<con, eval=FALSE>>=
 con <- vw.con()
 dbListTables(con)
 url.show('http://planto.de/OekoArt/ModellLog.php')
 @
-Get names of VegetWeb tables and look for the Relationship-Diagram.
+
+Get names of VegetWeb tables and look for the Entity Relationship Diagram.
 
 <<>>=
 con <- vw.con()
 dbListFields(con, "beobachtung")
 dbGetQuery(con, "SELECT * FROM projekt")[1:2]
 @
-
-
-\subsection{Plot locations in Google Earth}
 
 <<>>=
 query <- "Projekt='T302'"
@@ -413,39 +422,6 @@ site <- vw.site(query)
 site.coord <- site[!is.na(site$"Geografische Breite"),]
 @
 
-\paragraph{Plot coordinates of vegetation relev\'{e}s into an interactive Google Map}
-
-<<>>=
-library(googleVis)
-site.coord$loc <- paste(site.coord[,29], site.coord[,28], sep=':')
-@
-If you do not have geodesic coordinates as used in Google Earth (EPSG-Code 4326), you can convert coordinates with R packages rgdal
-
-<<eval=FALSE>>=
-library(rgdal)
-coord <- data.frame(HW=as.numeric(site.coord$Nordkoordinate), RW=as.numeric(site.coord$Ostkoordinate))
-coordinates(coord) <- c("RW", "HW")
-proj4string(coord) <- CRSargs(CRS("+init=epsg:31468")) # GK, 4. Stripe
-coord <- spTransform(coord, CRS("+init=epsg:4326")) # WGS 84, geographical coordinates, decimal degrees
-site.coord$long <- coordinates(coord)[,1]
-site.coord$lat <- coordinates(coord)[,2]
-site.coord$loc <- paste(site.coord$lat, site.coord$long, sep=':')
-@
-
-To give some information we will create Tips:
-<<>>=
-site.coord$tip <- paste(paste('Releve_NR:', site.coord$RELEVE_NR), paste('Table:',site.coord$TABLE_NR), paste('Nr. in table:', site.coord$NR_IN_TAB), site.coord$DATE, landuse=site.coord$NUTZUNG, site.coord$Assoziation, site.coord$Erheber, paste('Locality:', site.coord[,26]), paste('Longitude:', site.coord[,28]), paste('Latitude:', site.coord[,29]), sep='<BR>')
-@
-and the produced map will be open in your standard web browser.
-<<eval=FALSE, fig=FALSE>>=
-places <- gvisMap(site.coord, 'loc', 'tip', options=list(showTip=TRUE, showLine=FALSE, enableScrollWheel=TRUE, mapType='hybrid', useMapTypeControl=TRUE, width=1000, height=800))
-plot(places)
-@
-\begin{figure}
-\includegraphics[width=6cm]{gVis}
-\caption{Spatial distribution of vegetation plots from a VegetWeb project. The map is interactive and zoomable.}
-\end{figure}
-
 
 \section{Additional functions}
 
@@ -457,10 +433,6 @@ If you have to combine different taxonomic reference lists, functions \texttt{tv
 <<eval=FALSE>>=
 tv.compRefl('taxref1', 'taxref2')
 @
-
-\section{Vegetation analyses}
-
-The package \emph{vegdata} serves mostly as a helper for the analysis of vegetation data. Several powerful R packages like \emph{vegan} and others exist, to provide a very broad range of possibilities.
 
 \subsection{Frequency tables}
 
@@ -489,6 +461,49 @@ Or we can calculate the affiliation of species to abiotic clusters with the help
 <<syntab.mupa>>=
 syntab(elbaue, clust, mupa=TRUE, fullnames=TRUE)
 @
+
+
+
+
+
+
+\section{Vegetation analyses}
+
+The package \emph{vegdata} serves mostly as a helper for the analysis of vegetation data. Several powerful R packages like \emph{vegan} and others exist, to provide a very broad range of possibilities.
+
+
+\subsection{Plot coordinates of vegetation relev\'{e}s into an interactive Google Map}
+
+<<>>=
+library(googleVis)
+site.coord$loc <- paste(site.coord[,29], site.coord[,28], sep=':')
+@
+If you do not have geodesic coordinates as used in Google Earth (EPSG-Code 4326), you can convert coordinates with R packages rgdal.
+
+<<eval=FALSE>>=
+library(rgdal)
+coord <- data.frame(HW=as.numeric(site.coord$Nordkoordinate), RW=as.numeric(site.coord$Ostkoordinate))
+coordinates(coord) <- c("RW", "HW")
+proj4string(coord) <- CRSargs(CRS("+init=epsg:31468")) # GK, 4. Stripe
+coord <- spTransform(coord, CRS("+init=epsg:4326")) # WGS 84, geographical coordinates, decimal degrees
+site.coord$long <- coordinates(coord)[,1]
+site.coord$lat <- coordinates(coord)[,2]
+site.coord$loc <- paste(site.coord$lat, site.coord$long, sep=':')
+@
+
+To give some information we will create Tips:
+<<>>=
+site.coord$tip <- paste(paste('Releve_NR:', site.coord$RELEVE_NR), paste('Table:',site.coord$TABLE_NR), paste('Nr. in table:', site.coord$NR_IN_TAB), site.coord$DATE, landuse=site.coord$NUTZUNG, site.coord$Assoziation, site.coord$Erheber, paste('Locality:', site.coord[,26]), paste('Longitude:', site.coord[,28]), paste('Latitude:', site.coord[,29]), sep='<BR>')
+@
+and the produced map will be open in your standard web browser.
+<<eval=FALSE, fig=FALSE>>=
+places <- gvisMap(site.coord, 'loc', 'tip', options=list(showTip=TRUE, showLine=FALSE, enableScrollWheel=TRUE, mapType='hybrid', useMapTypeControl=TRUE, width=1000, height=800))
+plot(places)
+@
+\begin{figure}
+\includegraphics[width=6cm]{gVis}
+\caption{Spatial distribution of vegetation plots from a VegetWeb project. The map is interactive and zoomable.}
+\end{figure}
 
 
 \subsection{Multivariate Ordinations}

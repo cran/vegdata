@@ -1,9 +1,9 @@
-tv.site <- function (db, tv_home, quiet = FALSE, sysPath = FALSE, iconv, common.only = TRUE, ...) 
+tv.site <- function (db, tv_home, quiet = FALSE, iconv, common.only = TRUE, ...) 
 {
 ow <- options('warn')
 if(quiet) { options(warn=-1) }
 # if (is.list(db)) site <- tv.mysql(db, "tvhabita") else {
-      if (missing(tv_home)) tv_home <- tv.home(sysPath=sysPath)
+      if (missing(tv_home)) tv_home <- tv.home()
   site <- read.dbf(paste(tv_home, "Data", db[1], "tvhabita.dbf", sep = "/"))
   if (suppressWarnings(any(site < -1e+05, na.rm = TRUE))) 
     print(c("WARNING! Values less than -100,000. \n", "WARNING! tvhabita.dbf may be corrupt. \n", "WARNING! Please correct by reexporting e.g. with OpenOffice."), quote = FALSE)

@@ -8,7 +8,7 @@
 It is a wrapper for \code{tv.obs}, \code{tv.taxval}, \code{tv.coverperc}.}
 
 \usage{
-tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo = list(data(lc.1), "LAYER"), values='COVER_PERC', concept, spcnames=c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spc, site, RelScale, ...)
+tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo = list(lc.1, "LAYER"), values='COVER_PERC', concept, spcnames=c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spc, site, RelScale, ...)
 }
 
 \arguments{
@@ -17,7 +17,7 @@ tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max",
 \item{taxval}{Should taxonomic valuation (see \code{\link{taxval}}) be performed?}
 \item{convcode}{Should cover code be converted to percentage values?}
 \item{lc}{Layer combination type. Possible values: layer (default), sum, mean or max, see details}
-\item{pseudo}{List for layer combinations, see details}
+\item{pseudo}{List used for layer combinations, see details}
 \item{values}{Name of the variable which should be used for the vegetations matrix.}
 \item{concept}{Name of alternative taxon concept list, see \code{vignette(vegdata)}}
 \item{spcnames}{Should species numbers be replaced by shortletters or real names?}
@@ -34,7 +34,7 @@ tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max",
 \details{
 \code{layer} means, the different layers are combined assuming there independence (a species occuring in two layers with a cover of 50\% will result in a overall cover of 75\%. \code{sum} will sum up cover values of all layers
 
-With option \code{pseudo} you can decide, which layers should be combined. Give a list with a combination data.frame  (see \code{\link{lc}} and second the name of the column for combination. For an example see \code{pseudo = list(lc.1,c('LAYER'))}. Option pseudo=NULL will prevent any layer aggregation.
+With option \code{pseudo} you can decide, which layers should be combined. Give a list with a combination data.frame  (see \code{\link{lc}} and second the name of the column for combination. For an example see \code{pseudo = list(lc.1,c('LAYER'))}. With option pseudo=NULL there will be no layer aggregation. \\
 For further details see also \code{\link{tv.coverperc}} and \code{\link{taxval}}.
   }
 

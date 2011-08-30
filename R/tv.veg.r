@@ -7,7 +7,7 @@ tv.db <- function() {
 
 
 
-tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer","mean","max","sum","first"), pseudo = list(data(lc.1),'LAYER'), values = "COVER_PERC", concept, spcnames = c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spc, site, RelScale, ...) 
+tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer","mean","max","sum","first"), pseudo = list(lc.1,'LAYER'), values = "COVER_PERC", concept, spcnames = c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spc, site, RelScale, ...) 
 {
 ## Checks
     lc <- match.arg(lc)
@@ -21,6 +21,7 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
       cat('\n Selecting species ... \n')
       obs <- obs[obs$SPECIES_NR %in% spc,]
       }
+    if(missing(pseudo)) data(lc.1)
 ## Taxa
     if(missing(refl)) refl <- tv.refl(db[1], tv_home = tv_home)
     cat('Taxonomic reference list: ',refl, '\n')

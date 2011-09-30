@@ -1,0 +1,4 @@
+"GermanSL 1.2" is not included in vegdata to keep the R package small. 
+Instead the reference list will be automatically downloaded 
+from http://geobot.botanik.uni-greifswald.de/reflist
+into the tv_home directory, if needed.

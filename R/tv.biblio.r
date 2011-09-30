@@ -1,5 +1,5 @@
 tv.biblio <- function(x, site, quiet=FALSE, tv_home, ...) {
-  if(missing(tv_home)) tv_home <- tv.home(...)
+  if(missing(tv_home)) tv_home <- tv.home()
 
   biblio <- read.dbf(file.path(tv_home, 'Popup', 'tvrefenc.dbf'), as.is=TRUE)
   if(!missing(site)) {
@@ -7,7 +7,7 @@ tv.biblio <- function(x, site, quiet=FALSE, tv_home, ...) {
     biblio$NBREL <- as.integer(freq[match(biblio$REFERENCE, names(freq))] )
     biblio$NBREL[is.na(biblio$NBREL)] <- 0
 }
-  x <- as.character(x)
+  x <- as.character(unique(x))
 #  for(i in 1:length(x)) {
       b <- biblio[match(x,biblio$REFERENCE),]
       if(!quiet) print(b)

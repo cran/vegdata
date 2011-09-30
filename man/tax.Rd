@@ -1,21 +1,33 @@
 \name{tax}
 \alias{tax}
 \alias{spc}
+\alias{agg}
+\alias{childs}
+\alias{parents}
+\alias{syn}
 
-\title{Query of taxonomic reference list including concept synonomy.}
+
+\title{Query of taxonomic reference list including concept synonomy and taxonomic hierarchy.}
 
 \usage{
-tax(x, refl, verbose = FALSE, syn = FALSE, concept = NULL, sysPath = FALSE, ...)
+tax(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, ...)
+childs(x, refl, species, gen = 5, tree = FALSE, quiet = FALSE, ...)
+parents(x, refl, species, quiet = FALSE, ...)
+syn(x, refl, species, quiet = FALSE, ...)
 }
 
 \arguments{
 \item{x}{Species number, lettercode or species name}
 \item{refl}{Taxonomic reference list}
 \item{verbose}{Load tax.dbf with additional taxonomic information (e.g. Secundum) instead of species.dbf}
-\item{syn}{Prints also synonyms for shortletters.}
+\item{syn}{Return also matching synonyms.}
 \item{concept}{Name of alternatice taxon view file within the reference list directory.}
-\item{sysPath}{A small example reference list for dataset \code{elbaue} is available in the installation path of the package.}
-\item{...}{Other attributes}
+\item{strict}{Exact match or partial matching with \code{\link{grep}}}
+\item{species}{Taxonomic reference list (dataframe according to tax() output. If not given, tax(...) will be used.}
+\item{gen}{Number of child generations to return, defaults to all.}
+\item{quiet}{Hide screen messages.}
+\item{tree}{Opens a gWidgets window with interactive taxonomic tree view.}
+\item{...}{additional attributes}
 }
 
 \description{

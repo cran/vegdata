@@ -1,5 +1,10 @@
-version 0.3.2 July 2011
+version 0.4 Sept 2011
+  * major improvements and bugfixes
+  * new function syn to find the name swarm of a species
+  * new function comb.taxa to manually manipulate species in vegetation frame
   * updatet vignette
+
+version 0.3.2 July 2011
   * bugs in childs and parents
 
 version 0.3.1 June 2011
@@ -9,7 +14,7 @@ version 0.3.1 June 2011
 
 version 0.3 May 2011
   * directory permission of extdata changed
-  * Access to the German National Vegetation databse "VegetWeb" (http://www.floraweb.de/vegetation) through new functions vw.obs, vw.site and vw.veg (alpha stage!)
+  * Access to the German National Vegetation database "VegetWeb" (http://www.floraweb.de/vegetation) through new functions vw.obs, vw.site and vw.veg (alpha stage!)
   * New tv.write function to write Turboveg databases
   * the taxonomic reference list GermanSL has been outsourced, to be downloaded from http://geobot.botanik.uni-greifswald.de/download, if needed
   * child and parent relationships through new functions child() and parents()

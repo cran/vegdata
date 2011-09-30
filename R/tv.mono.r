@@ -1,7 +1,7 @@
-tv.mono <- function(refl, write=FALSE, nr.member = 1, tv_home, ...)
+tv.mono <- function(refl, write = FALSE, nr.member = 1, tv_home, ...)
 {
- if(missing(tv_home)) tv_home <- tv.home(...)
- taxa <- tax('all', refl=refl, tax=TRUE, syn=FALSE, ...)   
+ if(missing(tv_home)) tv_home <- tv.home()
+ taxa <- tax('all', refl = refl, verbose = TRUE, syn = FALSE, ...)   
  AG <- table(taxa$AGG)
  AG <- AG[AG == nr.member]
  AG <- as.integer(names(AG))
@@ -14,7 +14,8 @@ MEMB_NAME=taxa$ABBREVIAT[match(AG,taxa$AGG)], MEMB_RANG=taxa$RANG[match(AG,taxa$
 # mono$AGG_RANG[i] <- as.character(taxa[taxa$AGG == AG[i],7])
 #  }
 #csv(mono, paste(tv_home,'species',refl,'monotypic-D.csv',sep='/'))
-if(write) write.dbf(mono, 'monotypic-D.dbf') else mono
+if(write) write.dbf(mono, 'monotypic-D.dbf') else 
+return(mono)
 }
 # head(mono)
 

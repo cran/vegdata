@@ -1,5 +1,6 @@
 \name{tv.veg}
 \alias{tv.veg}
+\alias{tv.db}
 
 \title{Tabulates vegetation tables from Turboveg database}
 
@@ -7,13 +8,13 @@
 It is a wrapper for \code{tv.obs}, \code{tv.taxval}, \code{tv.coverperc}.}
 
 \usage{
-tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo = list(lc.1, "LAYER"), values='COVER_PERC', concept, spcnames=c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spc, site, RelScale, sysPath = FALSE, ...)
+tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo = list(data(lc.1), "LAYER"), values='COVER_PERC', concept, spcnames=c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spc, site, RelScale, ...)
 }
 
 \arguments{
 \item{db}{Name of your Turboveg database. Directory name containing tvabund.dbf, tvhabita.dbf and tvwin.set. Please specify pathnames below (if you sorted your databases in subfolders) but not above Turbowin/Data.}
 \item{tv_home}{Turbowin installation path.}
-\item{taxval}{Should taxonomic valuation (see \code{\link{tv.taxval}}) be performed?}
+\item{taxval}{Should taxonomic valuation (see \code{\link{taxval}}) be performed?}
 \item{convcode}{Should cover code be converted to percentage values?}
 \item{lc}{Layer combination type. Possible values: layer (default), sum, mean or max, see details}
 \item{pseudo}{List for layer combinations, see details}
@@ -27,7 +28,6 @@ tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max",
 \item{spc}{If you want to pick a subset of species.}
 \item{site}{Dataframe with site informations.}
 \item{RelScale}{Vector with Cover Scale code per Releve.}
-\item{sysPath}{Load system files instead of Turboveg files.}
 \item{...}{additional arguments for included functions}
 }
 
@@ -35,7 +35,7 @@ tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max",
 \code{layer} means, the different layers are combined assuming there independence (a species occuring in two layers with a cover of 50\% will result in a overall cover of 75\%. \code{sum} will sum up cover values of all layers
 
 With option \code{pseudo} you can decide, which layers should be combined. Give a list with a combination data.frame  (see \code{\link{lc}} and second the name of the column for combination. For an example see \code{pseudo = list(lc.1,c('LAYER'))}. Option pseudo=NULL will prevent any layer aggregation.
-For further details see also \code{\link{tv.coverperc}} and \code{\link{tv.taxval}}.
+For further details see also \code{\link{tv.coverperc}} and \code{\link{taxval}}.
   }
 
 \value{

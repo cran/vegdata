@@ -1,5 +1,4 @@
 \name{tv.metainfo}
-\alias{metainfo}
 \alias{tv.metainfo}
 \title{Show metainfo of vegetation database or ecodbase}
 

@@ -19,7 +19,8 @@ Type: \tab Package\cr
 License: \tab GPL version 2 or newer\cr
 LazyLoad: \tab yes\cr
 }
-Use \code{\link{tv.veg}} to prepare data directly for further analyses. Set option \code{\link{tv.taxval}} to \code{TRUE}, if your database is referenced with taxonomic reference list GermanSL and you want to realize taxonomic check and adaptations.\\
+
+Use \code{\link{tv.veg}} to prepare data directly for further analyses. Set option \code{\link{tv.taxval}} to \code{TRUE}, if your database is referenced with taxonomic reference list GermanSL or equivalent and you want to realize taxonomic check and adaptations.\\
 For more details see \code{vignette('vegdata')}.
 }
 \author{

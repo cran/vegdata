@@ -1,5 +1,5 @@
-9459d018c192550dbad040140970e955 *DESCRIPTION
-85de69dfef1577cd968b22c068903275 *NAMESPACE
+aa15a31bbc56db64ba828861af6660e1 *DESCRIPTION
+7dd5043a2feb2fa115a8d1d2fe64fc8d *NAMESPACE
 fd49ab9e93a2032b2f3144f797afaa06 *R/comb.species.r
 f52c3b8c3627fa082250db0f4080d92f *R/syntab.r
 932472047c69ce82c2d7f5b14df0a50d *R/tax.r
@@ -16,20 +16,18 @@ f12a256ba6fc6bff452af0b28c3799a9 *R/tv.refl.r
 597e2c899b00cae5f4e8b1ed97e05d8f *R/tv.site.r
 0e75e3c0243fabcb9d5ce2c7ce77e61e *R/tv.veg.r
 7786f6c8b4142ea6f23df5be605a4160 *R/tv.write.r
-0b2ce4f85e097e64dd44729bebd684bb *R/vegetweb.r
 b587eb3e16bb59b6a488f279d14847d3 *data/elbaue.rda
 0d456cf614154cda6c8989603c356cd1 *data/lc.0.csv.gz
 bc89d79416bb8ced441c5bcdf45d7a0e *data/lc.1.csv.gz
 fd46801e2d464ef1a98ec58a62232fa0 *data/lc.all.csv.gz
 bbf4c0a222ababe1c97c1c5f729d5bac *inst/CITATION
-51696099551fcce76e2d78ed1556665d *inst/CITATION.backup
 d6d3aaf23f4d4c579bc8b161bbec2ed9 *inst/ChangeLog
 8f1bb910437e0976dd11305538072445 *inst/doc/SweaveC.sty
 deb80beca921a090d30f5717ef0e9c86 *inst/doc/ecol_let.bst
 77d26b5ac5927539ef4045ad17ffec72 *inst/doc/gVis.jpg
-07947e3c55d8a9b607f030ac1314da79 *inst/doc/vegdata.Rnw
+89480accf934babeea639f89cf4e1636 *inst/doc/vegdata.Rnw
 dc0e4260379916ed32f7985f621bf88b *inst/doc/vegdata.bib
-2afb251315621378414b7db2933264d4 *inst/doc/vegdata.pdf
+d8ee7c8c93eaf613744294896e00022a *inst/doc/vegdata.pdf
 9790969d18a8f6e38a62089097c0ec52 *inst/doc/veronica.png
 2056c74414fd1e3eae4042021a254e5d *inst/tvdata/Data/elbaue/TvAdmin.dbf
 79ce959181a44f2b0ab97568e5c2d013 *inst/tvdata/Data/elbaue/metainfo.txt
@@ -63,4 +61,3 @@ a0b473a3d0ffbd7dc64e3c4d393563a5 *man/tv.eco.Rd
 8e5aab2b9fcbb65e469ec803554e02ef *man/tv.write.Rd
 18f86768888e846874313521942be939 *man/vegdata-internal.Rd
 072736c4696f9f17462cbc22dab50e50 *man/vegdata-package.Rd
-15fb634b54d9f48759675b018b189496 *man/vegetweb.Rd

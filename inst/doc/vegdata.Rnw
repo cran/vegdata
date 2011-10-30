@@ -86,7 +86,7 @@ We load the library as usual into our R environment.
 library(vegdata)
 @
 
-Many functions use the directory structure of Turbowin. The first time such a function is called, function \texttt{tv.home} tries to find your Turboveg installation path. Depending on whether you have Turboveg installed on your computer or not, it will give you a message about the Turboveg installation path or the path to the Turboveg directory structure of package vegdata.
+Many functions use the directory structure of Turboveg. The first time such a function is called, function \texttt{tv.home} tries to find your Turboveg installation path. Depending on whether you have Turboveg installed on your computer or not, it will give you a message about the Turboveg installation path or the path to the Turboveg directory structure of package vegdata.
 <<eval=TRUE>>=
 tv.home()
 @
@@ -110,7 +110,7 @@ will give you a list of possible database names (directories within the Turboveg
 <<>>=
 tv.refl()
 @
-GermanSL 1.2 is the default Taxonomic reference list in the actual vegdata package
+GermanSL is the default Taxonomic reference list in package \texttt{vegdata }.
 Whenever you use a Turboveg database name in a function, the Reference list will be read from the database configuration file "tvwin.set", if possible.
 
 Package vegdata contains several service functions to query the taxonomic information contained in the reference list.
@@ -118,7 +118,7 @@ Package vegdata contains several service functions to query the taxonomic inform
 tax('Achillea millefolium')
 @
 
-"GermanSL 1.2" is not included in vegdata to keep the R package small. Instead the reference list will be automatically downloaded into the tv\_home directory, if it is not installed but needed. If you want to use a different list, specify \texttt{refl=<Name of your list>}.
+"GermanSL 1.2" is not included in vegdata to keep the R package small. Instead the reference list will be automatically downloaded into the tv\_home directory (see \texttt{tv.home()}), if it is not installed but needed. If you want to use a different list, specify \texttt{refl=<Name of your list>}.
 Function \texttt{tax} will use the given character string to look for all (partially) matching species names within the reference list
 <<>>=
 tax('Achillea millefolium', strict=TRUE, verbose=TRUE) 
@@ -227,14 +227,14 @@ This condensed format shows only presences of species observations. Every specie
 
 \subsection{Explaining function taxval}
 
-We are using the taxonomic reference list GermanSL (see Jansen \& Dengler 2008, Tuexenia) which contains not only information about synonymy of species names, but also about the taxonomic hierarchy. This enables several semi-automatic enhancements of the taxonomic information stored in your vegetation database. If your database is not referenced to GermanSL (and can not be converted), you have to dismiss function \texttt{taxval} (option tax=FALSE in \texttt{tv. veg}) and do the taxonomic harmonization by hand (function \texttt{comb.species}).
+We are using the taxonomic reference list GermanSL \citep{Jansen2008} which contains not only information about synonymy of species names, but also about the taxonomic hierarchy. This enables several semi-automatic enhancements of the taxonomic information stored in your vegetation database. If your database is not referenced to GermanSL (and can not be converted), you have to dismiss function \texttt{taxval} (option tax=FALSE in \texttt{tv. veg}) and do the taxonomic harmonization by hand (function \texttt{comb.species}).
 
 <<taxval>>=
-obs.taxval <- taxval(obs.tax, mono='lower')
+obs.taxval <- taxval(obs.tax, db=db, mono='lower')
 @
 
 The database contains 25 different names in the beginning.
-\paragraph{Synonyms} 5 of the species names are synonyms and are therefore transfered to legal taxon names, respectively numbers (see option syn='adapt'). If you want to preserve synonyms, choose option syn='conflict' or 'preserve'.
+\paragraph{Synonyms} 5 of the species names are synonyms and are therefore transferred to legal taxon names, respectively numbers (see option syn='adapt'). If you want to preserve synonyms, choose option syn='conflict' or 'preserve'.
 
 \paragraph{Monotypic species within the area}
 Monotypic taxa are valid taxa which are the only child of their next higher taxonomic rank within the survey area. By default they will be converted by \texttt{taxval} to the higher rank. For instance \emph{Poa trivialis} is in Germany only represented by \emph{Poa trivialis subspecies trivialis}. Both taxa are valid, but for most analysis only one name for these identical entities must be used. By default a list of monotypic taxa within the GermanSL (whole Germany) is considered (see \texttt{tv.mono('GermanSL 1.2')}). The default is to set all monotypic species to the higher rank (because many monotypic subspecies can occur in vegetation databases). \\
@@ -261,7 +261,7 @@ Completely independent from the questions of correct taxonomic naming of a speci
 \subsection{Coarsening to a specific taxonomic level}
 If you want only species in your analyses and no other taxonomic level use \texttt{taxval(obs, ag='adapt', rank='SPE')}. All hierarchical levels below the species level (including the above specified monotypic subspecies) are set to species level in this case.
 <<FAM>>=2
-tmp <- taxval(obs.tax, maxtaxlevel='FAM', ag='adapt', rank='FAM')
+tmp <- taxval(obs.tax, db=db, maxtaxlevel='FAM', ag='adapt', rank='FAM')
 tmp$Taxon <-  species$ABBREVIAT[match(tmp$SPECIES_NR, species$SPECIES_NR)]
 tmp[order(tmp$Taxon),9:10]
 @
@@ -269,14 +269,17 @@ tmp[order(tmp$Taxon),9:10]
 Check \texttt{?taxval} and \texttt{args(taxval)} for more options than the default.
 
 
-\subsection{Implementing another taxon view}
+\subsection{Implementing other taxon views}
 
 If you wish to use another taxonomic concept than the default, you can use a conversion table to change synonymy etc. to catch your needs. 
+<<eval=FALSE>>=
+newtaxa <- tv.taxval(obs, db, concept='korneck1996')
+@
 
 
 \section{Vegetation matrices}
 
-At the moment there exist no formal class for vegetation data in R. But most functions in \texttt{vegan}, \texttt{ade4} or other packages expect vegetation data to be stored in a matrix with species in columns and plots in rows. Therefore, we need to inflate the Turboveg format (where zero occurrences are missing) to such a matrix.
+At the moment there exists no formal class for vegetation data in R. But most functions in \texttt{vegan}, \texttt{ade4} or other packages expect vegetation data to be stored in a matrix with species in columns and plots in rows. Therefore, we need to inflate the Turboveg format (where zero occurrences are missing) to such a matrix.
 
 \texttt{tv.veg} is a wrapper for the above mentioned functions and produces a vegetation matrix with releves as rows and species as columns.
 Additionally care about species-plot attribute differentiation and combination, and the handling of species codes is provided.

@@ -8,6 +8,10 @@
 Make relative or absolute frequency tables.
 }
 
+\seealso{
+package indicspecies from M. Cac\'{e}res with function multipatt for indicator species analysis along multiple cluster combinations
+}
+
 \usage{
 syntab(veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, limit=0, mupa=NULL, alpha=0.05, minstat=0, dec=0, ...)
 }

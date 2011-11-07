@@ -8,6 +8,7 @@ mono = c('higher','lower','preserve'),
 monolist = "monotypic-D", 
 uncertain = NULL, 
 maxtaxlevel = 'ROOT', 
+check = TRUE,
 quiet = FALSE, 
 ...)
 {
@@ -21,22 +22,13 @@ quiet = FALSE,
   species <- tax('all', refl=refl, syn=TRUE, verbose=TRUE, concept=concept, ...)
   taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), ordered=TRUE)
 
-##############################
-### define functions   
-##############################
-  findchilds <- function(obsspec, species, quiet=TRUE) {
-    unique(unlist(sapply(obsspec, function(x) childs(x, species=species, quiet=quiet)$SPECIES_NR)))
-  }
-##########################
-## end of function definition
-##########################
-
 fr <- as.data.frame(table(obs$SPECIES_NR))
 
 ## Adjust synonyms
-  confl <- function(expr, fr) {
+if(syn=='conflict') {
+#   confl <- function(expr, fr) {
     obsspec <- unique(obs$SPECIES_NR)
-    tem <- species[eval(expr) & species$SPECIES_NR %in% obsspec, ]
+    tem <- species[species$SYNONYM == TRUE & species$SPECIES_NR %in% obsspec, ]
     temp <- tem[tem[['VALID_NR']] %in% obsspec, ]
     tmp <- temp[match(obs$SPECIES_NR, temp$SPECIES_NR),'VALID_NR']
     if (nrow(temp)> 0) {
@@ -47,13 +39,15 @@ fr <- as.data.frame(table(obs$SPECIES_NR))
         cat('\n', nrow(temp), 'Synonyms found also as standard taxa in dataset. Combined!\n')
         print(temp[,c("SPECIES_NR", "ABBREVIAT", "Freq.1","VALID_NR", "VALID_NAME", "Freq.2")], row.names = FALSE) 
 	}
-      } else if(!quiet) cat('\nNo conflicting Synonyms.\n')
-    obs
-  }
-  adapt <- function(expr, fr) {    
+    } else if(!quiet) cat('\nNo conflicting Synonyms.\n')
+#     obs
+}
+
+if(syn=='adapt') {
+#   adapt <- function(expr, fr) {    
     obsspec <- unique(obs$SPECIES_NR)
     species$AGG_RANG <- species$RANG[match(species$AGG,species$SPECIES_NR)]
-    temp <- species[eval(expr) & species$SPECIES_NR %in% obsspec,]
+    temp <- species[species$SYNONYM == TRUE & species$SPECIES_NR %in% obsspec,]
 #     if(column=='AGG') temp[,c('AGG','AGG_NAME')] <- species[match(temp$VALID_NR,species$SPECIES_NR),c('AGG','AGG_NAME')]
     vec <- temp[match(obs$SPECIES_NR, temp$SPECIES_NR), 'VALID_NR']
     if (sum(vec > 0, na.rm = TRUE) > 0) {
@@ -62,18 +56,14 @@ fr <- as.data.frame(table(obs$SPECIES_NR))
         temp$Freq.2 <- fr[match(temp$AGG, fr[,1]),2]; temp$Freq.2[is.na(temp$Freq.2)] <- 0      
         cat('\n', nrow(temp), 'Synonyms found in dataset, adapted \n')
         if(!quiet) print(temp[, c("SPECIES_NR", "ABBREVIAT", "Freq.1","VALID_NR", "VALID_NAME", "Freq.2")], row.names = FALSE) 
-        } else 
+
+    } else 
           cat('\nNo Synonyms to adapt. \n')
-    obs
-  }
-obs <- switch(syn,
-  conflict= confl(expr=expression(species$SYNONYM == TRUE), fr),
-  adapt =   adapt(expr=expression(species$SYNONYM == TRUE), fr),
-  preserve = {
-    cat('\nSynonyms preserved! \n')
-    obs
-    },
-  )
+#     obs
+}
+#   conflict= confl(expr=expression(species$SYNONYM == TRUE), fr),
+#   adapt =   adapt(expr=expression(species$SYNONYM == TRUE), fr),
+if(syn=='preserve') cat('\nSynonyms preserved! \n')
 
 ## Monotypic taxa
 if (mono %in% c("lower", "higher")) {
@@ -111,20 +101,13 @@ if(maxtaxlevel %in% taxlevels) {
   } else cat('\nNo taxa higher than', maxtaxlevel,'found.\n')
 }
 
-## Aggregation
-fr <- as.data.frame(table(obs$SPECIES_NR))
-species$Freq.1 <- fr$Freq[match(species$SPECIES_NR, fr[,1])]
-species$Freq.2 <- fr$Freq[match(species$AGG, fr[,1])]
-
-
-if(syn=='preserve' & ag!='preserve') stop('Harmonisation of taxonomic ranks is working only with valid taxa, please rethink option "syn=preserve".')
-if(ag == 'adapt' & missing(rank)) stop('Please specify to which "rank" taxa should be adapted.')
-if(ag != 'adapt' & !missing(rank)) warning('Ignoring option "rank", it is working only with ag="adapt"!')
-
+##############################
+### define functions   
+##############################
 agg.conflict <- function() { # Subsuming elements into higher rank observations when adapt or conflict is chosen.
   repeat{
   obsspec <- unique(obs$SPECIES_NR)
-  temp <- findchilds(obsspec, species)
+  temp <- unique(unlist(sapply(obsspec, function(x) childs(x, refl=refl, species=species, quiet=TRUE, tree=FALSE)$SPECIES_NR)))
   ch <- temp[temp %in% obsspec]
   if(length(ch) != 0) {
     cat('\n', length(ch), 'child taxa found in dataset, adapted \n')
@@ -137,6 +120,22 @@ agg.conflict <- function() { # Subsuming elements into higher rank observations 
 }
 return(obs)
 }
+
+
+##########################
+## end of function definition
+##########################
+
+
+## Aggregation
+fr <- as.data.frame(table(obs$SPECIES_NR))
+species$Freq.1 <- fr$Freq[match(species$SPECIES_NR, fr[,1])]
+species$Freq.2 <- fr$Freq[match(species$AGG, fr[,1])]
+
+
+if(syn=='preserve' & ag!='preserve') stop('Harmonisation of taxonomic ranks is working only with valid taxa, please rethink option "syn=preserve".')
+if(ag == 'adapt' & missing(rank)) stop('Please specify to which "rank" taxa should be adapted.')
+if(ag != 'adapt' & !missing(rank)) warning('Ignoring option "rank", it is working only with ag="adapt"!')
 
 obs <- switch(ag,
     preserve = {
@@ -159,7 +158,7 @@ obs <- switch(ag,
   if(!is.null(uncertain)) {
     cat('\nFrequency of uncertainty levels')
     print(table(obs[,uncertain[[1]]]), row.names = FALSE)
-    species <- tax('all', refl = refl, tax=TRUE, tv_home=tv_home, ...)
+    species <- tax('all', refl = refl, verbose = TRUE, tv_home = tv_home, ...)
 
   uncertainty <- function(obs, column, uncrow, i, ...) {
     un <- match.arg(as.character(uncrow[[2]]),c('aggregate','preserve','ignore'))
@@ -181,6 +180,7 @@ obs <- switch(ag,
 
 cat('\nNumber of taxa after validation:', length(unique(obs$SPECIES_NR)),'\n')
 
+if(check) {
 ### Critical species
 # Pseudonyms
  auct <- species[grep("\ auct.", species$ABBREVIAT, perl=TRUE), ] #c(1:5, 11, 13, 14, 15)
@@ -211,7 +211,7 @@ cat('\nNumber of taxa after validation:', length(unique(obs$SPECIES_NR)),'\n')
       u <- ext[match(unique(obs$SPECIES_NR), ext$check_No, nomatch = FALSE), ]
       if(!quiet) print(u[order(u$to_check),], row.names = FALSE)
    }
-
+}
 return(obs)
 }
 

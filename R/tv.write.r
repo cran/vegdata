@@ -2,14 +2,14 @@
 # library(vegdata)
 # 
 # db <- 'taxatest'
-# obs <- tv.coverperc(db, sysPath=TRUE)
-# site <- tv.site(db, sysPath=TRUE)
-# 
+# obs <- tv.coverperc(db)
+# site <- tv.site(db)
+
 tv.write <- function(obs, site, name, cover=c('code','perc'), overwrite = FALSE, ...) {
   cover <- match.arg(cover)
   if(!any(c('tv.obs','vw.obs') %in% class(obs))) stop('Species observations must be either \"tv.obs\" or \"vw.obs\" class.')
   if(!all(c('SPECIES_NR','RELEVE_NR','COVER_CODE') %in% names(obs))) 
-    stop('column names of species observations must contain SPECIES_NR,RELEVE_NR,COVER_CODE')
+    stop('column names of species observations must contain SPECIES_NR, RELEVE_NR, COVER_CODE')
 
   if(!overwrite) if(file.exists(file.path(options('tv_home'), 'Data', name))) stop('Database ', name, ' already exists.')
   site$DATE <- gsub('-','',site$DATE)

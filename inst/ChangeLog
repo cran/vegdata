@@ -1,3 +1,9 @@
+version 0.5.1 Okt 2011
+  * Profiling: Performance of tv.veg, tax and taxval has been improved (a run of tv.veg('elbaue') was around 10 sec and is now 3 sec
+
+version 0.5 Okt 2011
+  * VegetWeb access has been excluded due to installation problems of RMySQl on Windows OS. The code can be reloaded from the internet (see vignette)
+
 version 0.4 Sept 2011
   * major improvements and bugfixes
   * new function syn to find the name swarm of a species

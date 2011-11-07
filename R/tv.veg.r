@@ -30,7 +30,8 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
 ## CoverCode
     if(convcode){
         cat('\n converting cover code ... \n')
-        if(missing(RelScale)) {     
+        if(missing(RelScale)) {
+	  if(missing(db)) stop('\nEither database name or a vector with CoverScale per releve has to be permitted, to cope with Cover Scale information\n')
           RelScale <- tv.site(db, tv_home=tv_home, quiet = TRUE, iconv=NULL)[, c("RELEVE_NR", "COVERSCALE")]
           obs <- tv.coverperc(obs=obs, RelScale = RelScale, tv_home = tv_home, ...) 
           } else  obs <- tv.coverperc(db[1], obs, tv_home = tv_home, ...)
@@ -44,14 +45,14 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
     if(!is.null(pseudo)) {
         cat('\n creating pseudo-species ... \n')
 	if(length(pseudo[[2]]) > 1) stop('Possibility to differentiate more than one species-plot attribute not yet implemented. \n
-		Please contact <jansen@uni-greifswald.de>.')
+	Please contact <jansen@uni-greifswald.de>.')
         obs$COMB <- pseudo[[1]][, 2][match(obs[, pseudo[[2]]], pseudo[[1]][,1])]
         collab <- paste(obs$SPECIES_NR, obs$COMB, sep = ".")
-    } else     collab <- as.vector(obs$SPECIES_NR)
+    } else  collab <- as.vector(obs$SPECIES_NR)
     rowlab <- as.vector(obs$RELEVE_NR)
     cat('\n combining occurrences using type', toupper(lc), 'and creating vegetation matrix ... \n')
     layerfun <- function(x) round((1 - prod(1 - x/100)) * 100, dec)
-    results <- switch(lc, 
+    results <- switch(lc,  # Inflate matrix
       layer = tapply(obs[, values], list(rowlab, collab), layerfun),
       mean  = tapply(obs[, values], list(rowlab, collab), mean), 
       max   = tapply(obs[, values], list(rowlab, collab), max), 
@@ -66,7 +67,7 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
 	species <- tax(as.numeric(colnames(results)), verbose=FALSE, syn=FALSE, refl = refl, tv_home=tv_home, ...)
 	if(spcnames=='short') colnames(results) <- species$LETTERCODE[match(colnames(results), species$SPECIES_NR)]
 	if(spcnames=='long') colnames(results) <- gsub(' ','_', species$ABBREVIAT[match(colnames(results), species$SPECIES_NR)] )
-        } else {
+       } else {
 	st <- unlist(strsplit(colnames(results), ".", fixed = TRUE))
 	colspc <- st[seq(1, length(st), 2)]
 	species <- tax(as.numeric(colspc), verbose=FALSE, refl = refl, tv_home=tv_home, ...)

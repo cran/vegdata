@@ -11,7 +11,7 @@
 
 \usage{
 tax(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, ...)
-childs(x, refl, species, gen = 5, tree = FALSE, quiet = FALSE, ...)
+childs(x, refl, species, gen = 4, tree = FALSE, quiet = FALSE, ...)
 parents(x, refl, species, quiet = FALSE, ...)
 syn(x, refl, species, quiet = FALSE, ...)
 }

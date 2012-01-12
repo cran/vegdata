@@ -26,7 +26,7 @@ syn(x, refl, species, quiet = FALSE, ...)
 \item{species}{Taxonomic reference list (dataframe according to tax() output. If not given, tax(...) will be used.}
 \item{gen}{Number of child generations to return, defaults to all.}
 \item{quiet}{Hide screen messages.}
-\item{tree}{Opens a gWidgets window with interactive taxonomic tree view.}
+\item{tree}{Opens a gWidgets window with interactive taxonomic tree view. Requires package gWidgets.}
 \item{...}{additional attributes}
 }
 
@@ -48,15 +48,18 @@ Jansen, F. and Dengler, J. (2008) GermanSL - eine universelle taxonomische Refer
 
 \examples{
 \dontrun{
-## Turboveg installation needed
+## GermanSL in Turboveg installation path needed
 tax(27)
 tax('Achillea millefolium')
 tax('ACHIMILL')
+}
+\dontrun{
+childs(0, gen=1)
+childs(94419, tree=TRUE)
 }
 }
 
 \author{Florian Jansen
 \email{jansen@uni-greifswald.de}
-        }
-
+}
 \keyword{misc}

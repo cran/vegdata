@@ -4,6 +4,7 @@
 \alias{sub.abbr}
 \alias{vw.con}
 \alias{first.word}
+\alias{reShape.veg}
 
 \title{Internal vegdata functions}
 

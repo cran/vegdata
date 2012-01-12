@@ -6,6 +6,7 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
     ncl <- length(unique(clust))
     cat(' Number of clusters: ', ncl, '\n')
     cat('Cluster frequency', as.vector(table(clust)),'\n')
+    if(is.null(levels(clust))) levels(clust) <- 1:length(table(clust))
     sp.veg <- split(veg, clust)
     nb.rel.clust <- as.numeric(table(clust))
 

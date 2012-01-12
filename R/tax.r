@@ -7,15 +7,11 @@ store <- local({
     }
 })
 
-# , envir=as.environment(which(search()=='package:vegdata'))
-# store <- local({
-#        assign('GermanSL', NULL)
-#        function(value, refl) {
-#           if(missing(value)) get(refl)
-# 	  else get(refl) <<- value
-#        }
-#    })
-# 
+# As dBase is DOS, Umlaute  are  stored  using  a  different  code  table
+#    (namely ASCII) than most modern unices (namely ANSI).  If you encounter
+#    such a file, I would recommend piping the output through recode(1) with
+#    ibmpc:latin1 as it’s argument.
+
 sub.abbr <- function(x) {
 #  loc <- Sys.getlocale(category='LC_CTYPE')
 #  Sys.setlocale("LC_ALL","C")
@@ -39,7 +35,6 @@ sub.abbr <- function(x) {
 #  Sys.setlocale(category='LC_CTYPE', locale=loc)
    return(x)  
 }
-
 
 tax <- function(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, ...) {
   tv_home <- tv.home()
@@ -89,10 +84,8 @@ select.taxa <- function(x, species, strict) {
    return(l)
 }
 ##### end internal functions #####
-# Type
-# reflist <- paste(refl, dbf, sep='.')
- 
-# Get
+
+# Get reflist
 if(is.null(store(reflist))) { # load.species(refl=refl, verbose = verbose)
   if(file.access(file.path(tv_home, 'Species', refl, dbf))) {
     if(refl %in% supportedReflists) {
@@ -124,10 +117,9 @@ if(refl %in% supportedReflists && verbose==FALSE) species <- species[,c('SPECIES
 
 return(species)
 }
-
 #  ls(pos='package:vegdata')
 
-
+##### Child taxa of a taxon
 childs <- function (x, refl, species, gen=4, tree=FALSE, quiet=FALSE, ...) {
  if(missing(species)) species <- tax("all", verbose = TRUE, refl = refl, syn = FALSE)
  if(length(x)>1) warning('More than one species selected, using only the first.')
@@ -137,16 +129,19 @@ childs <- function (x, refl, species, gen=4, tree=FALSE, quiet=FALSE, ...) {
 
   if(tree) {
     require(gWidgets)
+    if(!'gWidgetstcltk' %in% installed.packages()) warning('Please install gWidgetstcltk.')
     root <- childs(x, gen=1)
     offspring <- function(path, ...) {
       ll <- root
-      for(i in path)
-	  ll <- childs(i, gen=1, tree=FALSE, quiet=TRUE)
+    for(i in path)
+	    ll <- childs(i, gen=1, tree=FALSE, quiet=TRUE)
+    off <- logical(nrow(ll))
+    for(n in 1:nrow(ll)) off[n] <- !is.null(childs(ll$SPECIES_NR[n], quiet=TRUE))
 	  out <- data.frame(Name=ll$ABBREVIAT,
-		      hasOffspring=!is.null(childs(ll$SPECIES_NR, quiet=TRUE)),
-		      Rang=ll$RANG,
-		      Nr=ll$SPECIES_NR,
-		    stringsAsFactors=FALSE)
+		        hasOffspring=off,
+		        Rang=ll$RANG,
+		        Nr=ll$SPECIES_NR,
+		        stringsAsFactors=FALSE)
       out
     }
     w <- gwindow(paste("Taxonomic Tree of", species$ABBREVIAT[species$SPECIES_NR==x]))

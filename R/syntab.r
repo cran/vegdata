@@ -1,6 +1,7 @@
-syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, limit=0, mupa=NULL, alpha=0.05, minstat=0, dec = 0, ...)
+syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, limit=0, mupa=NULL, alpha=0.05, minstat=0, dec = 0, refl, ...)
 {
 #    if(mupa & !'indicspecies' %in% installed.packages()[,1]) stop('Please install package \'indicspecies\' before using option mupa=TRUE')
+#    if(fullnames & missing(refl)) stop('Please specify taxonomic reference list for fullnames.')
     type <- match.arg(type)
     if (missing(clust)) clust <- rep(1,nrow(veg))
     ncl <- length(unique(clust))
@@ -32,16 +33,21 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
 	mu <- multipatt(veg, clust, ...) else 
 	mu <- mupa
       sig <- mu$sign[mu$sign$p.value <= alpha & !is.na(mu$sign$p.value) & mu$sign$stat >= minstat,]
+      
       st <- st[rownames(sig),]
       o <- order(sig[,'index'])
 
       st <- st[o,]
       st$cl <- attr(mu$str,'dimnames')[[2]][sig[o,'index']]
+      st$stat <- sig$stat[match(rownames(st), rownames(sig))]
+      st$p.value <- sig$p.value[match(rownames(st), rownames(sig))]
     }
     class(st) <- c('syntab','data.frame')
 
     if(fullnames) {
-      nam <- tax(rownames(st), verbose=FALSE, ...)
+      if(missing(refl) & is.null(attr(veg, 'taxreflist'))) stop('Either "taxreflist" attribute must be given in veg object or refl must be specified.')
+      if(missing(refl)) refl <- attr(veg, 'taxreflist')
+      nam <- tax(rownames(st), verbose=FALSE, refl, ...)
       rownames(st) <- nam$ABBREVIAT[match(rownames(st), nam$LETTERCODE)]
       }
     print(st)

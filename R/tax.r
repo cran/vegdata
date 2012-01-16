@@ -63,6 +63,7 @@ concept.FUN <- function(species, concept, ...) {
     species$AGG_NAME[match(conc$SPECIES_NR,species$SPECIES_NR,nomatch = 0)] <- co$AGG_NAME[match(conc$SPECIES_NR,co$SPECIES_NR,nomatch = 0)]
     species$SECUNDUM[match(conc$SPECIES_NR,species$SPECIES_NR,nomatch = 0)] <- co$SECUNDUM[match(conc$SPECIES_NR,co$SPECIES_NR,nomatch = 0)]
 }
+
 # Subsetting
 select.taxa <- function(x, species, strict) {
   if(is.factor(x)) x <- as.character(x)
@@ -106,7 +107,7 @@ if(is.null(store(reflist))) { # load.species(refl=refl, verbose = verbose)
   } else {
 #     cat('Using stored list', reflist, '\n')
     species <- store(reflist)
-  }
+}
 
 # Filter
 if(!is.null(concept)) species <- concept.FUN(species, concept)
@@ -132,7 +133,7 @@ childs <- function (x, refl, species, gen=4, tree=FALSE, quiet=FALSE, ...) {
     if(!'gWidgetstcltk' %in% installed.packages()) warning('Please install gWidgetstcltk.')
     root <- childs(x, gen=1)
     offspring <- function(path, ...) {
-      ll <- root
+    ll <- root
     for(i in path)
 	    ll <- childs(i, gen=1, tree=FALSE, quiet=TRUE)
     off <- logical(nrow(ll))
@@ -179,37 +180,60 @@ childs <- function (x, refl, species, gen=4, tree=FALSE, quiet=FALSE, ...) {
  }
 }
 
-parents <- function (x, refl, species, quiet=FALSE,  ...) {
+
+## Parents of a taxon
+parents <- function (x, refl, species, rank, ...) {
+if(!is.numeric(x) & !is.integer(x)) x <- tax(x, strict=TRUE, syn=FALSE, refl, ...)['SPECIES_NR']
+  # stop('x must be numeric or integer (use tax() to find Species numbers).')
+  taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), ordered=TRUE)
+
   if(missing(species)) species <- tax("all", verbose = TRUE, refl = refl, syn = TRUE)
-  x <- tax(x, refl=refl, strict=TRUE, syn = FALSE)$SPECIES_NR
+#  x <- tax(x, refl=refl, strict=TRUE, syn = FALSE)$SPECIES_NR
   if(length(x)>1) warning('More than one match, using only first.')
   x <- x[1]
   x <- species[match(x, species$SPECIES_NR),'VALID_NR']
-
-  x <- species[match(x, species$SPECIES_NR),]
-  p <- species[match(unique(x$AGG),species$SPECIES_NR),]
+  y <- species[match(x, species$SPECIES_NR),]
+  y$GENERATION <- 0
+  p <- species[match(unique(y$AGG),species$SPECIES_NR),]
   p$GENERATION <- 1
-  if(nrow(p)==0) cat(x$ABBREVIAT, 'has no parents.\n') else{
-# table(species$RANG)
-# ROOT  ABT  UAB  KLA  UKL  ORD FAM  GAT  AG2  AGG  SEC  SER  SSE  SGE  SPE  SSP  VAR  ZUS
-  p2 <- p
-  t <- 1
-  repeat {
-  t <- t+1
-  p2 <- species[match(p2$AGG,species$SPECIES_NR),]
-  p2$GENERATION <- t
-  p <- rbind(p, p2)
-  if(p2$SPECIES_NR == 0 ) break
- }
 
-  if(!quiet) {
-    cat('Parents of', x$ABBREVIAT, '(', x$SPECIES_NR, '):\n')
-    print(p[,c('SPECIES_NR','ABBREVIAT','SECUNDUM','RANG','GENERATION','EDITSTATUS')])
-   }
- invisible(p)
-}}
+lo <- function(y,p) {
+    if(nrow(p)==0) cat(y$ABBREVIAT, 'has no parents.\n') 
+    else {
+      p2 <- p
+      t <- 1
+      repeat {
+        t <- t+1
+        p2 <- species[match(p2$AGG,species$SPECIES_NR),]
+        p2$GENERATION <- t
+        p <- rbind(p, p2)
+        if(p2$SPECIES_NR == 0 ) break
+    }}
+    return(p)
+}
+    
+if(!missing(rank)) {
+    if(!rank %in% taxlevels) stop(c('Rank must be one of', ranks))
+      if(taxlevels[match(rank, taxlevels)] <= taxlevels[match(y$RANG, taxlevels)]) {
+        warning('Species is equal oo higher rank than specified parent level.')
+        p <- c(ABBREVIAT='')
+      } else {
+        p <- lo(y,p)
+        # oblig.taxlevels <- factor(c('SPE','GAT','FAM','ORD','KLA','ABT','ROOT'), levels= c('SPE','GAT','FAM','ORD','KLA','ABT','ROOT'), ordered=TRUE)
+        #  p$TAXLEVEL <- as.integer(oblig.taxlevels[match(p$RANG, oblig.taxlevels)])
+        p <- p[which(p$RANG == rank), ]
+        if(nrow(p) == 0) p <- c(ABBREVIAT='Incertae_sedis')
+        #    tv <- oblig.taxlevels[(which(oblig.taxlevels == y$RANG)+1):length(oblig.taxlevels)]
+        #    if(!all(tv %in% p$RANG)) 
+        cat('Parents of', y$ABBREVIAT, '(', y$SPECIES_NR, '):\n')
+        print(p[,c('SPECIES_NR','ABBREVIAT','SECUNDUM','RANG','GENERATION')])
+      }
+}  else p <- lo(y, p)
 
+return(p)
+}
 
+# Synonymy swarm of a taxon
 syn <- function (x, refl, species, quiet=FALSE, ...) {
  if(missing(species)) 
       species <- tax('all', verbose = TRUE, refl = refl, syn = TRUE, strict = TRUE, ...)

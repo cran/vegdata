@@ -13,7 +13,7 @@ package indicspecies from M. Cac\'{e}res with function multipatt for indicator s
 }
 
 \usage{
-syntab(veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, limit=0, mupa=NULL, alpha=0.05, minstat=0, dec=0, ...)
+syntab(veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, limit=0, mupa=NULL, alpha=0.05, minstat=0, dec=0, refl, ...)
 }
 
 \arguments{
@@ -22,10 +22,11 @@ syntab(veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, limit=0,
 \item{type}{Relative or absolute frequency, mean species response values or strength of association (see function multipatt in package indicspecis).}
 \item{fullnames}{Replace rownames (LETTERCODES) with full scientific names.}
 \item{limit}{Minimum value to display.}
-\item{dec}{Number of decimals in result.}
 \item{mupa}{Either logical for (not) using multipatt from package indispecies to detect significance of cluster association strength or supply output from previous use of multipatt.}
 \item{alpha}{Significance threshold.}
 \item{minstat}{Minimal indicator value}
+\item{dec}{Number of decimals in result.}
+\item{refl}{Name of Turboveg taxonomic reference list to use for fullnames.}
 \item{...}{additional arguments}
 }
 

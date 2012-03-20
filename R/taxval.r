@@ -16,14 +16,13 @@ quiet = FALSE,
   ag <- match.arg(ag)
   mono <- match.arg(mono)
   tv_home <- tv.home()
-  if(missing(obs))   obs <- tv.obs(db=db, tv_home)
+  if(ag == 'adapt') syn <- 'adapt' 
+  if(missing(obs)) if(missing(db)) stop('Please specify either an observation dataframe or the name of your Turboveg database.') else  obs <- tv.obs(db=db, tv_home)
   cat("\nOriginal number of names:", length(unique(obs$SPECIES_NR)),'\n')
-  if(missing(refl)) refl <- tv.refl(db[1], tv_home=tv_home)
+  if(missing(refl)) if(missing(db)) stop('If you do not give a taxonomic reference list name, you have to specify at least a name of a Turboveg database.') else refl <- tv.refl(db[1], tv_home=tv_home)
   species <- tax('all', refl=refl, syn=TRUE, verbose=TRUE, concept=concept, ...)
   taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), ordered=TRUE)
-
 fr <- as.data.frame(table(obs$SPECIES_NR))
-
 ## Adjust synonyms
 if(syn=='conflict') {
 #   confl <- function(expr, fr) {
@@ -32,7 +31,7 @@ if(syn=='conflict') {
     temp <- tem[tem[['VALID_NR']] %in% obsspec, ]
     tmp <- temp[match(obs$SPECIES_NR, temp$SPECIES_NR),'VALID_NR']
     if (nrow(temp)> 0) {
-       obs$SPECIES_NR <- replace(obs$SPECIES_NR, which(tmp > 0), tmp[!is.na(tmp)])
+        obs$SPECIES_NR <- replace(obs$SPECIES_NR, which(tmp > 0), tmp[!is.na(tmp)])
        if(!quiet) {
         temp$Freq.1 <- fr[match(temp$SPECIES_NR, fr[,1]),2]
         temp$Freq.2 <- fr[match(temp[,'VALID_NR'], fr[,1]),2]
@@ -48,8 +47,10 @@ if(syn=='adapt') {
     obsspec <- unique(obs$SPECIES_NR)
     species$AGG_RANG <- species$RANG[match(species$AGG,species$SPECIES_NR)]
     temp <- species[species$SYNONYM == TRUE & species$SPECIES_NR %in% obsspec,]
+
 #     if(column=='AGG') temp[,c('AGG','AGG_NAME')] <- species[match(temp$VALID_NR,species$SPECIES_NR),c('AGG','AGG_NAME')]
     vec <- temp[match(obs$SPECIES_NR, temp$SPECIES_NR), 'VALID_NR']
+
     if (sum(vec > 0, na.rm = TRUE) > 0) {
         obs$SPECIES_NR <- replace(obs$SPECIES_NR, which(vec > 0), vec[!is.na(vec)])
         temp$Freq.1 <- fr[match(temp$SPECIES_NR, fr[,1]),2]; temp$Freq.1[is.na(temp$Freq.1)] <- 0
@@ -64,7 +65,7 @@ if(syn=='adapt') {
 #   conflict= confl(expr=expression(species$SYNONYM == TRUE), fr),
 #   adapt =   adapt(expr=expression(species$SYNONYM == TRUE), fr),
 if(syn=='preserve') cat('\nSynonyms preserved! \n')
-
+  
 ## Monotypic taxa
 if (mono %in% c("lower", "higher")) {
      obsspec <- unique(obs$SPECIES_NR)
@@ -89,7 +90,6 @@ if (mono %in% c("lower", "higher")) {
       }
   } } else cat('\nMonotypic taxa preserved!\n')
 
-
 ## Maximum taxonomic level
 obsspec <- unique(obs$SPECIES_NR)
 if(maxtaxlevel %in% taxlevels) {
@@ -104,7 +104,7 @@ if(maxtaxlevel %in% taxlevels) {
 ##############################
 ### define functions   
 ##############################
-agg.conflict <- function() { # Subsuming elements into higher rank observations when adapt or conflict is chosen.
+agg.conflict <- function(obs) { # Subsuming elements into higher rank observations when adapt or conflict is chosen.
   repeat{
   obsspec <- unique(obs$SPECIES_NR)
   temp <- unique(unlist(sapply(obsspec, function(x) childs(x, refl=refl, species=species, quiet=TRUE, tree=FALSE)$SPECIES_NR)))
@@ -135,23 +135,25 @@ species$Freq.2 <- fr$Freq[match(species$AGG, fr[,1])]
 
 if(syn=='preserve' & ag!='preserve') stop('Harmonisation of taxonomic ranks is working only with valid taxa, please rethink option "syn=preserve".')
 if(ag == 'adapt' & missing(rank)) stop('Please specify to which "rank" taxa should be adapted.')
-if(ag != 'adapt' & !missing(rank)) warning('Ignoring option "rank", it is working only with ag="adapt"!')
+if(ag != 'adapt' & !missing(rank)) warning('Ignoring option "rank", harmonisation to a specified taxonomic rank is working only with option ag="adapt"!')
 
 obs <- switch(ag,
     preserve = {
 	  cat('\n Aggregates preserved! \n')
 	  obs
 	  },
-    conflict = agg.conflict(),
+    conflict = agg.conflict(obs),
     adapt = {
-	if(rank < maxtaxlevel) warning('Maximum allowed taxonomic rank lower than the aggregation level!')
+      if(refl %in% c('GermanSL 1.0', 'GermanSL 1.1')) stop(paste('The taxonomic hierarchy of', refl, 'is inaccurate, please upgrade to version >= 1.2'))
+	if(rank > maxtaxlevel) warning('Maximum allowed taxonomic rank lower than the aggregation level!')
 	obsspec <- unique(obs$SPECIES_NR)
 	for(i in 1:length(obsspec)) {
 	    temp <- parents(obsspec[i], refl=refl, species=species, quiet=TRUE)
+#print(4)
 	    if(rank %in% temp$RANG) obs$SPECIES_NR[obs$SPECIES_NR == obsspec[i]] <- temp$SPECIES_NR[temp$RANG == rank]
 	}
-	agg.conflict()
-      }
+	agg.conflict(obs)
+     }
   )
 
 ## Uncertainty

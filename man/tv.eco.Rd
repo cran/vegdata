@@ -1,20 +1,20 @@
-\name{tv.eco}
+\name{tv.traits}
+\alias{tv.traits}
 \alias{tv.eco}
-\title{Load ecological species traits from Turboveg reference list}
+\title{Load species traits from Turboveg reference list}
 
 \usage{
-tv.eco(db, eco = 'ecodbase.dbf', refl, tv_home) 
+tv.traits(db, eco = 'ecodbase.dbf', refl) 
 }
 
 \arguments{
 \item{db}{Path name to the Turboveg database directory}
 \item{eco}{Name of species trait DBase file, default is 'ecodbase'}
 \item{refl}{Name of taxonomic reference list}
-\item{tv_home}{Turbowin installation path}
 }
 
 \description{
-Loading Turboveg ecodbase and do basic data evaluation. Empty columns are eliminated and warnings about possibly wrong '0' values are performed
+Loading Turboveg ecodbase or any other specified dBase file in this directory and do basic data evaluation. Empty columns are eliminated and warnings about possibly wrong '0' values are performed
 }
 
 \details{

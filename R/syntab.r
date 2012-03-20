@@ -1,6 +1,5 @@
 syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, limit=0, mupa=NULL, alpha=0.05, minstat=0, dec = 0, refl, ...)
 {
-#    if(mupa & !'indicspecies' %in% installed.packages()[,1]) stop('Please install package \'indicspecies\' before using option mupa=TRUE')
 #    if(fullnames & missing(refl)) stop('Please specify taxonomic reference list for fullnames.')
     type <- match.arg(type)
     if (missing(clust)) clust <- rep(1,nrow(veg))

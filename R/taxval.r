@@ -1,3 +1,4 @@
+
 taxval <- function (obs, refl, db, 
 concept=NULL, 
 syn = c('adapt','conflict','preserve'), 
@@ -35,7 +36,7 @@ if(syn=='conflict') {
         temp$Freq.1 <- fr[match(temp$SPECIES_NR, fr[,1]),2]
         temp$Freq.2 <- fr[match(temp[,'VALID_NR'], fr[,1]),2]
         cat('\n', nrow(temp), 'Synonyms found also as standard taxa in dataset. Combined!\n')
-        print(temp[,c("SPECIES_NR", "taxonName", "Freq.1","VALID_NR", "VALID_NAME", "Freq.2")], row.names = FALSE) 
+        print(temp[,c("SPECIES_NR", "ABBREVIAT", "Freq.1","VALID_NR", "VALID_NAME", "Freq.2")], row.names = FALSE) 
 	}
     } else if(!quiet) cat('\nNo conflicting Synonyms.\n')
 #     obs
@@ -55,7 +56,7 @@ if(syn=='adapt') {
         temp$Freq.1 <- fr[match(temp$SPECIES_NR, fr[,1]),2]; temp$Freq.1[is.na(temp$Freq.1)] <- 0
         temp$Freq.2 <- fr[match(temp$AGG, fr[,1]),2]; temp$Freq.2[is.na(temp$Freq.2)] <- 0      
         cat('\n', nrow(temp), 'Synonyms found in dataset, adapted \n')
-        if(!quiet) print(temp[, c("SPECIES_NR", "taxonName", "Freq.1","VALID_NR", "VALID_NAME", "Freq.2")], row.names = FALSE) 
+        if(!quiet) print(temp[, c("SPECIES_NR", "ABBREVIAT", "Freq.1","VALID_NR", "VALID_NAME", "Freq.2")], row.names = FALSE) 
 
     } else 
           cat('\nNo Synonyms to adapt. \n')
@@ -95,7 +96,7 @@ if(maxtaxlevel %in% taxlevels) {
   toohigh <- obsspec[species$RANG[match(obsspec, species$SPECIES_NR)] %in% taxlevels[taxlevels > maxtaxlevel]]
   if(length(toohigh) > 0) {
     cat('\n', length(toohigh), 'taxa higher than specified maximal taxonomic level',maxtaxlevel,'found. Deleted.\n')
-    print(species[species$SPECIES_NR %in% toohigh, c('SPECIES_NR','taxonName','SECUNDUM')],row.names=FALSE)
+    print(species[species$SPECIES_NR %in% toohigh, c('SPECIES_NR','ABBREVIAT','SECUNDUM')],row.names=FALSE)
     obs <- obs[!obs$SPECIES_NR %in% toohigh,]
   } else cat('\nNo taxa higher than', maxtaxlevel,'found.\n')
 }
@@ -111,7 +112,7 @@ agg.conflict <- function(obs) { # Subsuming elements into higher rank observatio
   if(length(ch) != 0) {
     cat('\n', length(ch), 'child taxa found in dataset, adapted \n')
     nested <- species[match(ch, species$SPECIES_NR),]
-    if(!quiet) print(nested[,c('SPECIES_NR','taxonName','Freq.1','AGG','AGG_NAME','Freq.2')], row.names = FALSE)
+    if(!quiet) print(nested[,c('SPECIES_NR','ABBREVIAT','Freq.1','AGG','AGG_NAME','Freq.2')], row.names = FALSE)
     index <- match(obs$SPECIES_NR, nested$SPECIES_NR)
     repl <- !is.na(index)
     obs$SPECIES_NR[repl] <- nested$AGG[index][repl]
@@ -120,9 +121,11 @@ agg.conflict <- function(obs) { # Subsuming elements into higher rank observatio
 return(obs)
 }
 
+
 ##########################
 ## end of function definition
 ##########################
+
 
 ## Aggregation
 fr <- as.data.frame(table(obs$SPECIES_NR))
@@ -142,8 +145,7 @@ obs <- switch(ag,
     conflict = agg.conflict(obs),
     adapt = {
       if(refl %in% c('GermanSL 1.0', 'GermanSL 1.1')) stop(paste('The taxonomic hierarchy of', refl, 'is inaccurate, please upgrade to version >= 1.2'))
-	if(taxlevels[taxlevels==rank] > taxlevels[taxlevels==maxtaxlevel]) 
-    warning('Maximum allowed taxonomic rank lower than the aggregation level!')
+	if(rank > maxtaxlevel) warning('Maximum allowed taxonomic rank lower than the aggregation level!')
 	obsspec <- unique(obs$SPECIES_NR)
 	for(i in 1:length(obsspec)) {
 	    temp <- parents(obsspec[i], refl=refl, species=species, quiet=TRUE)
@@ -160,7 +162,7 @@ obs <- switch(ag,
     print(table(obs[,uncertain[[1]]]), row.names = FALSE)
     species <- tax('all', refl = refl, verbose = TRUE, tv_home = tv_home, ...)
 
-  uncertainty <- function(obs, column, uncrow, ...) {
+  uncertainty <- function(obs, column, uncrow, i, ...) {
     un <- match.arg(as.character(uncrow[[2]]),c('aggregate','preserve','ignore'))
     if(un == 'aggregate') {
       cat('\n changing species occurrences to coarser level for uncertainty level ', as.character(uncrow[[1]]))
@@ -183,11 +185,11 @@ cat('\nNumber of taxa after validation:', length(unique(obs$SPECIES_NR)),'\n')
 if(check) {
 ### Critical species
 # Pseudonyms
- auct <- species[grep("\ auct.", species$taxonName, perl=TRUE), ] #c(1:5, 11, 13, 14, 15)
-  auct$to_check <- sub("\ auct.", "", auct$taxonName, perl=TRUE)
-  auct$check_No <- species$SPECIES_NR[match(auct$to_check, species$taxonName)]
+ auct <- species[grep("\ auct.", species$ABBREVIAT, perl=TRUE), ] #c(1:5, 11, 13, 14, 15)
+  auct$to_check <- sub("\ auct.", "", auct$ABBREVIAT, perl=TRUE)
+  auct$check_No <- species$SPECIES_NR[match(auct$to_check, species$ABBREVIAT)]
   auct <- auct[!is.na(auct$check_No), ]
-  auct <- auct[,  c('to_check', 'check_No', 'taxonName','SPECIES_NR', 'SECUNDUM')]
+  auct <- auct[,  c('to_check', 'check_No', 'ABBREVIAT','SPECIES_NR', 'SECUNDUM')]
   names(auct)[3] <- "check against"
   if (any(obs$SPECIES_NR %in% auct$check_No)) {
       cat('\nWarning: Critical Pseudonym(s) in dataset, please check\n')
@@ -197,14 +199,14 @@ if(check) {
 
 ### Extent of taxon interpretation
 #species <<- species
-  sl <- species[grep("\ s.\ l.$", species$taxonName, perl=TRUE),c('SPECIES_NR','taxonName','VALID_NR','VALID_NAME','RANG','AGG','AGG_NAME','SECUNDUM') ] # c(1:5, 11, 13, 14, 15)
-  sl$to_check <- sub("\ s.\ l.$", "", sl$taxonName, perl=TRUE)
-  sstr <- species[grep("\ s.\ str.$", species$taxonName, perl=TRUE), c('SPECIES_NR','taxonName','VALID_NR','VALID_NAME','RANG','AGG','AGG_NAME','SECUNDUM')]
-  sstr$to_check <- sub("\ s.\ str.$", "", sstr$taxonName, perl=TRUE)
+  sl <- species[grep("\ s.\ l.$", species$ABBREVIAT, perl=TRUE),c('SPECIES_NR','ABBREVIAT','VALID_NR','VALID_NAME','RANG','AGG','AGG_NAME','SECUNDUM') ] # c(1:5, 11, 13, 14, 15)
+  sl$to_check <- sub("\ s.\ l.$", "", sl$ABBREVIAT, perl=TRUE)
+  sstr <- species[grep("\ s.\ str.$", species$ABBREVIAT, perl=TRUE), c('SPECIES_NR','ABBREVIAT','VALID_NR','VALID_NAME','RANG','AGG','AGG_NAME','SECUNDUM')]
+  sstr$to_check <- sub("\ s.\ str.$", "", sstr$ABBREVIAT, perl=TRUE)
   ext <- rbind(sl,sstr)
 
-  ext$check_No <- species$SPECIES_NR[match(ext$to_check, species$taxonName)]
-  ext <- ext[!is.na(ext$check_No), c('to_check', 'check_No', 'taxonName','SPECIES_NR', 'SECUNDUM')] #  c(10, 11, 2, 1, 5, 4, 6)
+  ext$check_No <- species$SPECIES_NR[match(ext$to_check, species$ABBREVIAT)]
+  ext <- ext[!is.na(ext$check_No), c('to_check', 'check_No', 'ABBREVIAT','SPECIES_NR', 'SECUNDUM')] #  c(10, 11, 2, 1, 5, 4, 6)
   names(ext)[3] <- "check against"
   if (any(obs$SPECIES_NR %in% ext$check_No)) {
       cat('\nWarning: Critical species in dataset, please check\n')

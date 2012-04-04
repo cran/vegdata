@@ -1,6 +1,6 @@
 tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, verbose = FALSE, Sink = TRUE, new = FALSE, ...) 
 {
-    Names = "taxonName"
+    Names = "ABBREVIAT"
     Numbers = "SPECIES_NR"
     if (missing(tv_home)) 
         tv_home <- tv.home()
@@ -16,11 +16,11 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, verbose = FALS
     diff.2 <- sort(as.character(refl.2[!refl.2[, Names] %in% refl.1[, Names], Names]))
     if (check.nr) {
         df <- merge(refl.1, refl.2, by = Names, all.x = FALSE)
-        nomatch1 <- df[as.character(df$SPECIES_NR.x) != as.character(df$SPECIES_NR.y), c("taxonName", "SPECIES_NR.x", "SPECIES_NR.y")]
+        nomatch1 <- df[as.character(df$SPECIES_NR.x) != as.character(df$SPECIES_NR.y), c("ABBREVIAT", "SPECIES_NR.x", "SPECIES_NR.y")]
         nomatch1 <- nomatch1[!is.na(nomatch1[, 1]), ]
         nomatch1 <- nomatch1[order(nomatch1[, 2]), ]
         df <- merge(refl.1, refl.2, by = Numbers, all.x = FALSE)
-        nomatch2 <- df[as.character(df$taxonName.x) != as.character(df$taxonName.y), c("SPECIES_NR", "taxonName.x", "taxonName.y")]
+        nomatch2 <- df[as.character(df$ABBREVIAT.x) != as.character(df$ABBREVIAT.y), c("SPECIES_NR", "ABBREVIAT.x", "ABBREVIAT.y")]
         nomatch2 <- nomatch2[!is.na(nomatch2[, 1]), ]
         nomatch2 <- nomatch2[order(nomatch2[, 2]), ]
         if (nrow(nomatch1) == 0 & nrow(nomatch2) == 0) 
@@ -39,8 +39,8 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, verbose = FALS
     }
     else {
         reflmerge <- merge(refl.1, refl.2, by = Names, all = TRUE)
-#        refl <- reflmerge[is.na(reflmerge$SPECIES_NR.x) | is.na(reflmerge$SPECIES_NR.y),]
-        combnames <- reflmerge$taxonName
+        refl <- reflmerge[is.na(reflmerge$SPECIES_NR.x) | is.na(reflmerge$SPECIES_NR.y),]
+        combnames <- reflmerge$ABBREVIAT
         auct <- data.frame(Taxname = sort(grep("auct.", combnames, value = TRUE, fixed = TRUE, useBytes = TRUE)))
         auct$to_check_against <- sub(" auct.", "", auct$Taxname)
         if (nrow(auct) > 0) {
@@ -93,9 +93,9 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, verbose = FALS
         cat("\n Report is written to file \"comprefl.txt\" \n")
     }
     if (new) {
-        comb <- rbind(refl.1, refl.2[refl.2$taxonName %in% diff.2, 
+        comb <- rbind(refl.1, refl.2[refl.2$ABBREVIAT %in% diff.2, 
             ])
-        comb$Attention <- comb$taxonName %in% auct | comb$taxonName %in% 
+        comb$Attention <- comb$ABBREVIAT %in% auct | comb$ABBREVIAT %in% 
             ext
         cat("\n New names in refl2 added to refl1. Reference list \"combrefl\" saved in TURBOVEG species directory. Please check for critical species names before use. \n")
         dir.create(file.path(tv_home, "/Species/combrefl"), showWarnings = FALSE)

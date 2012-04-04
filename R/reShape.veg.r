@@ -1,6 +1,7 @@
 reShape.veg <- function (veg, crop=TRUE, refl) {
 if(!'veg' %in% class(veg)) stop('Only applicable for objects of class \"veg\".')
 if(is.null(attr(veg, 'taxreflist')) & missing(refl)) stop('Set option refl because attribute \"taxreflist\" is not set for object \"veg\".')
+name <- dimnames(veg) 
 veg <- as.matrix(veg)
 perf <- as.vector(veg)
 plots <- as.integer(as.character(dimnames(veg)[[1]][row(veg)]))

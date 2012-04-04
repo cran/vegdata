@@ -8,7 +8,7 @@
 It is a wrapper for \code{tv.obs}, \code{tv.taxval}, \code{tv.coverperc}.}
 
 \usage{
-tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo = list(lc.1, "LAYER"), values='COVER_PERC', spcnames=c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spc,  RelScale, ...)
+tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo = list(lc.1, "LAYER"), values='COVER_PERC', concept, spcnames=c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spc, site, RelScale, ...)
 }
 
 \arguments{
@@ -19,12 +19,14 @@ tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max",
 \item{lc}{Layer combination type. Possible values: layer (default), sum, mean or max, see details}
 \item{pseudo}{List used for layer combinations, see details}
 \item{values}{Name of the variable which should be used for the vegetations matrix.}
+\item{concept}{Name of alternative taxon concept list, see \code{vignette(vegdata)}}
 \item{spcnames}{Should species numbers be replaced by shortletters or real names?}
 \item{dec}{Number of decimals for cover values in the resulting vegetation matrix.}
 \item{cover.transform}{If you want to transform the abundancce values within your samples you can choose 'pa' for presence-absnece or 'squareroot' for the \code{dec} rounded square root.}
 \item{obs}{Observations, optional}
 \item{refl}{Taxonomic reference list, optional}
 \item{spc}{If you want to pick a subset of species.}
+\item{site}{Dataframe with site informations.}
 \item{RelScale}{Vector with Cover Scale code per Releve.}
 \item{...}{additional arguments for included functions}
 }
@@ -42,14 +44,13 @@ Function returns an object of class matrix with (combined) cover values.
 
 \examples{
 \dontrun{vignette("vegdata")
-# If you have Turboveg installed on your computer try for a beginning 
-# tv.veg('databasename', tax=FALSE).
+# If you have Turboveg installed on your computer try for a beginning tv.veg('databasename', tax=FALSE).
 args(tv.veg)
 args(tv.taxval)
 
-veg <- tv.veg('taxatest')
+veg <- tv.veg('taxatest', sysPath=TRUE)
 names(veg)
-tv.veg('taxatest', uncertain=list('DET_CERT', data.frame(0:2,c('pres','agg','agg'))), pseudo=list(lc.0,'LAYER'), genus = 'delete')
+tv.veg('taxatest', uncertain=list('DET_CERT', data.frame(0:2,c('pres','agg','agg'))), pseudo=list(lc.0,'LAYER'), genus = 'delete', sysPath=TRUE)
 }
 }
 

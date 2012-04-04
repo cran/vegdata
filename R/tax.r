@@ -1,48 +1,3 @@
-# Load taxonomic reference list
-# load.taxlist('GermanSl1.2.verbose', 'GermanSL1.2', reflist.path, reflist.type = 'Turboveg', tv_home, dbf, verbose)
-
-load.taxlist <- function(reflist, refl, reflist.type= 'Turboveg', verbose, ...) {
-	if(is.null(store(reflist))) { # load.species(refl=refl, verbose = verbose)
-	reflist.type <- match.arg(reflist.type, c('Turboveg'))
-		if(reflist.type == 'Turboveg') {
-			tv_home <- tv.home()
-			if(missing(refl)) refl <- tv.refl(tv_home=tv_home)
-			reflist <- paste(refl, ifelse(verbose,'.verbose',''), sep='')
-			dbf <- if(verbose) 'tax.dbf' else 'species.dbf'
-			supportedReflists <- c('latest', 'GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2')
-			supportedReflists <- c(supportedReflists, sub(' ', '', supportedReflists))
-			supportedReflists <- c(supportedReflists, tolower(supportedReflists))
-			reflist.path <- file.path(tv_home, 'Species', refl, dbf)
-			
-			if(file.access(reflist.path)) {
-			if(refl %in% supportedReflists) {
-				cat('\nTaxonomic evaluation list (',dbf, ') of version', refl, 'not available.\n')
-				cat('I will try to download the reference now.\n\n')
-				version <- paste("version", substr(refl, 10, nchar(refl)), sep = "")
-				download.file(paste('http://geobot.botanik.uni-greifswald.de/download/GermanSL',version,'GermanSL.zip',sep='/'), file.path(tv_home, 'Species','GermanSL.zip'))
-				unzip(file.path(tv_home, 'Species/GermanSL.zip'), exdir=file.path(tv_home, 'Species'))
-			} else cat('\nTaxonomic evaluation list (',dbf, ') of ', refl, 'not available.\n')
-			}
-		species <- read.dbf(file.path(tv_home, 'Species', refl, dbf))
-		names(species)[names(species)=='ABBREVIAT'] <- 'taxonName'
-		names(species)[names(species)=='NATIVENAME'] <- 'vernacular'
-		
-		for(i in which(sapply(species, is.factor))) species[,i] <- as.character(species[,i]) # ob nötig?
-		for(i in which(sapply(species, is.character))) Encoding(species[,i]) <- 'latin1' # ob nötig?
-		species$taxonName <- tax.abbr(species$taxonName)
-		if(verbose) {
-			species$VALID_NAME <- sub.abbr(species$VALID_NAME)
-			if('vernacular' %in% names(species)) species$vernacular <- iconv(species$vernacular, iconvlist()[5], '')
-			}
-		} else stop('Only reflisttype Turboveg implemented until now')
-		
-		if(refl %in% supportedReflists && verbose==FALSE) species <- species[,c('SPECIES_NR','LETTERCODE','taxonName','vernacular','SYNONYM', 'VALID_NR')]
-		
-		store(reflist, species)
-	} else { species <- store(reflist) 	}
-	return(species)
-}
-
 store <- local({
     refList <- list()
     function(name, value) {
@@ -52,7 +7,7 @@ store <- local({
     }
 })
 
-# As dBase is an old DOS format, Umlaute  are  stored  using  a  different  code  table
+# As dBase is DOS, Umlaute  are  stored  using  a  different  code  table
 #    (namely ASCII) than most modern unices (namely ANSI).  If you encounter
 #    such a file, I would recommend piping the output through recode(1) with
 #    ibmpc:latin1 as its argument.
@@ -81,25 +36,28 @@ tax.abbr <- function(x) {
    return(x)  
 }
 
-"tax" <- function(...) UseMethod("tax")
-
-tax.default <- function(x, refl = 'GermanSL 1.2', verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, native = FALSE, ...) {
-	tv_home <- tv.home()
+tax <- function(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, ...) {
+  tv_home <- tv.home()
+  if(missing(refl)) refl <- tv.refl(tv_home=tv_home)
+  reflist <- paste(refl, ifelse(verbose,'.verbose',''), sep='')
+  dbf <- if(verbose) 'tax.dbf' else 'species.dbf'
+  supportedReflists <- c('latest', 'GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2')
+  supportedReflists <- c(supportedReflists, sub(' ', '', supportedReflists))
+  supportedReflists <- c(supportedReflists, tolower(supportedReflists))
 
 ###### Internal Functions #####
 # Taxon concepts
-concept.FUN <- function(species, concept, dbf, ...) {
+concept.FUN <- function(species, concept, ...) {
     cat('\n Will use taxon concept', concept, '.\n\n')
     verbose=TRUE
-    species$taxonName <- as.character(species$taxonName)
+    species$ABBREVIAT <- as.character(species$ABBREVIAT)
     species$VALID_NAME <- as.character(species$VALID_NAME)
     species$AGG_NAME <- as.character(species$AGG_NAME)
     species$SECUNDUM <- as.character(species$SECUNDUM)
     conc <- read.dbf(file.path(tv_home, 'Species', refl, paste(concept,'dbf',sep='.')), as.is=TRUE)
-    print(conc)
     co <- conc[match(species$SPECIES_NR, conc$SPECIES_NR, nomatch = 0),]
     species[match(conc$SPECIES_NR,species$SPECIES_NR),c('SYNONYM','VALID_NR','AGG')] <- co[match(conc$SPECIES_NR,co$SPECIES_NR),c('SYNONYM','VALID_NR','AGG')]
-    species$taxonName[match(conc$SPECIES_NR,species$SPECIES_NR,nomatch = 0)] <- co$taxonName[match(conc$SPECIES_NR,co$SPECIES_NR,nomatch = 0)]
+    species$ABBREVIAT[match(conc$SPECIES_NR,species$SPECIES_NR,nomatch = 0)] <- co$ABBREVIAT[match(conc$SPECIES_NR,co$SPECIES_NR,nomatch = 0)]
     species$VALID_NAME[match(conc$SPECIES_NR,species$SPECIES_NR,nomatch = 0)] <- co$VALID_NAME[match(conc$SPECIES_NR,co$SPECIES_NR,nomatch = 0)]
     species$RANG[match(conc$SPECIES_NR,species$SPECIES_NR,nomatch = 0)] <- co$RANG[match(conc$SPECIES_NR,co$SPECIES_NR,nomatch = 0)]
     species$AGG_NAME[match(conc$SPECIES_NR,species$SPECIES_NR,nomatch = 0)] <- co$AGG_NAME[match(conc$SPECIES_NR,co$SPECIES_NR,nomatch = 0)]
@@ -107,9 +65,9 @@ concept.FUN <- function(species, concept, dbf, ...) {
 }
 
 # Subsetting
-select.taxa <- function(x, species, strict, ...) {
+select.taxa <- function(x, species, strict) {
   if(is.factor(x)) x <- as.character(x)
-  if(is.numeric(x) | is.integer(x))
+  if(is.numeric(x) | is.integer(x))  
 	l <- species[match(x, species$SPECIES_NR),]  ## Tax numbers
   if(is.character(x)) {
 #    x <- sub.abbr(x)
@@ -119,48 +77,58 @@ select.taxa <- function(x, species, strict, ...) {
 	} else {		## Taxnames
 	l <- species[species$SPECIES_NR==(-1),]
 	for(i in 1:length(x))
-    if(native) {
-      l <- if(!strict) rbind(l, species[grep(x[i], species$vernacular, useBytes=TRUE), ]) else 
-        rbind(l, species[match(species$vernacular, x[i], nomatch = 0) > 0, ])
-    }
-      else {
-        l <- if(!strict) rbind(l, species[grep(x[i], species$taxonName, useBytes=TRUE), ]) else 
-			   rbind(l, species[match(species$taxonName, x[i], nomatch = 0) > 0, ])
-      }}
+	  l <- if(!strict) rbind(l, species[grep(x[i], species$ABBREVIAT, useBytes=TRUE), ]) else 
+			   rbind(l, species[match(species$ABBREVIAT, x[i], nomatch = 0) > 0, ])
+      }
    }
    if(length(l) == 0) stop('No species found!')
    return(l)
 }
-
 ##### end internal functions #####
-reflist <- paste(refl, ifelse(verbose,'.verbose',''), sep='')
 
-species <- load.taxlist(reflist, refl, reflist.type='Turboveg', verbose=verbose)
-	
+# Get reflist
+if(is.null(store(reflist))) { # load.species(refl=refl, verbose = verbose)
+  if(file.access(file.path(tv_home, 'Species', refl, dbf))) {
+    if(refl %in% supportedReflists) {
+	cat('\nTaxonomic evaluation list (',dbf, ') of version', refl, 'not available.\n')
+	cat('I will try to download the reference now.\n\n')
+# 	version <- gsub(' ', '', refl)
+	version <- paste("version", substr(refl, 10, nchar(refl)), sep = "")
+	download.file(paste('http://geobot.botanik.uni-greifswald.de/download/GermanSL',version,'GermanSL.zip',sep='/'), file.path(tv_home, 'Species','GermanSL.zip'))
+	unzip(file.path(tv_home, 'Species/GermanSL.zip'), exdir=file.path(tv_home, 'Species'))
+    } else cat('\nTaxonomic evaluation list (',dbf, ') of ', refl, 'not available.\n')
+  }
+  species <- read.dbf(file.path(tv_home, 'Species', refl, dbf))
+  for(i in which(sapply(species, is.factor))) species[,i] <- as.character(species[,i]) # ob nötig?
+  for(i in which(sapply(species, is.character))) Encoding(species[,i]) <- 'latin1' # ob nötig?
+  species$ABBREVIAT <- sub.abbr(species$ABBREVIAT)
+  if(verbose) {
+    species$VALID_NAME <- sub.abbr(species$VALID_NAME)
+    if('NATIVENAME' %in% names(species)) species$NATIVENAME <- iconv(species$NATIVENAME, iconvlist()[5], '')
+  }
+  store(reflist, species)
+  } else {
+#     cat('Using stored list', reflist, '\n')
+    species <- store(reflist)
+}
+
 # Filter
-# if(!is.null(concept)) species <- concept.FUN(species, concept)
-if(x[1] != 'all') species <- select.taxa(x, species, strict, ...)
+if(!is.null(concept)) species <- concept.FUN(species, concept)
+if(x[1] != 'all') species <- select.taxa(x, species, strict)
 if(!syn) species <- species[species$SYNONYM == FALSE,]
+
+if(refl %in% supportedReflists && verbose==FALSE) species <- species[,c('SPECIES_NR','LETTERCODE','ABBREVIAT','NATIVENAME','SYNONYM', 'VALID_NR')]
 
 return(species)
 }
 #  ls(pos='package:vegdata')
 
-
-tax.veg <- function(veg, ...) {
-  if(is.null(attr(veg, 'taxreflist'))) stop('Object must have attribute taxreflist.')
-  taxa <- tax.default(names(veg), syn=FALSE, ...)
-  cat('Taxa in vegetation matrix:\n\n')
-  return(taxa$taxonName[match(names(veg), taxa$LETTERCODE)])
-}
-
-
 ##### Child taxa of a taxon
-childs <- function (x, refl = 'GermanSL 1.2', species, gen=4, tree=FALSE, quiet=FALSE, syn=FALSE, ...) {
+childs <- function (x, refl, species, gen=4, tree=FALSE, quiet=FALSE, syn=FALSE, ...) {
  if(missing(species)) species <- tax("all", verbose = TRUE, refl = refl, syn = FALSE)
  if(length(x)>1) warning('More than one species selected, using only the first.')
   x <- x[1]
-  # if(is.character(x)) x <- species[match(x, species$taxonName),'SPECIES_NR']
+  # if(is.character(x)) x <- species[match(x, species$ABBREVIAT),'SPECIES_NR']
   x <- tax(x, refl=tv.refl(refl=refl), syn = FALSE)$SPECIES_NR	# too many ressources used
 
   if(tree) {
@@ -175,14 +143,14 @@ childs <- function (x, refl = 'GermanSL 1.2', species, gen=4, tree=FALSE, quiet=
       off <- logical(nrow(ll))
       for(n in 1:nrow(ll)) off[n] <- !is.null(childs(ll$SPECIES_NR[n], quiet=TRUE))
       if(syn) out <- data.frame(
-                Name=ll$taxonName,
+                Name=ll$ABBREVIAT,
     		        hasOffspring=off,
     		        Rang=ll$RANG,
                 Synonym=ll$SYNONYM,
     		        stringsAsFactors=FALSE
                ) else
   	  out <- data.frame(
-              Name=ll$taxonName,
+              Name=ll$ABBREVIAT,
   		        hasOffspring=off,
   		        Rang=ll$RANG,
   		        Nr=ll$SPECIES_NR,
@@ -190,10 +158,10 @@ childs <- function (x, refl = 'GermanSL 1.2', species, gen=4, tree=FALSE, quiet=
              )
       out
     }
-    w <- gwindow(paste("Taxonomic Tree of", species$taxonName[species$SPECIES_NR==x]))
+    w <- gwindow(paste("Taxonomic Tree of", species$ABBREVIAT[species$SPECIES_NR==x]))
     tr <- gtree(offspring=offspring, container=w)  
     addHandlerDoubleclick(tr, handler=function(h,...) {
-      print(childs(svalue(h$obj), gen=1, syn=syn , quiet=TRUE)[, c('SPECIES_NR' , 'LETTERCODE' , 'taxonName' , 'GRUPPE' , 'RANG' , 'SYNONYM', 'AGG' , 'SECUNDUM' , 'EDITSTATUS')])
+      print(childs(svalue(h$obj), gen=1, syn=syn , quiet=TRUE)[, c('SPECIES_NR' , 'LETTERCODE' , 'ABBREVIAT' , 'GRUPPE' , 'RANG' , 'SYNONYM', 'AGG' , 'SECUNDUM' , 'EDITSTATUS')])
       })
   }} else {
     x <- species[match(x, species$SPECIES_NR),'VALID_NR']
@@ -202,10 +170,10 @@ childs <- function (x, refl = 'GermanSL 1.2', species, gen=4, tree=FALSE, quiet=
           ch <- species[which(species$AGG == x$SPECIES_NR),'SPECIES_NR']
           ch <- do.call(rbind, lapply(ch, function(x) syn(x, quiet=TRUE)))
          } else ch <- species[which(species$AGG == x$SPECIES_NR),]
-    if(is.null(ch)) { if(!quiet) cat(x$taxonName, 'has no childs.\n')
+    if(is.null(ch)) { if(!quiet) cat(x$ABBREVIAT, 'has no childs.\n')
                     } else
     if(nrow(ch)==0) {
-        if(!quiet) cat(x$taxonName, 'has no childs.\n') 
+        if(!quiet) cat(x$ABBREVIAT, 'has no childs.\n') 
   } else {
     ch$GENERATION <- 1
     ch2 <- ch
@@ -223,8 +191,8 @@ childs <- function (x, refl = 'GermanSL 1.2', species, gen=4, tree=FALSE, quiet=
     }
     if(!is.null(gen)) ch <- ch[ch$GENERATION <= gen,]
     if(!quiet) {
-      	cat('Childs of', x$taxonName, '(', x$SPECIES_NR, '):\n')
-      	print(ch[,c('SPECIES_NR','taxonName','RANG','SECUNDUM','AGG','GENERATION','SYNONYM','EDITSTATUS')])
+      	cat('Childs of', x$ABBREVIAT, '(', x$SPECIES_NR, '):\n')
+      	print(ch[,c('SPECIES_NR','ABBREVIAT','RANG','SECUNDUM','AGG','GENERATION','SYNONYM','EDITSTATUS')])
     }
     invisible(ch)
   }
@@ -233,7 +201,7 @@ childs <- function (x, refl = 'GermanSL 1.2', species, gen=4, tree=FALSE, quiet=
 
 
 ## Parents of a taxon
-parents <- function (x, refl = 'GermanSL 1.2', species, rank, ...) {
+parents <- function (x, refl, species, rank, ...) {
   if(!is.numeric(x) & !is.integer(x)) x <- tax(x, strict=TRUE, syn=FALSE, refl, ...)['SPECIES_NR']
   # stop('x must be numeric or integer (use tax() to find Species numbers).')
   taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), ordered=TRUE)
@@ -249,7 +217,7 @@ parents <- function (x, refl = 'GermanSL 1.2', species, rank, ...) {
   p$GENERATION <- 1
 
 lo <- function(y,p) {
-    if(nrow(p)==0) cat(y$taxonName, 'has no parents.\n') 
+    if(nrow(p)==0) cat(y$ABBREVIAT, 'has no parents.\n') 
     else {
       p2 <- p
       t <- 1
@@ -267,17 +235,17 @@ if(!missing(rank)) {
     if(!rank %in% taxlevels) stop(c('Rank must be one of', rank))
       if(taxlevels[match(rank, taxlevels)] <= taxlevels[match(y$RANG, taxlevels)]) {
         warning('Species is equal oo higher rank than specified parent level.')
-        p <- c(taxonName='')
+        p <- c(ABBREVIAT='')
       } else {
         p <- lo(y,p)
         # oblig.taxlevels <- factor(c('SPE','GAT','FAM','ORD','KLA','ABT','ROOT'), levels= c('SPE','GAT','FAM','ORD','KLA','ABT','ROOT'), ordered=TRUE)
         #  p$TAXLEVEL <- as.integer(oblig.taxlevels[match(p$RANG, oblig.taxlevels)])
         p <- p[which(p$RANG == rank), ]
-        if(nrow(p) == 0) p <- c(taxonName='Incertae_sedis')
+        if(nrow(p) == 0) p <- c(ABBREVIAT='Incertae_sedis')
         #    tv <- oblig.taxlevels[(which(oblig.taxlevels == y$RANG)+1):length(oblig.taxlevels)]
         #    if(!all(tv %in% p$RANG)) 
-        cat('Parents of', y$taxonName, '(', y$SPECIES_NR, '):\n')
-        print(p[,c('SPECIES_NR','taxonName','SECUNDUM','RANG','GENERATION')])
+        cat('Parents of', y$ABBREVIAT, '(', y$SPECIES_NR, '):\n')
+        print(p[,c('SPECIES_NR','ABBREVIAT','SECUNDUM','RANG','GENERATION')])
       }
 }  else p <- lo(y, p)
 
@@ -285,10 +253,10 @@ return(p)
 }
 
 # Synonymy swarm of a taxon
-syn <- function (x, refl = 'GermanSL 1.2', species, quiet=FALSE, ...) {
+syn <- function (x, refl, species, quiet=FALSE, ...) {
  if(missing(species)) 
       species <- tax('all', verbose = TRUE, refl = refl, syn = TRUE, strict = TRUE, ...)
-  x <- tax(x, refl=refl, strict=TRUE)$SPECIES_NR
+  x <- tax(x,refl=refl, strict=TRUE)$SPECIES_NR
   if(length(x)>1) {
       warning('More than one match, using only first.')
       x <- x[1]
@@ -297,15 +265,15 @@ syn <- function (x, refl = 'GermanSL 1.2', species, quiet=FALSE, ...) {
   if(length(v)==0) stop('No matching species.')
   s <- species[which(species$VALID_NR == v),]
   if(!quiet) {
-    cat('Name swarm of', s$taxonName[s$SPECIES_NR == x],':\n')
-    print(s[, c('SPECIES_NR','taxonName','SYNONYM','SECUNDUM','EDITSTATUS')])
+    cat('Name swarm of', s$ABBREVIAT[s$SPECIES_NR == x],':\n')
+    print(s[, c('SPECIES_NR','ABBREVIAT','SYNONYM','SECUNDUM','EDITSTATUS')])
 #    print(p[,c(1,3,8,9,12,21)])
    }
  invisible(s)
 }
 
 
-agg <- function(x, refl = 'GermanSL 1.2', species, ...) {
+agg <- function(x, refl, species, ...) {
   cat('Deprecated function. Using childs(x, gen=1) instead\n')
   childs(x, refl=refl, species=species, gen=1, ... )
   }

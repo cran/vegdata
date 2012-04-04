@@ -5,18 +5,9 @@ tv.db <- function() {
   return(dir)
 }
 
-# "[.veg" <- function(x, s,...) {
-#   taxref <- attr(veg, 'taxreflist')
-#   out <- NextMethod("[,", drop=TRUE)
-#   class(out) <- 'veg'
-#   attr(veg, 'taxreflist') <- taxref
-#   return(out)
-# }
-# 
 
-tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer","mean","max","sum","first"), 
-                    pseudo = list(lc.1,'LAYER'), values = "COVER_PERC", spcnames = c('short','long','numbers'), 
-                    dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spc, RelScale, ...) 
+
+tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer","mean","max","sum","first"), pseudo = list(lc.1,'LAYER'), values = "COVER_PERC", concept, spcnames = c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spc, site, RelScale, ...) 
 {
 ## Checks
     lc <- match.arg(lc)
@@ -30,7 +21,7 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
       cat('\n Selecting species ... \n')
       obs <- obs[obs$SPECIES_NR %in% spc,]
       }
-    data(lc.1)
+    if(missing(pseudo)) data(lc.1)
 ## Taxa
     if(missing(refl)) refl <- tv.refl(db[1], tv_home = tv_home)
     cat('Taxonomic reference list: ',refl, '\n')
@@ -53,7 +44,7 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
 ## Pseudo-Species / Layer
     if(!is.null(pseudo)) {
         cat('\n creating pseudo-species ... \n')
-	if(length(pseudo[[2]]) > 1) stop('Possibility to differentiate more than one plot-species attribute not yet implemented. \n
+	if(length(pseudo[[2]]) > 1) stop('Possibility to differentiate more than one species-plot attribute not yet implemented. \n
 	Please contact <jansen@uni-greifswald.de>.')
         obs$COMB <- pseudo[[1]][, 2][match(obs[, pseudo[[2]]], pseudo[[1]][,1])]
         collab <- paste(obs$SPECIES_NR, obs$COMB, sep = ".")
@@ -77,14 +68,14 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
         print(as.numeric(colnames(results)))
 	species <- tax(as.numeric(colnames(results)), verbose=TRUE, syn=FALSE, refl = refl, tv_home=tv_home, ...)
 	if(spcnames=='short') colnames(results) <- species$LETTERCODE[match(colnames(results), species$SPECIES_NR)]
-	if(spcnames=='long') colnames(results) <- gsub(' ','_', species$taxonName[match(colnames(results), species$SPECIES_NR)] )
+	if(spcnames=='long') colnames(results) <- gsub(' ','_', species$ABBREVIAT[match(colnames(results), species$SPECIES_NR)] )
        } else {
 	st <- unlist(strsplit(colnames(results), ".", fixed = TRUE))
 	colspc <- st[seq(1, length(st), 2)]
 	species <- tax(as.numeric(colspc), verbose=FALSE, refl = refl, tv_home=tv_home, ...)
 	ll <- st[seq(2, length(st), 2)]
 	if(spcnames=='short') coln <- as.character(species$LETTERCODE[match(as.numeric(colspc), species$SPECIES_NR)])
-	if(spcnames=='long') coln <- gsub(' ','_', species$taxonName[match(as.numeric(colspc), species$SPECIES_NR)]) 
+	if(spcnames=='long') coln <- gsub(' ','_', species$ABBREVIAT[match(as.numeric(colspc), species$SPECIES_NR)]) 
 	cn <- replace(coln, which(ll != 0), paste(coln, ll, sep = ".")[ll != 0])
 	colnames(results) <- cn
 	}
@@ -97,9 +88,9 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
       if(cover.transform == 'pa') results <- as.data.frame(ifelse(results > 0, 1,0))
       if(cover.transform == 'sqrt') results <- as.data.frame(round(sqrt(results),dec))
    }
-  class(results) <- c("veg", "data.frame")
-  attr(results, 'taxreflist') <- refl
-  return(results)
+      class(results) <- c("veg", "data.frame")
+      attr(results, 'taxreflist') <- refl
+   return(results)
 }
 
 

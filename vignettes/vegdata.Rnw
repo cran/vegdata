@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 %\VignetteIndexEntry{An R package for vegetation data access, formatting and taxonomic enhancement}
-%\VignetteDepends{vegan, labdsv, akima, gWidgets, R.utils, googleVis, RMySQL}
+%\VignetteDepends{vegan, labdsv, akima, gWidgets, R.utils, googleVis}
 %\VignetteKeyword{Vegetation}
 
 \usepackage[utf8]{inputenc}
@@ -16,7 +16,7 @@
 
 \author{Florian Jansen}
 \title{Vegetation data access and taxonomic harmonization \\
-Version 0.5}
+version \Sexpr{packageDescription("vegdata", field="Version")}}
 
 % \renewcommand{\Sinput}[1]{\small{\color{#1}{rgb}{0,0,0.56}}}
 % \definecolor{Sinput}{rgb}{0,0,0.56}
@@ -126,12 +126,12 @@ tax('Achillea millefolium', strict=TRUE, verbose=TRUE)
 Additional to the Turboveg standard fields comprehensive information for every taxon is stored in an extra file (tax.dbf). If you set option strict=TRUE, only the species with exact match to the given character string will be returned.
 
 <<syn>>=
-tax('Elytrigia repens')$ABBREVIAT
+tax('Elytrigia repens')$taxonName
 syn('Elytrigia repens')
 @
 
 <<childs>>=
-childs(27, quiet=TRUE)$ABBREVIAT
+childs(27, quiet=TRUE)$taxonName
 parents('ACHIMIL')
 @
 If you want to learn more about the taxonomic reference list for Germany, please look at \cite{Jansen2008}. You can download the list manually from \url{'http://geobot.botanik.uni-greifswald.de/portal/reflist'}.
@@ -160,7 +160,7 @@ Let's have a look at the Turboveg data structure.
 obs.tax <- tv.obs(db)
 # Adding species names
 species <- tax('all', syn=TRUE)
-obs.tax$Name <-  species$ABBREVIAT[match(obs.tax$SPECIES_NR, species$SPECIES_NR)]
+obs.tax$Name <-  species$taxonName[match(obs.tax$SPECIES_NR, species$SPECIES_NR)]
 head(obs.tax[,1:4])
 @
 
@@ -250,7 +250,7 @@ Especially with aggregates and their members the coarsening to the higher level 
 
 I confess that it is a strange and complete artificial example. Starting with 25 names in the beginning only 13 taxa survived the valuation. All others had to be converted.
 <<Taxon>>=
-obs.taxval$Taxon <-  species$ABBREVIAT[match(obs.taxval$SPECIES_NR, species$SPECIES_NR)]
+obs.taxval$Taxon <-  species$taxonName[match(obs.taxval$SPECIES_NR, species$SPECIES_NR)]
 obs.taxval[order(obs.taxval$Name),c('Name','Taxon')]
 @
 
@@ -262,7 +262,7 @@ Completely independent from the questions of correct taxonomic naming of a speci
 If you want only species in your analyses and no other taxonomic level use \texttt{taxval(obs, ag='adapt', rank='SPE')}. All hierarchical levels below the species level (including the above specified monotypic subspecies) are set to species level in this case.
 <<coarsen, eval=TRUE, results=hide>>=
 tmp <- taxval(obs.tax, refl='GermanSL 1.2', ag='adapt', rank='FAM')
-tmp$Taxon <-  species$ABBREVIAT[match(tmp$SPECIES_NR, species$SPECIES_NR)]
+tmp$Taxon <-  species$taxonName[match(tmp$SPECIES_NR, species$SPECIES_NR)]
 @
 <<print.coarsen>>=
 tmp[order(tmp$Taxon),c('Name','Taxon')]
@@ -373,134 +373,22 @@ It is stated in the output, if you have to check and possibly correct 0 values.
 
 \section{VegetWeb, the National German vegetation plot repository}
 
-I have written functions, which provide the possibility to access the data stored in VegetWeb, the German national vegetation database. VegetWeb is realised as MySQL database without API to access data directly. Therefore we need package RMySQL to make queries. Unfortunately there are no binary versions of RMySQL on CRAN any more. If you are working under Linux please install RMySQL with something like sudo apt-get install r-cran-rmysql. If you work with MS Windows you have to install RTools and the MySQL headers before you can compile RMySQL from source:
+To prevent incompatibilities with Windows users who want to use Turboveg data but do not want to use VegetWeb data or are not able to install R package RMySQL, I excluded the VegetWeb functions from package vegdata. They can still be downloaded from the following website
 
-\begin{enumerate}
- \item Install RTools from \url{(http://www.murdoch-sutherland.com/Rtools/}
- \item Install MySQL Connector C with installation option "full" from \url{http://dev.mysql.com/downloads/connector/c/} and copy the file libmysql.dll from the directory debug to the bin directory. Alternatively you can install a complete MySQL Server.
- \item create a file Renviron.site in your R installation path in directory etc/ and add the correct path to your MySQL Connector installation e.g.: \\
-  \begin{verbatim}MYSQL_HOME=C:/PROGRAMME/MySQL/MySQL Connector C 6.0.\end{verbatim}
-  \item open R and type \\
-  install.packages('RMySQL', type='source')
-\end{enumerate}
-
-If you run into trouble see \url{http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL}.
-
-To prevent incompatibilities with Windows users who want to use Turboveg data but no VegetWeb data and who are not able or willing to install RMySQL, I excluded the VegetWeb functions from package vegdata, but they can be downloaded from the following website:
-
-<<RMySQL, eval=FALSE>>=
-library(RMySQL)
+<<VegetWeb, eval=FALSE>>=
 source('http://geobot.botanik.uni-greifswald.de/download/r_package/vegetweb.r')
 @
 
-\begin{Schunk}
-\begin{Sinput}
-> vw.site()
-\end{Sinput}
-\begin{Soutput}
- No query string specified. 
- You can select vegetation plots from VegetWeb with queries like
-	  query="Projekt='T271'" 
- This will select all releves from project T271, i.e Dengler 2007 Tuexenia.
- If you want to see which selection parameters are available, try: 
- con <- vw.con() 
- dbListFields(con, "beobachtung")
- summary(dbGetQuery(con, "SELECT pH FROM beobachtung")) 
- dbGetQuery(con, "SELECT * FROM projekt") 
- etc. 
-\end{Soutput}
-\end{Schunk}
-\texttt{vw.site} and \texttt{veg} are the user interface to retrieve data from VegetWeb respectively an open access mirror of the original BfN Server at the University of Greifswald (mirrored every Sunday).
+\section[label=ESVeg]{ESVeg, a XML exchange format for vegetation data}
 
-\begin{Schunk}
-\begin{Sinput}
-> con <- vw.con()
-> dbListTables(con)
-> url.show("http://planto.de/OekoArt/ModellLog.php")
-\end{Sinput}
-\end{Schunk}
+First preliminary functions to load vegetation data from ESVeg formatted XML files are now implemented. As soon as there is a software to use Veg-X, the international TDWG exchange standard for vegetation data, I will implement functions for this.
 
-Gets names of VegetWeb tables and look for the Entity Relationship Diagram.
-
-\begin{Schunk}
-\begin{Sinput}
-> con <- vw.con()
-> dbListFields(con, "beobachtung")
-\end{Sinput}
-\begin{Soutput}
- [1] "Beobachtungs_ID"               "Beobachtungscode"              "Plotcode"                     
- [4] "Vorbeobachtung"                "Projekt"                       "DatumVon"                     
- [7] "Datum"                         "Moosidentifikation"            "Flechtenidentifikation"       
-[10] "Deckungsmethode"               "Deckungsmethode2"              "Nutzung"                      
-[13] "Anteil Streuschicht"           "Anteil offene Wasserfläche"    "Anteil Fels"                  
-[16] "Anteil Skelett"                "Anteil offener Boden"          "Deckung Baumschicht"          
-[19] "Deckung Strauchschicht"        "Deckung Feldschicht"           "Deckung Kryptogamenschicht"   
-[22] "Deckung Schwimmblattschicht"   "Deckung Wasserpflanzenschicht" "Höhe Baumschicht"          
-[25] "Höhe Strauchschicht"           "Höhe Feldschicht"              "Höhe Kryptogamenschicht"   
-[28] "Tiefe Wasserpflanzen"          "Bemerkung"                     "Erheber"                      
-[31] "Digitalisierer"                "Zitat"                         "Zitattabelle"                 
-[34] "Zitataufnahme"                 "Verband"                       "Assoziation"                  
-[37] "Gesellschaftsbezeichnung"      "Subassoziation"                "Sukzessionsstatus"            
-[40] "Bestandsalter"                 "Biozönotische Aspekte"         "Hydrologie"                   
-[43] "Grundwasserflurabstand"        "Uferentfernung"                "Bodenart"                     
-[46] "Bodentyp"                      "Humusform"                     "pH"                           
-[49] "Phosphor"                      "Kalium"                        "Magnesium"                    
-[52] "N-Gehalt"                      "Biotoptyp"                     "Pflegemaßnahmen"           
-[55] "Düngung"                       "Schutz"                        "Temperatur"                   
-[58] "User"                          "Modified"                     
-\end{Soutput}
-\begin{Sinput}
-> dbGetQuery(con, "SELECT * FROM projekt")[1:2]
-\end{Sinput}
-\begin{Soutput}
-   Projekt                                                         Projektname
-1     Bohn                       Vegetationsaufnahmen bodensaurer Buchenwälder
-2     BgWd                                                Bergwald - Datenbank
-3     T252                                                   Tüxenia 25 Becker
-4     T251                                                          Tüxenia 25
-5     T253                                                 Tüxenia 25 Bültmann
-6     T262                                                          Tüxenia 26
-7     T264                                                          Tüxenia 26
-8     T254                                                    Tüxenia 25 Fuchs
-9     T255                                                  Tüxenia 25 Gehlken
-10    T269                                                          Tüxenia 26
-11    T261                                                          Tüxenia 26
-12    T268                                                          Tüxenia 26
-13    T256                                            Tüxenia 25 Otte und Maul
-14    T265                                                          Tüxenia 26
-15    T266                                                          Tüxenia 26
-16    T282                              Die Schwermetall-Vegetation des Harzes
-17    T292    Populationsstruktur und Vergesellschaftung von Dictamnus albus L.
-18    T275                                                   Tüxenia 27 Huntke
-19    T274                                       Tüxenia 27 Krämer u. Fartmann
-20    T273                                                  Tüxenia 27 Brandes
-21    T272                                                   Tüxenia 27 Klauck
-22    T271                                                  Tüxenia 27 Dengler
-23    T263                                                          Tüxenia 26
-24    T276                                                   Tüxenia 27 Becker
-25    T281                      Die Allmendeweide "NSG Kanzelstein bei Eibach"
-26    T291 Verbreitung, Vergesellschaftung und Ökologie von Lathraea squamaria
-27    T293              Trittgesellschaften der nordrhein-westfälischen Dörfer
-28    T294              Succession and management of calcareous dry grasslands
-29  SYPF10                    Synopsis der Pflanzengesellschaften Deutschlands
-30    vNWR                                          Naturwaldreservate Bayerns
-31   LANUV  LINFOS-Daten Landesamt für Natur, Umwelt und Verbraucherschutz NRW
-32    T302                                           Tüxenia 30 Schmitt et al.
-\end{Soutput}
-\end{Schunk}
-
-
-<<>>=
-query <- "Projekt='T302'"
+<<ESVeg>>=
+download.file('http://geobot.botanik.uni-greifswald.de/download/data/T302.xml', "T302.xml")
+T302.site <- ESveg.site('T302.xml')
+T302.site <- T302.site[!is.na(T302.site$LONGITUDE),]
 @
 
-Since several years all authors of \textbf{Tuexenia} are committed to give their published data to VegetWeb. Therefore we can quite easily download the data from e.g.: \\
-Schmitt, Fartmann, Hoelzel 2010 Phytosociology and ecology of \emph{Gladiolus palustris} in southern Bavaria, Tuexenia 30, p. 105-128.
-
-<<eval=FALSE>>=
-site <- vw.site(query)
-site.coord <- site[!is.na(site$"Geografische Breite"),]
-@
 
 \section{Additional functions}
 
@@ -553,27 +441,33 @@ The package \emph{vegdata} serves mostly as a helper for the analysis of vegetat
 
 \subsection{Plot coordinates of vegetation relev\'{e}s into an interactive Google Map}
 
-If you do not have geodesic coordinates as used in Google Earth (EPSG-Code 4326), you can convert coordinates with R packages rgdal.
+We will use data from VegetWeb (Schmitt, Fartmann, Hoelzel 2010 Phytosociology and ecology of \emph{Gladiolus palustris} in southern Bavaria, Tuexenia 30, p. 105-128.) to make an interactive map of plot locations. The data has already been loaded through the ESVeg functionality \ref{ESVeg}.
+
+
+A database with \Sexpr{nrow(T302.site)} plots with plot locations.
+
+If you do not have geodesic coordinates as used in Google Earth (EPSG-Code 4326), you could convert coordinates with R packages rgdal.
 
 <<eval=FALSE>>=
 library(rgdal)
-coord <- data.frame(HW=as.numeric(site.coord$Nordkoordinate), RW=as.numeric(site.coord$Ostkoordinate))
-coordinates(coord) <- c("RW", "HW")
+library(googleVis)
+coord <- data.frame(lat=T302.site$LATITUDE, long=T302.site$LONGITUDE)
+coordinates(coord) <- c("long", "lat")
 proj4string(coord) <- CRSargs(CRS("+init=epsg:31468")) # GK, 4. Stripe
 coord <- spTransform(coord, CRS("+init=epsg:4326")) # WGS 84, geographical coordinates, decimal degrees
-site.coord$long <- coordinates(coord)[,1]
-site.coord$lat <- coordinates(coord)[,2]
-site.coord$loc <- paste(site.coord$lat, site.coord$long, sep=':')
+T302.site$long <- coordinates(coord)[,1]
+T302.site$lat <- coordinates(coord)[,2]
 @
 
-To give some information we will create Tips:
+To give some information in the interactive map, we will Provide Hyperlink Tips:
 <<eval=FALSE>>=
-site.coord$tip <- paste(paste('Releve_NR:', site.coord$RELEVE_NR), paste('Table:',site.coord$TABLE_NR), paste('Nr. in table:', site.coord$NR_IN_TAB), site.coord$DATE, landuse=site.coord$NUTZUNG, site.coord$Assoziation, site.coord$Erheber, paste('Locality:', site.coord[,26]), paste('Longitude:', site.coord[,28]), paste('Latitude:', site.coord[,29]), sep='<BR>')
+T302.site$loc <- paste(T302.site$LATITUDE, T302.site$LONGITUDE, sep=':')
+T302.site$tip <- paste(paste('Releve_NR:', T302.site$plotCode), paste('Table:', T302.site$referenceTable), paste('Nr. in table:', T302.site$referencePlot), paste('Date:', T302.site$obsEndDate), paste('Landuse:', T302.site$NUTZUNG), paste('Author:', T302.site$ERHEBER), paste('Locality:', T302.site$LOKALIT__T), paste('Longitude:', T302.site$LONGITUDE), paste('Latitude:', T302.site$LATITUDE), paste('geogr. Uncertaintity:', T302.site$GENAUIGKEI), sep='<BR>')
 @
-and the produced map will open in your standard web browser.
+and the produced map will open in your web browser.
 
 <<eval=FALSE, fig=FALSE>>=
-places <- gvisMap(site.coord, 'loc', 'tip', options=list(showTip=TRUE, showLine=FALSE, enableScrollWheel=TRUE, mapType='hybrid', useMapTypeControl=TRUE, width=1000, height=800))
+places <- gvisMap(T302.site[,c('loc','tip')], 'loc', 'tip', options=list(showTip=TRUE, showLine=FALSE, enableScrollWheel=TRUE, mapType='hybrid', useMapTypeControl=TRUE, width=1000, height=800))
 plot(places)
 @
 \begin{figure}
@@ -595,6 +489,9 @@ which is a wrapper for Kruskal's Non-metric Multidimensional Scaling \citep{Cox1
 library(vegan)
 veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE, noshare = 1, expand = TRUE, trace = 2)
 # plot(veg.nmds)
+mT.F <- meanTraits('OEK_F', elbaue)
+mT.N <- meanTraits('OEK_N', elbaue)
+env <- envfit(veg.nmds, data.frame(mT.F,mT.N))
 @
 
 To show the result in comparison with environmental measurements in a nice graphic we do some plotting magic.
@@ -603,9 +500,10 @@ To show the result in comparison with environmental measurements in a nice graph
 library(labdsv)
 library(akima)
 color = function(x)rev(topo.colors(x))
-nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', ...) {
+nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', env = NULL, ...) {
  lplot <- nrow(ordi$points);  lspc <- nrow(ordi$species)
- filled.contour(interp(ordi$points[, 1], ordi$points[, 2], site[, var1]), ylim = c(-1, 1.1), xlim = c(-1.4, 1.4),
+ filled.contour(interp(ordi$points[, 1], ordi$points[, 2], site[, var1]), 
+                ylim = c(-1, 1.1), xlim = c(-1.4, 1.4),
    color.palette = color, xlab = var1, ylab = var2, main = plottitle,
     key.title = title(main = var1, cex.main = 0.8, line = 1, xpd = NA),
     plot.axes = { axis(1);  axis(2)
@@ -614,6 +512,7 @@ nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', ...) {
       ordisurf(ordi, site[, var2], col = 'black', choices = c(1, 2), add = TRUE)
       orditorp(ordi, display = disp, pch = " ")
       legend("topright", paste("GAM of ", var2), col = 'black', lty = 1)
+      if(!is.null(env)) plot(env, col='red')
    }
   ,...)
 }
@@ -622,9 +521,11 @@ nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', ...) {
 \begin{figure}
 \begin{center}
 <<nmdsplot, fig=TRUE, quiet=TRUE, results=hide>>=
-print(nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", plottitle = 'NMDS of Elbaue floodplain vegetation'))
+print(nmds.plot(veg.nmds, elbaue.env, disp='species', 
+                var1="MGL", var2="SDGL", env=env, 
+                plottitle = 'NMDS of Elbaue floodplain vegetation'))
 @
-\caption{Non-metric multidimensional scaling of the elbaue vegetation data with an overlay of mean groundwater table (colors) and standard deviation of groundwater level fluctuations (lines).}
+\caption{Non-metric multidimensional scaling of the elbaue vegetation data with an overlay of mean groundwater table (colors) and standard deviation of groundwater level fluctuations (lines). Arrows show direction of increasing mean Ellenberg F resp. N}
 \end{center}
 \end{figure}
 

@@ -1,16 +1,20 @@
 
-## Export regular function names (no dots)
-export(childs,comb.species,parents,reShape.veg, syn,syntab,tax,taxval)
+## Export regular function names
+export(childs, parents, syn, syntab, tax, taxval, meanTraits)
 
 ## export regular functions with dot names
-export(tv.biblio,tv.compRefl,tv.coverperc,tv.db,tv.traits,tv.home,tv.metainfo,tv.mono,tv.obs,tv.refl,tv.site,tv.veg,tv.write, sub.abbr)
+export(comb.species, reShape.veg, tv.biblio, tv.compRefl, tv.coverperc, tv.db, tv.traits, tv.home, tv.metainfo, tv.mono, tv.obs, tv.refl, tv.site, tv.veg, tv.write, sub.abbr, ESveg.veg, ESveg.site)
 
 ## Export .Deprecated functions (to be removed later)
 # export(agg, spc, tv.taxval)
 export(tv.eco)
 
+## Export S3 methods
+S3method(tax, default)
+S3method(tax, veg)
+
 ## do NOT export the following internal functions
-## export(vw.con,first.word}
+## export(first.word}
 
 ## Registration of S3 methods
 importFrom(foreign, read.dbf)

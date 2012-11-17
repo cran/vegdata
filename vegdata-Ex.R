@@ -5,6 +5,25 @@ library('vegdata')
 
 assign(".oldSearch", search(), pos = 'CheckExEnv')
 cleanEx()
+nameEx("ESveg")
+### * ESveg
+
+flush(stderr()); flush(stdout())
+
+### Name: ESveg.veg
+### Title: Load vegetation data from ESveg formatted data files
+### Aliases: ESveg.veg ESveg.site
+### Keywords: misc,manip,survey
+
+### ** Examples
+
+path <- system.file(package = "vegdata")
+veg <- ESveg.veg(file.path(path,'tvdata', 'Data', 'tvexport.xml'))
+names(veg)
+
+
+
+cleanEx()
 nameEx("elbaue")
 ### * elbaue
 
@@ -61,7 +80,7 @@ flush(stderr()); flush(stdout())
 ### Name: tax
 ### Title: Query of taxonomic reference list including concept synonomy and
 ###   taxonomic hierarchy.
-### Aliases: tax spc agg childs parents syn
+### Aliases: tax tax.default tax.veg spc agg childs parents syn
 ### Keywords: misc
 
 ### ** Examples
@@ -139,6 +158,24 @@ flush(stderr()); flush(stdout())
 
 
 cleanEx()
+nameEx("tv.traits")
+### * tv.traits
+
+flush(stderr()); flush(stdout())
+
+### Name: tv.traits
+### Title: Load species traits from Turboveg reference list
+### Aliases: tv.traits meanTraits tv.eco
+### Keywords: misc
+
+### ** Examples
+
+veg <- tv.veg('elbaue', cover.transform='pa')
+mEIV <- meanTraits('OEK_F', veg, 'ecodbase.dbf')
+
+
+
+cleanEx()
 nameEx("tv.veg")
 ### * tv.veg
 
@@ -153,13 +190,14 @@ flush(stderr()); flush(stdout())
 
 ## Not run: 
 ##D vignette("vegdata")
-##D # If you have Turboveg installed on your computer try for a beginning tv.veg('databasename', tax=FALSE).
+##D # If you have Turboveg installed on your computer try for a beginning 
+##D # tv.veg('databasename', tax=FALSE).
 ##D args(tv.veg)
 ##D args(tv.taxval)
 ##D 
-##D veg <- tv.veg('taxatest', sysPath=TRUE)
+##D veg <- tv.veg('taxatest')
 ##D names(veg)
-##D tv.veg('taxatest', uncertain=list('DET_CERT', data.frame(0:2,c('pres','agg','agg'))), pseudo=list(lc.0,'LAYER'), genus = 'delete', sysPath=TRUE)
+##D tv.veg('taxatest', uncertain=list('DET_CERT', data.frame(0:2,c('pres','agg','agg'))), pseudo=list(lc.0,'LAYER'), genus = 'delete')
 ## End(Not run)
 
 

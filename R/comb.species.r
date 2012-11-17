@@ -1,10 +1,9 @@
 
-comb.species <- function(x, sel, newname, nametype='LETTERCODE', refl) {
+comb.species <- function(x, sel, newname, refl) {
   if(!'veg' %in% class(x)) warning(paste('Object', x, 'not of class "veg"'))
   if(missing(sel)) stop(paste('Either vegetation matrix or the vector of species names to combine is missing.'))
   if(missing(refl)) refl <- attr(x, 'taxreflist')
   if(is.null(refl)) warning('Please specify appropriate taxonomic reference list.')
-  nam <- names(x)
 
   if(missing(newname)) newname <- sel[1]
   occtaxa <- sel[sel %in% names(x)]

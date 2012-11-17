@@ -1,4 +1,4 @@
-vegetweb <- function() {
+vegetweb <- function(...) {
 cat('Functions to access data from VegetWeb (http://www.floraweb.de/vegetation/aufnahmen.html),
 the National Vegetation database of Germany.\n')
 if(length(find.package('RMySQL', quiet=TRUE)) > 0)  {

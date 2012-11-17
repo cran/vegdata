@@ -3,9 +3,8 @@ tv.site <- function (db, tv_home, quiet = FALSE, iconv, common.only = TRUE, ...)
 ow <- options('warn')
 if(quiet) { options(warn=-1) }
 # if (is.list(db)) site <- tv.mysql(db, "tvhabita") else {
-      if (missing(tv_home)) tv_home <- tv.home()
+  if (missing(tv_home)) tv_home <- tv.home()
   site <- read.dbf(paste(tv_home, "Data", db[1], "tvhabita.dbf", sep = "/"))
-  bob <- data.frame(lapply(site, as.character), stringsAsFactors=FALSE)
   if (suppressWarnings(any(site < -1e+05, na.rm = TRUE))) 
     print(c("WARNING! Values less than -100,000. \n", "WARNING! tvhabita.dbf may be corrupt. \n", "WARNING! Please correct by im- / exporting e.g. with OpenOffice."), quote = FALSE)
   if(length(db)>1) for(i in 2:length(db)) {
@@ -16,11 +15,10 @@ if(quiet) { options(warn=-1) }
 	if (common.only){
 		common <- intersect(cols1, cols2)
 		site <- rbind(site[, common], site.tmp[, common])
-	}
-	else {
-		all <- union(cols1, cols2)
-		miss1 <- setdiff(all, cols1)
-		miss2 <- setdiff(all, cols2)
+	} else {
+ 		All <- union(cols1, cols2)
+		miss1 <- setdiff(All, cols1)
+		miss2 <- setdiff(All, cols2)
 		site[, miss1] <- NA
 		site.tmp[, miss2] <- NA
 		site <- rbind(site, site.tmp)
@@ -76,7 +74,7 @@ for(i in names(site)[lapply(site, class) == 'factor']) site[,i] <- base:::iconv(
     if (any(null)) {
       cat(paste('\n', "The following numeric fields contain 0 values:", '\n'))
     print(names(site)[null], quote = FALSE)
-    cat('\n Please check if these are really measured as 0 values or if they are not measured \n and wrongly assigned because of Dbase restrictions. \n')
+    cat(' Please check if these are really measured as 0 values or if they are not measured \n and wrongly assigned because of Dbase restrictions. \n')
     cat(" If so, use something like: \n site$Column_name[site$Column_name==0] <- NA \n summary(site[,c('", paste(names(site)[null], 
 	  collapse = "','"), "')]) \n", sep = "")       
           }

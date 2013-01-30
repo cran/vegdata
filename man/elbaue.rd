@@ -5,10 +5,6 @@
 
 \title{Species Data and Altitude from floodplains of the river Elbe, Germany.}
 
-\usage{
-data(elbaue)
-}
-
 \description{
 The \code{elbaue} data frame has 33 sites (rows) and 53 species (columns).
 }
@@ -34,14 +30,10 @@ Data frame \code{elbaue.env} contains the following variables:
  Leyer, Ilona and Wesche, Carsten 2007: Multivariate Statistik in der Oekologie, p. 221, Springer, Berlin.
 }
 
-\value{
-A dataframe \code{elbaue} with vegetation data, sites in rows and species in columns.
-
-A dataframe \code{elbaue.env} with environmental data, with Altitude as the only variable.
-}
 
 \examples{
-data(elbaue)
+elbaue <- tv.veg('elbaue')
+elbaue.env <- tv.site('elbaue')
 }
 
 \keyword{datasets}

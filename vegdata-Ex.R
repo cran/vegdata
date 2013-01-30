@@ -37,7 +37,8 @@ flush(stderr()); flush(stdout())
 
 ### ** Examples
 
-data(elbaue)
+elbaue <- tv.veg('elbaue')
+elbaue.env <- tv.site('elbaue')
 
 
 
@@ -48,25 +49,22 @@ nameEx("syntab")
 flush(stderr()); flush(stdout())
 
 ### Name: syntab
-### Title: Frequency table
+### Title: Frequency tables
 ### Aliases: syntab print.syntab freqtab
 ### Keywords: misc
 
 ### ** Examples
 
-data(elbaue)
-
-clust <- vector('integer', nrow(elbaue.env))
-clust[elbaue.env$MGL < -50 & elbaue.env$SDGL < 50] <- 1
-clust[elbaue.env$MGL < -50 & elbaue.env$SDGL >= 50] <- 2
-clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL >= 50] <- 3
-clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL < 50] <- 4
-# syntab(elbaue, clust, limit=30)
-
-levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
-
 ## Not run: 
-##D syntab(elbaue, clust, limit=30, mupa=TRUE)
+##D elbaue <- tv.veg('elbaue')
+##D elbaue.env <- tv.site('elbaue')
+##D clust <- vector('integer', nrow(elbaue.env))
+##D clust[elbaue.env$MGL < -50 & elbaue.env$SDGL < 50] <- 1
+##D clust[elbaue.env$MGL < -50 & elbaue.env$SDGL >= 50] <- 2
+##D clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL >= 50] <- 3
+##D clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL < 50] <- 4
+##D levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
+##D syntab(elbaue, clust, limit=30, mupa=TRUE, fullnames=TRUE)
 ## End(Not run)
 
 
@@ -80,7 +78,7 @@ flush(stderr()); flush(stdout())
 ### Name: tax
 ### Title: Query of taxonomic reference list including concept synonomy and
 ###   taxonomic hierarchy.
-### Aliases: tax tax.default tax.veg spc agg childs parents syn
+### Aliases: tax tax.default tax.veg childs parents syn
 ### Keywords: misc
 
 ### ** Examples
@@ -105,7 +103,7 @@ nameEx("taxval")
 flush(stderr()); flush(stdout())
 
 ### Name: taxval
-### Title: Handling of taxon names in vegetation data.
+### Title: Handling of taxonomy in vegetation data.
 ### Aliases: taxval tv.taxval comb.species
 ### Keywords: misc,manip
 
@@ -113,8 +111,11 @@ flush(stderr()); flush(stdout())
 
 ## Not run: 
 ##D # Turboveg installation needed
-##D obs <- tv.taxval('taxatest')
+##D obs <- taxval(db='taxatest')
 ##D ## For explanations see vignette('vegdata').
+##D 
+##D veg <- tv.veg('taxatest')
+##D veg <- comb.species(veg, c('ARMEM-E','ARMEM-H'))
 ## End(Not run)
 
 
@@ -170,9 +171,12 @@ flush(stderr()); flush(stdout())
 
 ### ** Examples
 
-veg <- tv.veg('elbaue', cover.transform='pa')
-mEIV <- meanTraits('OEK_F', veg, 'ecodbase.dbf')
-
+## Not run: 
+##D veg <- tv.veg('elbaue', cover.transform='pa')
+##D # mEIV <- meanTraits('OEK_F', veg, 'ecodbase.dbf')
+##D site <- tv.site('elbaue')
+##D # plot(site$MGL, mEIV)
+## End(Not run)
 
 
 cleanEx()
@@ -193,7 +197,7 @@ flush(stderr()); flush(stdout())
 ##D # If you have Turboveg installed on your computer try for a beginning 
 ##D # tv.veg('databasename', tax=FALSE).
 ##D args(tv.veg)
-##D args(tv.taxval)
+##D help('taxval')
 ##D 
 ##D veg <- tv.veg('taxatest')
 ##D names(veg)

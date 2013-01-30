@@ -2,8 +2,6 @@
 \alias{tax}
 \alias{tax.default}
 \alias{tax.veg}
-\alias{spc}
-\alias{agg}
 \alias{childs}
 \alias{parents}
 \alias{syn}
@@ -12,9 +10,9 @@
 \title{Query of taxonomic reference list including concept synonomy and taxonomic hierarchy.}
 
 \usage{
-\method{tax}{default}(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, native = FALSE, ...)
+\method{tax}{default}(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, vernacular = FALSE, quiet = FALSE, ...)
 childs(x, refl, species, gen = 4, tree = FALSE, quiet = FALSE, syn = FALSE, ...)
-parents(x, refl, species, rank, ...)
+parents(x, refl, species, rank, quiet = FALSE, ...)
 syn(x, refl, species, quiet = FALSE, ...)
 }
 
@@ -25,7 +23,7 @@ syn(x, refl, species, quiet = FALSE, ...)
 \item{syn}{Return also synonym names}
 \item{concept}{Name of alternatice taxon view file within the reference list director}
 \item{strict}{Exact match or partial matching with \code{\link{grep}}}
-\item{native}{Search in native names.}
+\item{vernacular}{Search in vernacular names instead of scientific names.}
 \item{species}{Taxonomic reference list (dataframe according to tax() output. If not given, tax(...) will be used}
 \item{gen}{Number of child generations to return}
 \item{quiet}{Hide screen messages}

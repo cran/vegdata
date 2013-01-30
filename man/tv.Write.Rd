@@ -9,7 +9,7 @@ tv.write(x, site, name, cover = c("code", "perc"), overwrite = FALSE, ...)
 }
 
 \arguments{
-  \item{x}{Either observations data.frame with RELEVE_NR, SPECIES_NR and COVER_CODE columns or vegetation matrix of class "veg".}
+  \item{x}{Either observations data.frame with RELEVE_NR, TaxonUsageID and COVER_CODE columns or vegetation matrix of class "veg".}
   \item{site}{Header data for plots.}
   \item{name}{Name of the database.}
   \item{cover}{Use of covercodes or (mean) cover percentages, see Details.}
@@ -18,7 +18,7 @@ tv.write(x, site, name, cover = c("code", "perc"), overwrite = FALSE, ...)
 }
 
 \details{
-  By deafult covercode are written to Turboveg. This is only meaningful, if correct coverscales are stored in the site dataframe. In case of e.g. VegetWeb data it is better to choose percentage cover (and Cover code 00) for Turboveg).
+  By default covercode are written to Turboveg. This is only meaningful, if correct coverscales are stored in the site dataframe. In case of e.g. VegetWeb data it is better to choose percentage cover (and Cover code 00) for Turboveg).
 }
 
 \value{

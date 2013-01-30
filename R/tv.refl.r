@@ -1,4 +1,4 @@
-tv.refl <- function(db, refl, tv_home) {
+tv.refl <- function(refl, db, tv_home) {
 
 #   capwords <- function(s, strict = FALSE) {
 #       cap <- function(s) paste(toupper(substring(s,1,1)), {s <- substring(s,2); if(strict) toupper(s) else s}, sep = "", collapse = " " )
@@ -14,7 +14,13 @@ tv.refl <- function(db, refl, tv_home) {
       dbattr <- file.path(tv_home, 'Data', db,'tvwin.set')
       if(file.access(dbattr)==0) refl <-  sub('A\002', '', readBin(dbattr,what='character', n=3)[3]) else 
     stop('Database attribute file tvwin.set from database "', db, '" not available. Please specify name of taxonomic reference list!') 
-  } else  refl <- 'GermanSL 1.2'
+  } else  
+    if(!missing(refl)) {
+      rl <- list.dirs(path = file.path(tv_home, "Species"), full.names = TRUE, 
+                       recursive = FALSE)
+      rl <- sapply(rl, function(x) substring(x, nchar(tv_home) + 10), USE.NAMES = FALSE)
+      refl <- match.arg(refl, rl)
+    } else refl <- 'GermanSL 1.2'
 #  if(!exists(refl)) refl <- fun(gsub(' ','',refl))
   if(tolower(substr(refl, 1,8)) == 'germansl') refl <- paste('GermanSL', substring(refl,9,nchar(refl)), sep='')
   return(refl)

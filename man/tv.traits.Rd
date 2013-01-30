@@ -39,8 +39,10 @@ data.frame of ecological traits, see \code{metainfo(refl, eco=TRUE)}.
         }
         
 \examples{
+\dontrun{
 veg <- tv.veg('elbaue', cover.transform='pa')
-mEIV <- meanTraits('OEK_F', veg, 'ecodbase.dbf')
-}
-
+# mEIV <- meanTraits('OEK_F', veg, 'ecodbase.dbf')
+site <- tv.site('elbaue')
+# plot(site$MGL, mEIV)
+}}
 \keyword{misc}

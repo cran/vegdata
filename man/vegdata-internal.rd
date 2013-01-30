@@ -1,10 +1,11 @@
 \name{vegdata-internal}
 \alias{tv.home}
 \alias{tv.refl}
-\alias{sub.abbr}
+\alias{taxname.abbr}
 \alias{vw.con}
 \alias{first.word}
 \alias{reShape.veg}
+\alias{TCS.replace}
 
 \title{Internal vegdata functions}
 

@@ -20,6 +20,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
     print(unique(obs[is.na(g),'COVER_CODE']))
     stop('These releves miss a cover scale value in the header data.')
     }
+  paste('Split')
   obs <- split(obs, g, drop = FALSE)
   for (i in names(obs)) {
     if (i == "00") 
@@ -28,7 +29,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
       p <- which(is.na(tvscale[i,]))[1]
       if(is.na(p)) p <- ncol(tvscale)
       scala <- tvscale[i,]
-      if(is.na(scala[1])) stop('Can not find cover scale', i, 'in Turbowin/Popup/tvscale.dbf')
+      if(is.na(scala[1])) stop('Can not find cover scale "', i, '" in Turbowin/Popup/tvscale.dbf')
       code <- t(scala[seq(4,(p-1),2)])
       perc <- scala[seq(5,p,2)][1,]
       d.f <- data.frame(code=code[,1], perc = as.numeric(perc))

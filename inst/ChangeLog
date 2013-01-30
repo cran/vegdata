@@ -8,7 +8,7 @@ version 0.5.7 March 2012
 
 version 0.5.6 March 2012
   * bug in taxval concerning the coarsening of taxonomic levels
-  * slightly improved encoding of native names
+  * slightly improved encoding of vernacular names
 
 version 0.5.4 Jan 2012
   * columns stat and p.value added in syntab if using multipatt
@@ -45,10 +45,10 @@ version 0.3 May 2011
   * New tv.write function to write Turboveg databases
   * the taxonomic reference list GermanSL has been outsourced, to be downloaded from http://geobot.botanik.uni-greifswald.de/download, if needed
   * child and parent relationships through new functions child() and parents()
-  * aggregation of taxa in tv.taxval is now possible through all taxonomic ranks, see vignette
+  * aggregation of taxa in taxval is now possible through all taxonomic ranks, see vignette
 
 version 0.2.1 November 2010
-  * bug in tv.taxval due to changed default syn value in tax corrected
+  * bug in taxval due to changed default syn value in tax corrected
   * new option pa in tv.coverperc to produce presence/absence vegetation data
 
 version 0.2 Sept 2010
@@ -58,7 +58,7 @@ version 0.2 Sept 2010
 
 version 0.1.5 March 2010
   * function tv.compRefl rewritten
-  * default values in tv.taxval changed
+  * default values in taxval changed
   * GermanSL updated to version 1.1.3
 
 version 0.1.1 November 2009

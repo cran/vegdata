@@ -19,7 +19,10 @@ tv.home <- function() {
       '\nIf you want to change this use: options(tv_home=\"<path_to_your_Turbowin_root>\")',
       '\n##########################################################\n')
   options(tv_home=tv_home)
-  } else tv_home <- getOption('tv_home')
+  } else {
+  tv_home <- getOption('tv_home')
+#  cat('Turboveg root directory has already been set to "', tv_home,'".\n', sep='')
+  }
   invisible(tv_home)
 }
 

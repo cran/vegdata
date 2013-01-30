@@ -16,7 +16,7 @@ warning('This function is highly experimental and will most probably not work as
     if(cover == 'perc') {
       X$COVER_CODE <- as.character(X$COVER_PERC)
       site$COVERSCALE <- '00'
-      X <- X[,c('RELEVE_NR','SPECIES_NR', 'COVER_CODE', 'LAYER')]
+      X <- X[,c('RELEVE_NR','TaxonUsageID', 'COVER_CODE', 'LAYER')]
     }
   } else {
       if(!any(c('tv.obs','vw.obs') %in% class(x))) stop('Species observations must be of either \"tv.obs\" or \"vw.obs\" class.')

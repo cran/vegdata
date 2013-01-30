@@ -1,4 +1,5 @@
 ESveg.veg <- function (db, refl, ...) {
+  enc <- "ISO-8859-1"
   require(XML)
 #  data(lc.1)
   doc <- xmlParse(db)
@@ -34,7 +35,7 @@ ESveg.veg <- function (db, refl, ...) {
   ## vegmatrix
   cover$stratumCode[cover$stratumCode == ''] <- '0'
 #  cover$COMB <- pseudo[[1]][, 2][match(obs[, pseudo[[2]]], pseudo[[1]][,1])]
-#  collab <- paste(obs$SPECIES_NR, obs$COMB, sep = ".")
+#  collab <- paste(obs$TaxonUsageID, obs$COMB, sep = ".")
   collab <- paste(cover$taxonCode, cover$stratumCode, sep = ".")
   rowlab <- as.vector(cover$observationCode)
   
@@ -56,7 +57,7 @@ ESveg.veg <- function (db, refl, ...) {
   coln <- make.names(taxa$interpretationName[match(as.numeric(colspc), taxa$taxonCode)])
   cn <- replace(coln, which(ll != 0), paste(coln, ll, sep = ".")[ll != 0])
   colnames(results) <- cn
-  # colnames(results) <- species$LETTERCODE[match(colnames(results), species$SPECIES_NR)]
+  # colnames(results) <- species$LETTERCODE[match(colnames(results), species$TaxonUsageID)]
   #(veg <- results)
   out <- as.data.frame(results)
   class(out) <- c('veg', 'data.frame')
@@ -110,7 +111,7 @@ ESveg.site <- function (db, ...) {
   site <- cbind(plot[match(as.character(samples$plotCode), plot$plotCode),], samples)
   
   # for(i in names(site)[lapply(site, class) == 'factor']) 
-  #  site[,i] <- base:::iconv(site[,i], '437', '')
+  #  site[,i] <- base:::iconv(site[,i], enc, '')
   ### Time
   if(any(site$obsEndDate == '1901-01-01')) warning(sum(site$obsEndDate == '1901-01-01'), ' releves without date. Not converted from factor to date format.') 
   else {

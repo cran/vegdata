@@ -3,12 +3,12 @@
 \alias{tv.taxval}
 \alias{comb.species}
 
-\title{Handling of taxon names in vegetation data.}
+\title{Handling of taxonomy in vegetation data.}
 
 \description{
 Performs taxonomic valuation of species names according to synonomy, taxonomic level, unambiguity of biotic content etc.
 Necessary prerequisite is information about taxonomic status (synonomy) and hierarchy (next higher aggregat).
- Until now only applicable for reference list 'GermanSL' (>= vers. 1.1, see References Section), which is applicable in Germany and adjacent countries.
+ Until now only applicable for reference list 'GermanSL' (>= vers. 1.1, see References Section), which is valid in Germany and adjacent countries.
 }
 
 \usage{
@@ -67,8 +67,11 @@ Jansen, F. and Dengler, J. (2010) Plant names in vegetation databases - a neglec
 \examples{
 \dontrun{
 # Turboveg installation needed
-obs <- tv.taxval('taxatest')
+obs <- taxval(db='taxatest')
 ## For explanations see vignette('vegdata').
+
+veg <- tv.veg('taxatest')
+veg <- comb.species(veg, c('ARMEM-E','ARMEM-H'))
 }
 }
 

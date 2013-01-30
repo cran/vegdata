@@ -2,7 +2,7 @@ tv.eco <- function (...) stop('This function is deprecated, use tv.traits instea
   
 tv.traits <- function (db, trait.db = 'ecodbase.dbf', refl, quiet = FALSE, ...) {
     tv_home <- tv.home()
-    if(missing(refl))  refl <- if(missing(db)) tv.refl() else tv.refl(db)
+    if(missing(refl))  refl <- if(missing(db)) tv.refl() else tv.refl(db = db)
     ecodb <- read.dbf(file.path(tv_home, 'Species', refl, trait.db))
     empty <- function(x) all(is.na(x) | x == 0)
     na <- apply(ecodb, 2, empty)
@@ -17,15 +17,15 @@ tv.traits <- function (db, trait.db = 'ecodbase.dbf', refl, quiet = FALSE, ...) 
 # doesnt work 
     ecoDB <- ecodb
     for(i in 1:ncol(ecodb)) if(is.factor(ecodb[,i])) {
-      ecoDB[,i] <- iconv(as.character(ecodb[,i], "437", ""))
+      ecoDB[,i] <- iconv(as.character(ecodb[,i], "ISO-8859-1", ""))
       ecoDB[,i] <- type.convert(ecoDB[,i]) }
     if(!quiet) cat('\n')
     
     for(i in 1:ncol(ecoDB))  if(class(ecodb[,i]) != class(ecoDB[,i])) if(!quiet) cat('Class of', names(ecoDB)[i], 'changed to ', class(ecoDB[,i]), '\n')
 #     if(rm.dupl) {
-#       taxa <- tax('all', refl=refl)
-#       ecoDB$LETTERCODE <- taxa$LETTERCODE[match(ecoDB$TAXNR, taxa$SPECIES_NR)]
-#       ecoDB$SYNONYM <- taxa$SYNONYM[match(ecoDB$TAXNR, taxa$SPECIES_NR)]
+#       taxa <- load.taxlist(refl=refl, ...)
+#       ecoDB$LETTERCODE <- taxa$LETTERCODE[match(ecoDB$TAXNR, taxa$TaxonUsageID)]
+#       ecoDB$SYNONYM <- taxa$SYNONYM[match(ecoDB$TAXNR, taxa$TaxonUsageID)]
 #       tab <- table(ecoDB$LETTERCODE)
 #       ind <- ecoDB$LETTERCODE %in% names(tab)[tab>1] & ecoDB$SYNONYM
 #       ecoDB <- ecoDB[!ind,]
@@ -49,7 +49,8 @@ meanTraits <- function(trait, veg, trait.db = 'ecodbase.dbf', join = 'LETTERCODE
   names(IV) <- names(veg)
   if(zero.is.NA) IV[IV == 0] <- NA
   ind <- !is.na(IV)
-  out <- rowSums(t((t(veg) * IV)) / rowSums(veg[,!is.na(IV)]), na.rm=TRUE)
+  veg <- veg[,ind]; IV <- IV[ind]
+  out <- rowSums(t((t(veg) * IV)) / rowSums(veg))
   return(out)
 }
 

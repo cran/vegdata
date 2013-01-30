@@ -1,8 +1,8 @@
-tv.metainfo <- function (db, refl='GermanSL 1.1', tv_home, filename = 'metainfo.txt', ...)
+tv.metainfo <- function (db, refl='GermanSL 1.2', tv_home, filename = 'metainfo.txt', ...)
 {
     if (missing(tv_home)) tv_home <- tv.home()
     if (db[1] == "eco") {
-	if(missing(refl)) if(length(db)>1) stop('More than one database name specified!') else refl <- tv.refl(db, tv_home, ...)
+	if(missing(refl)) if(length(db)>1) stop('More than one database name specified!') else refl <- tv.refl(db = db, tv_home = tv_home, ...)
 	shell.exec(file.path(tv_home, "Species", refl, "metainfo-eco.txt"))
       } else {
 	for(i in 1:length(db)) {

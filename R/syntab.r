@@ -20,19 +20,20 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
       temp <- lapply(sp.veg, function(x) {x[x==0] <- NA; round(colMeans(x, na.rm=TRUE),dec)})
       is.na(temp) <- 0
     }
-    if(type=='abs') temp <- lapply(sp.veg, function(x) colSums(x > 0))
+    if(type=='abs') 
+      temp <- lapply(sp.veg, function(x) colSums(x > 0))
 
     st <- as.data.frame(temp)
     st[is.na(st)] <- 0
     names(st) <- levels(clust)
 #    if(ncl>1) st <- st[rowSums > limit,]
-    if(!is.null(mupa) | class(mupa)=='multipatt' & ncl<1) {
+    if(!is.null(mupa) | class(mupa)=='multipatt' & ncl < 1) {
       require(indicspecies)
       if(class(mupa)!='multipatt') mu <- multipatt(veg, clust, ...) else mu <- mupa
       #      st <- st[rownames(st) %in% rownames(sig),]     
       o <- order(mu$sign[,'index'])
       df <- mu$sign
-      df[,1:4] <- mu$sign[,1:4] * st
+      df[, 1:ncl] <- mu$sign[,1:ncl] * st
       colnames(df)[1:ncl] <- levels(clust)
       st <- df
 #      sig <- mu$sign[mu$sign$p.value <= alpha & !is.na(mu$sign$p.value) & mu$sign$stat >= minstat,]
@@ -43,16 +44,21 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
     if(fullnames) {
       if(missing(refl) & is.null(attr(veg, 'taxreflist'))) stop('Either "taxreflist" attribute must be given in veg object or refl must be specified.')
       if(missing(refl)) refl <- attr(veg, 'taxreflist')
-      nam <- tax(rownames(st), verbose=FALSE, syn=FALSE, refl, ...)
-      rownames(st) <- nam$taxonName[match(rownames(st), nam$LETTERCODE)]
+      if(length(grep('.', rownames(st), fixed=TRUE)) > 0) stop('Fullname substitution only possible without pseudo-species separation (e.g. layers).')
+      nam <- tax(rownames(st), verbose=FALSE, syn=TRUE, refl, ...)
+      rownames(st) <- nam$TaxonName[match(rownames(st), nam$LETTERCODE)]
       }
+    class(st) <- c('syntab', 'data.frame')
 #    print(st)
-    invisible(st)
+    return(st)
 }
 
-print.syntab <- function(x, zero.print='.', ...) {
- class(x) <- 'data.frame'
-if(ncol(x)>1) {
+print.syntab <- function(x, zero.print='.', trait, ...) {
+	if(!missing(trait)) {
+		traitname <- as.character(substitute(trait))
+		trait <- as.data.frame(trait)
+	}
+	if(ncol(x)>1) {
   if('stat' %in% names(x)) mu=TRUE else mu=FALSE
   if(mu) {
     cl <- x[,'stat']; x <- x[,-which(names(x)=='stat')]
@@ -62,9 +68,18 @@ if(ncol(x)>1) {
   if(zero.print != "0" && any(i0 <- x == 0)) {
       x[i0] <- sub("0", zero.print, x[i0])
       x[i0] <- sub("0.0", zero.print, x[i0])
-      x[i0] <- sub("0.00", zero.print, x[i0]) }
-  if(mu) x <- cbind(x, index, cl, p.value)
- }
-   print.data.frame(x, zero.print='', ...)
+      x[i0] <- sub("0.00", zero.print, x[i0]) 
+  }
+  if(mu) {
+    x <- cbind(x, index, cl, p.value)
+    x <- x[order(x$index),]
+    }
+  }
+
+	if(!missing(trait)) {	
+		x <- cbind(x, trait=trait[match(rownames(x), rownames(trait)),])
+		names(x)[names(x)=='trait'] <- traitname
+	}
+  print.data.frame(x, zero.print='', ...)
  }
 

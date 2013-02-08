@@ -3,17 +3,17 @@
 \alias{tv.taxval}
 \alias{comb.species}
 
-\title{Handling of taxon names in vegetation data.}
+\title{Handling of taxonomy in vegetation data.}
 
 \description{
 Performs taxonomic valuation of species names according to synonomy, taxonomic level, unambiguity of biotic content etc.
 Necessary prerequisite is information about taxonomic status (synonomy) and hierarchy (next higher aggregat).
- Until now only applicable for reference list 'GermanSL' (>= vers. 1.1, see References Section), which is applicable in Germany and adjacent countries.
+ Until now only applicable for reference list 'GermanSL' (>= vers. 1.1, see References Section), which is valid in Germany and adjacent countries.
 }
 
 \usage{
 taxval(obs, refl, db, concept=NULL, syn = c('adapt','conflict','preserve'), ag = c('conflict', 'adapt', 'preserve'), rank, mono = c('higher','lower', 'preserve'), monolist = "monotypic-D", uncertain = NULL, maxtaxlevel = 'ROOT', check = TRUE, quiet = FALSE,  ...)
-comb.species(x, sel, newname, nametype = "LETTERCODE", refl)
+comb.species(x, sel, newname, refl)
 }
 
 \arguments{
@@ -33,7 +33,6 @@ comb.species(x, sel, newname, nametype = "LETTERCODE", refl)
   \item{x}{Dataframe of class 'veg'. See \code{\link{tv.veg}}}
   \item{sel}{Vector of species (column names) to be combined.}
   \item{newname}{Name of the combined taxon.}
-  \item{nametype}{Name type.}
   \item{...}{Other parameters passed to functions.}
 }
 
@@ -68,8 +67,11 @@ Jansen, F. and Dengler, J. (2010) Plant names in vegetation databases - a neglec
 \examples{
 \dontrun{
 # Turboveg installation needed
-obs <- tv.taxval('taxatest')
+obs <- taxval(db='taxatest')
 ## For explanations see vignette('vegdata').
+
+veg <- tv.veg('taxatest')
+veg <- comb.species(veg, c('ARMEM-E','ARMEM-H'))
 }
 }
 

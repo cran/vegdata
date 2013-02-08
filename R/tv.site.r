@@ -1,32 +1,33 @@
-tv.site <- function (db, tv_home, quiet = FALSE, iconv, common.only = TRUE, ...) 
+tv.site <- function (db, tv_home, quiet = FALSE, common.only = TRUE, ...) 
 {
 ow <- options('warn')
 if(quiet) { options(warn=-1) }
 # if (is.list(db)) site <- tv.mysql(db, "tvhabita") else {
-      if (missing(tv_home)) tv_home <- tv.home()
-  site <- read.dbf(paste(tv_home, "Data", db[1], "tvhabita.dbf", sep = "/"))
-  bob <- data.frame(lapply(site, as.character), stringsAsFactors=FALSE)
+  if (missing(tv_home)) tv_home <- tv.home()
+  site <- read.dbf(file.path(tv_home, "Data", db[1], "tvhabita.dbf"))
   if (suppressWarnings(any(site < -1e+05, na.rm = TRUE))) 
     print(c("WARNING! Values less than -100,000. \n", "WARNING! tvhabita.dbf may be corrupt. \n", "WARNING! Please correct by im- / exporting e.g. with OpenOffice."), quote = FALSE)
   if(length(db)>1) for(i in 2:length(db)) {
-	site.tmp <- read.dbf(paste(tv_home, 'Data', db[i],'tvhabita.dbf',sep='/'))
+	site.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvhabita.dbf'))
 	if(any(site$RELEVE_NR %in% site.tmp$RELEVE_NR)) stop('Found duplicate releve numbers, aborting!')
 	cols1 <- names(site)
 	cols2 <- names(site.tmp)
 	if (common.only){
 		common <- intersect(cols1, cols2)
 		site <- rbind(site[, common], site.tmp[, common])
-	}
-	else {
-		all <- union(cols1, cols2)
-		miss1 <- setdiff(all, cols1)
-		miss2 <- setdiff(all, cols2)
+	} else {
+ 		All <- union(cols1, cols2)
+		miss1 <- setdiff(All, cols1)
+		miss2 <- setdiff(All, cols2)
 		site[, miss1] <- NA
 		site.tmp[, miss2] <- NA
 		site <- rbind(site, site.tmp)
 	} 
   }
-for(i in names(site)[lapply(site, class) == 'factor']) site[,i] <- base:::iconv(site[,i], '437', '')
+
+### Conversion of factors
+# fac <- sapply(site, is.factor)
+for(i in names(site)[lapply(site, class) == 'factor']) site[,i] <- iconv(site[,i], "ISO-8859-1", '')
 
     ### Time
     if(any(is.na(site$DATE))) warning(sum(is.na(site$DATE)), ' releves without date. Not converted from factor to date format.') else {
@@ -45,14 +46,8 @@ for(i in names(site)[lapply(site, class) == 'factor']) site[,i] <- base:::iconv(
   n <- sum(site$SURF_AREA == 0 | is.na(site$SURF_AREA))
   if(n>0) warning(paste(n, ' releves without survey area'))
 
-  ### Conversion of factors
-  fac <- sapply(site, is.factor)
-  if (!missing(iconv)) 
-      if (!is.null(iconv))
-	  for (i in (1:ncol(site))[fac & !(1:ncol(site)) %in% c(3,6,9)]) site[,i] <- type.convert(iconv(as.character(site[,i]), iconv[1], iconv[2]))
-  if (missing(iconv))
-      for (i in c(1, 2, 4, 5, 7, 8, 10:ncol(site))) site[,i] <- type.convert(as.character(site[, i]),...)
-  site$SURF_AREA[site$SURF_AREA==0] <- NA        
+
+site$SURF_AREA[site$SURF_AREA==0] <- NA        
 ### 
   fun <- function(x) all(is.na(x))
   na <- apply(site, 2, fun)
@@ -76,7 +71,7 @@ for(i in names(site)[lapply(site, class) == 'factor']) site[,i] <- base:::iconv(
     if (any(null)) {
       cat(paste('\n', "The following numeric fields contain 0 values:", '\n'))
     print(names(site)[null], quote = FALSE)
-    cat('\n Please check if these are really measured as 0 values or if they are not measured \n and wrongly assigned because of Dbase restrictions. \n')
+    cat(' Please check if these are really measured as 0 values or if they are not measured \n and wrongly assigned because of Dbase restrictions. \n')
     cat(" If so, use something like: \n site$Column_name[site$Column_name==0] <- NA \n summary(site[,c('", paste(names(site)[null], 
 	  collapse = "','"), "')]) \n", sep = "")       
           }

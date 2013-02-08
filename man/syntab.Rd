@@ -2,7 +2,7 @@
 \alias{syntab}
 \alias{print.syntab}
 \alias{freqtab}
-\title{Frequency table}
+\title{Frequency tables}
 
 \description{
 Make relative or absolute frequency tables.
@@ -33,19 +33,16 @@ syntab(veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, limit=0,
 \author{Florian Jansen \email{jansen@uni-greifswald.de} }
 
 \examples{
-data(elbaue)
-
+\dontrun{
+elbaue <- tv.veg('elbaue')
+elbaue.env <- tv.site('elbaue')
 clust <- vector('integer', nrow(elbaue.env))
 clust[elbaue.env$MGL < -50 & elbaue.env$SDGL < 50] <- 1
 clust[elbaue.env$MGL < -50 & elbaue.env$SDGL >= 50] <- 2
 clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL >= 50] <- 3
 clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL < 50] <- 4
-# syntab(elbaue, clust, limit=30)
-
 levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
-
-\dontrun{
-syntab(elbaue, clust, limit=30, mupa=TRUE)
+syntab(elbaue, clust, limit=30, mupa=TRUE, fullnames=TRUE)
 }
 }
 

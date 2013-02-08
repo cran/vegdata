@@ -5,10 +5,10 @@
 \title{Tabulates vegetation tables from Turboveg database}
 
 \description{Tabulates vegetation tables from Turboveg resp. VegetWeb database, including taxonomic emendation and layer combination. Using various default parameters for the included functions.
-It is a wrapper for \code{tv.obs}, \code{tv.taxval}, \code{tv.coverperc}.}
+It is a wrapper for \code{tv.obs}, \code{taxval}, \code{tv.coverperc}.}
 
 \usage{
-tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo = list(lc.1, "LAYER"), values='COVER_PERC', concept, spcnames=c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spc, site, RelScale, ...)
+tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo, values='COVER_PERC', spcnames=c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spcnr,  RelScale, ...)
 }
 
 \arguments{
@@ -19,14 +19,12 @@ tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max",
 \item{lc}{Layer combination type. Possible values: layer (default), sum, mean or max, see details}
 \item{pseudo}{List used for layer combinations, see details}
 \item{values}{Name of the variable which should be used for the vegetations matrix.}
-\item{concept}{Name of alternative taxon concept list, see \code{vignette(vegdata)}}
 \item{spcnames}{Should species numbers be replaced by shortletters or real names?}
 \item{dec}{Number of decimals for cover values in the resulting vegetation matrix.}
 \item{cover.transform}{If you want to transform the abundancce values within your samples you can choose 'pa' for presence-absnece or 'squareroot' for the \code{dec} rounded square root.}
 \item{obs}{Observations, optional}
 \item{refl}{Taxonomic reference list, optional}
-\item{spc}{If you want to pick a subset of species.}
-\item{site}{Dataframe with site informations.}
+\item{spcnr}{If you want to pick only a subset of species numbers.}
 \item{RelScale}{Vector with Cover Scale code per Releve.}
 \item{...}{additional arguments for included functions}
 }
@@ -34,23 +32,27 @@ tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max",
 \details{
 \code{layer} means, the different layers are combined assuming there independence (a species occuring in two layers with a cover of 50\% will result in a overall cover of 75\%. \code{sum} will sum up cover values of all layers
 
-With option \code{pseudo} you can decide, which layers should be combined. Give a list with a combination data.frame  (see \code{\link{lc}} and second the name of the column for combination. For an example see \code{pseudo = list(lc.1,c('LAYER'))}. With option pseudo=NULL there will be no layer aggregation. \\
-For further details see also \code{\link{tv.coverperc}} and \code{\link{taxval}}.
+With option \code{pseudo} you can decide, which layers should be combined. Give a list with a combination data.frame  (see \code{\link{lc}} and second the name of the column for combination. The default is \code{pseudo = list(lc.1, c('LAYER'))}, where lc.1 is a data.frame \code{data(lc.1)}, which will combine all tree layers, all shrub layers and all layers below shrubs. An alternative would be data(lc.all), combining all layers. With option pseudo=NULL there will be no layer aggregation.
   }
 
 \value{
 Function returns an object of class matrix with (combined) cover values.
 }
 
+\seealso{
+\code{\link{taxval}}, \code{\link{tv.coverperc}}, \code{\link{tv.mono}}, \code{\link{tv.obs}}, \code{\link{tv.site}}
+}
+
 \examples{
 \dontrun{vignette("vegdata")
-# If you have Turboveg installed on your computer try for a beginning tv.veg('databasename', tax=FALSE).
+# If you have Turboveg installed on your computer try for a beginning 
+# tv.veg('databasename', tax=FALSE).
 args(tv.veg)
-args(tv.taxval)
+help('taxval')
 
-veg <- tv.veg('taxatest', sysPath=TRUE)
+veg <- tv.veg('taxatest')
 names(veg)
-tv.veg('taxatest', uncertain=list('DET_CERT', data.frame(0:2,c('pres','agg','agg'))), pseudo=list(lc.0,'LAYER'), genus = 'delete', sysPath=TRUE)
+tv.veg('taxatest', uncertain=list('DET_CERT', data.frame(0:2,c('pres','agg','agg'))), pseudo=list(lc.0,'LAYER'), genus = 'delete')
 }
 }
 

@@ -3,14 +3,13 @@
 \title{Load site data from Turboveg Database}
 
 \usage{
-tv.site(db, tv_home, quiet=FALSE, iconv, common.only = TRUE,...)
+tv.site(db, tv_home, quiet=FALSE, common.only = TRUE,...)
 }
 
 \arguments{
   \item{db}{Name of your Turboveg database. Directory name containing tvabund.dbf, tvhabita.dbf and tvwin.set.}
   \item{tv_home}{Turbowin installation path. Optional, if Turbowin is either on "C:/turbowin" or "C:/Programme/Turbowin".}
   \item{quiet}{Suppress messages}
-  \item{iconv}{If you get an error about unrecognized symbols, you may want to convert characters from one encoding to another. Please provide a character vector of length two with the names of source and target encoding, see \code{\link{iconv}}}
   \item{common.only}{Import only header data which occur in all databases with the same name.}
   \item{...}{Additional options like \code{dec} for type.convert}
 }
@@ -21,9 +20,9 @@ Loading Turboveg header data and do basic data evaluation. Empty columns are eli
 }
 
 \details{
-Please specify pathnames below but not above Turbowin/Data. Can be a single database or a character vector of multiple databases. In the latter case
+Please specify pathnames below but not above Turbowin/Data. Can be a single database or a character vector of multiple databases. In the latter case you have to asure, that all databases use the same taxonomic reference list.
 
-You can use the final output line to make a summary statistic for attributes with potentially misleading '0' values. Just delete the \" at beginning and end.
+You can use the example in the final output line to make a summary statistic for attributes with potentially misleading '0' values. Just delete the \" at beginning and end.
   }
 
 \value{

@@ -1,7 +1,6 @@
 reShape.veg <- function (veg, crop=TRUE, refl) {
 if(!'veg' %in% class(veg)) stop('Only applicable for objects of class \"veg\".')
 if(is.null(attr(veg, 'taxreflist')) & missing(refl)) stop('Set option refl because attribute \"taxreflist\" is not set for object \"veg\".')
-name <- dimnames(veg) 
 veg <- as.matrix(veg)
 perf <- as.vector(veg)
 plots <- as.integer(as.character(dimnames(veg)[[1]][row(veg)]))
@@ -16,9 +15,9 @@ spec <- dimnames(veg)[[2]][col(veg)]
 
   df <- data.frame(RELEVE_NR=plots, LETTERCODE=spec, COVER_PERC=perf, LAYER=layer)
   spc <- unlist(lapply(spcnames, function(x) x[1]))
-  df$SPECIES_NR <- integer(nrow(df))
+  df$TaxonUsageID <- integer(nrow(df))
   taxa <- tax(spc, syn=FALSE)
-  df$SPECIES_NR <- taxa$SPECIES_NR[match(spc, taxa$LETTERCODE)]
+  df$TaxonUsageID <- taxa$TaxonUsageID[match(spc, taxa$LETTERCODE)]
 
   # o <- df[order(df[,1], df[,2]),]
   # df <- df[o,]

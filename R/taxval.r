@@ -102,6 +102,7 @@ if(maxtaxlevel %in% taxlevels) {
   } else cat(' No taxa higher than', maxtaxlevel,'found.\n')
 }
 
+
 ##############################
 ### define functions   
 ##############################

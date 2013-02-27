@@ -3,7 +3,7 @@ tv.home <- function() {
     if(.Platform$OS.type == "unix") if(file.access(paste(Sys.getenv('HOME'),'/.wine/drive_c/Turbowin',sep=''))==0)
       tv_home <- file.path(Sys.getenv('HOME'),'.wine/drive_c/Turbowin') else {
         cat('\nNo Turbowin installation path found. \n')
-	tv_home <- file.path(.path.package("vegdata"), "tvdata")
+	tv_home <- file.path(path.package("vegdata"), "tvdata")
 	}
     if(.Platform$OS.type == "windows") {
       if(file.access('O:/Turbowin/Popup/tvscale.dbf')==0) tv_home <- 'O:/Turbowin' else {
@@ -12,7 +12,7 @@ tv.home <- function() {
 	    if(file.access('C:/Programme/Turbowin/Popup/tvscale.dbf') ==0) tv_home <- 'C:/Programme/Turbowin' else
 	      if(file.access('D:/Programme/Turbowin/Popup/tvscale.dbf') ==0) tv_home <- 'D:/Programme/Turbowin' else {
        cat('\nNo Turbowin installation path found. \n')
-	tv_home <- file.path(.path.package("vegdata"), "tvdata")
+	tv_home <- file.path(path.package("vegdata"), "tvdata")
       }}}}
   cat('\n##########################################################',
       '\nTurboveg root directory is set to', tv_home,

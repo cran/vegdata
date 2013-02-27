@@ -1,9 +1,9 @@
 
 ## Export regular function names
-export(childs, parents, syn, syntab, tax, taxname.abbr, taxval, meanTraits)
+export(childs, parents, syn, syntab, tax, taxname.abbr, taxval, meanTraits, vegetweb)
 
 ## export regular functions with dot names
-export(comb.species, reShape.veg, print.syntab, ESveg.veg, ESveg.site, TCS.replace)
+export(comb.species, reShape.veg, print.syntab, ESveg.obs, ESveg.site, TCS.replace)
 export(tv.biblio, tv.compRefl, tv.coverperc, tv.db, tv.home, tv.traits, tv.metainfo, tv.mono, tv.obs, tv.refl, tv.site, tv.veg, tv.write)
 
 ## Register? internal functions

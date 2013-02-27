@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 %\VignetteIndexEntry{An R package for vegetation data access, formatting and taxonomic enhancement}
-%\VignetteDepends{vegan, labdsv, akima, gWidgets, R.utils, googleVis}
+%\VignetteDepends{vegan, labdsv, akima, googleVis}
 %\VignetteKeyword{Vegetation}
 
 \usepackage[utf8]{inputenc}

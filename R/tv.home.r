@@ -1,6 +1,6 @@
 tv.home <- function() {
   if(is.null(getOption('tv_home'))) {
-    if(.Platform$OS.type == "unix") if(file.access(paste(Sys.getenv('HOME'),'/.wine/drive_c/Turbowin',sep=''))==0)
+    if(.Platform$OS.type == "unix") if(file.access(paste(Sys.getenv('HOME'),'/.wine/drive_c/Turbowin', sep=''))==0)
       tv_home <- file.path(Sys.getenv('HOME'),'.wine/drive_c/Turbowin') else {
         cat('\nNo Turbowin installation path found. \n')
 	tv_home <- file.path(path.package("vegdata"), "tvdata")

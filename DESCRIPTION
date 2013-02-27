@@ -1,5 +1,5 @@
 Package: vegdata
-Version: 0.6.1
+Version: 0.6.2
 Encoding: UTF-8
 Date: March 2013
 Title: Functions to access vegetation databases (Turboveg) and prepare
@@ -15,7 +15,7 @@ Description: Handling of vegetation data sets from Turboveg, VegetWeb
         standard list "GermanSL").
 License: GPL (>= 2)
 URL: http://www.botanik.uni-greifswald.de/GermanSL.html
-Packaged: 2013-04-03 16:48:23 UTC; jansen
+Packaged: 2013-04-14 21:59:52 UTC; jansen
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-04-03 22:54:25
+Date/Publication: 2013-04-15 08:15:02

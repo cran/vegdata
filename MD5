@@ -1,4 +1,4 @@
-b819f270814c2e34c8a4b142eaf00305 *DESCRIPTION
+531f208cde852226e771cf2b5165db6e *DESCRIPTION
 2ffcab50a63c13944e63628f142623f0 *NAMESPACE
 b8ca2f099e5e5a9eb18004c4d428d174 *R/ESveg.r
 13de9907442f4a6efff5f42bcc3074af *R/childs.r
@@ -6,12 +6,12 @@ b8ca2f099e5e5a9eb18004c4d428d174 *R/ESveg.r
 419ad978b6d23942b6a8901f9540a941 *R/internal.r
 51b10df956b999e549c5b2e9090112b8 *R/reShape.veg.r
 848f10ec15f08dd0ca37bdf32de6d1af *R/syntab.r
-85862d8b4d3a9a8e05846001b926378c *R/tax.r
+16847d9e29e61760bf497bfec7b486e9 *R/tax.r
 07764b15fa590b36c010f8186a079f77 *R/taxval.r
 521a3c722e6e3ea1096b7d5abfd6ee15 *R/tv.biblio.r
 9b6862eecb31ea972ae84273764cbd05 *R/tv.compRefl.r
-3585e5b67d7b0dfb8a8b484fb1c5c00d *R/tv.coverperc.r
-cfc905d8c16fe473eef5e99529f0e130 *R/tv.home.r
+43e0e4faa26eac4e04464f69abf75dd2 *R/tv.coverperc.r
+134b7f91555b430c17070d8d55732657 *R/tv.home.r
 988543c0844b7c1452b19e737684c046 *R/tv.metainfo.r
 9bef8516560cbf3d07506281bfd21f19 *R/tv.mono.r
 6a3379dcfcb64989249ac9cc3c6b6d57 *R/tv.obs.r
@@ -27,8 +27,8 @@ bc89d79416bb8ced441c5bcdf45d7a0e *data/lc.1.csv.gz
 fd46801e2d464ef1a98ec58a62232fa0 *data/lc.all.csv.gz
 4327fe7e7ec6baa726ceacf098554339 *inst/CITATION
 040ca2763d0102083a4df36f4680e5e9 *inst/ChangeLog
-07276da318e1b1821568dd35b3a91337 *inst/doc/vegdata.Rnw
-158f5c79f25e7f57333254c0b5502e34 *inst/doc/vegdata.pdf
+f5a0452dd50e5dfc63590864c1f434f5 *inst/doc/vegdata.Rnw
+5747ab4b51221cf3688d4ac9d7eabb98 *inst/doc/vegdata.pdf
 44e4e40f6eefd5d915726e20d050e057 *inst/tvdata/Data/ESVeg-2.4.xsd
 d94825d1670ae95be24d426c82535a16 *inst/tvdata/Data/elbaue.xml
 2056c74414fd1e3eae4042021a254e5d *inst/tvdata/Data/elbaue/TvAdmin.dbf
@@ -69,6 +69,6 @@ d17a9613c467bdb8c7d5de0fd339513c *man/vegdata-internal.Rd
 0370412981c2cd49cced9e69b78f3af3 *vignettes/SweaveC.sty
 deb80beca921a090d30f5717ef0e9c86 *vignettes/ecol_let.bst
 77d26b5ac5927539ef4045ad17ffec72 *vignettes/googleVis.jpg
-07276da318e1b1821568dd35b3a91337 *vignettes/vegdata.Rnw
+f5a0452dd50e5dfc63590864c1f434f5 *vignettes/vegdata.Rnw
 cdb497ba07a8037d5c7aebdffeb239c7 *vignettes/vegdata.bib
 9790969d18a8f6e38a62089097c0ec52 *vignettes/veronica.png

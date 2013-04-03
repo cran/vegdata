@@ -7,14 +7,14 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
     cat(' Number of clusters: ', ncl, '\n')
     cat('Cluster frequency', as.vector(table(clust)),'\n')
     if(is.null(levels(clust))) levels(clust) <- 1:length(table(clust))
-    sp.veg <- split(veg, clust)
+    sp.veg <- split(veg, clust, drop=FALSE)
     nb.rel.clust <- as.numeric(table(clust))
 
     if(type=='rel') {
     	tmp <- lapply(sp.veg, function(x) colSums(x > 0))
     	temp <- vector('list', length=ncl)
-	  for(i in 1:length(nb.rel.clust))
-	    temp[[i]] <- round(tmp[[i]] / nb.rel.clust[i] * 100, dec)
+	    for(i in 1:length(nb.rel.clust))
+	      temp[[i]] <- round(tmp[[i]] / nb.rel.clust[i] * 100, dec)
     }
     if(type=='mean.cover') {
       temp <- lapply(sp.veg, function(x) {x[x==0] <- NA; round(colMeans(x, na.rm=TRUE),dec)})
@@ -39,6 +39,7 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
 #      sig <- mu$sign[mu$sign$p.value <= alpha & !is.na(mu$sign$p.value) & mu$sign$stat >= minstat,]
     }
     if(ncl > 1) st <- st[apply(st, 1, function(x) max(x, na.rm=TRUE) > limit), ]
+# st$stat < alpha
  #   class(st) <- c('syntab','data.frame')
     
     if(fullnames) {

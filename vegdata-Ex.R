@@ -10,16 +10,19 @@ nameEx("ESveg")
 
 flush(stderr()); flush(stdout())
 
-### Name: ESveg.veg
+### Name: ESveg
 ### Title: Load vegetation data from ESveg formatted data files
-### Aliases: ESveg.veg ESveg.site
+### Aliases: ESveg.obs ESveg.site
 ### Keywords: misc,manip,survey
 
 ### ** Examples
 
-path <- system.file(package = "vegdata")
-veg <- ESveg.veg(file.path(path,'tvdata', 'Data', 'tvexport.xml'))
-names(veg)
+## Not run: 
+##D path <- system.file(package = "vegdata")
+##D obs <- ESveg.obs(file.path(path,'tvdata', 'Data', 'elbaue.xml'))
+##D veg <- tv.veg(obs=obs, refl='GermanSL 1.2', taxval=TRUE, convcode=FALSE, )
+##D dimnames(veg)
+## End(Not run)
 
 
 

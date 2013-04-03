@@ -6,6 +6,7 @@
 \alias{first.word}
 \alias{reShape.veg}
 \alias{TCS.replace}
+\alias{vegetweb}
 
 \title{Internal vegdata functions}
 

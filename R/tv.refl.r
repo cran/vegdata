@@ -16,12 +16,11 @@ tv.refl <- function(refl, db, tv_home) {
     stop('Database attribute file tvwin.set from database "', db, '" not available. Please specify name of taxonomic reference list!') 
   } else  
     if(!missing(refl)) {
-      rl <- list.dirs(path = file.path(tv_home, "Species"), full.names = TRUE, 
-                       recursive = FALSE)
-      rl <- sapply(rl, function(x) substring(x, nchar(tv_home) + 10), USE.NAMES = FALSE)
-      refl <- match.arg(refl, rl)
+      rli <- list.dirs(path = file.path(tv_home, "Species"), full.names = TRUE, recursive = FALSE)
+      rli <- sapply(rli, function(x) substring(x, nchar(tv_home) + 10), USE.NAMES = FALSE)
+      refl <- match.arg(refl, rli)
     } else refl <- 'GermanSL 1.2'
 #  if(!exists(refl)) refl <- fun(gsub(' ','',refl))
-  if(tolower(substr(refl, 1,8)) == 'germansl') refl <- paste('GermanSL', substring(refl,9,nchar(refl)), sep='')
+  if(tolower(substr(refl, 1,8)) == 'germansl') refl <- paste('GermanSL', substring(refl, 9, nchar(refl)), sep='')
   return(refl)
  }

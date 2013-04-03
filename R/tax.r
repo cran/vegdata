@@ -6,19 +6,26 @@ load.taxlist <- function(refl, reflist.type= 'Turboveg', verbose, ...) {
     reflist <- paste(refl, ifelse(verbose,'.verbose',''), sep='')
     if(is.null(store(reflist))) { # load.species(refl=refl, verbose = verbose)
       dbf <- if(verbose) 'tax.dbf' else 'species.dbf'
-      supportedReflists <- c('latest', 'GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2')
+      supportedReflists <- c('GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2', 'Czsk 0.1')
       supportedReflists <- c(supportedReflists, sub(' ', '', supportedReflists))
       supportedReflists <- c(supportedReflists, tolower(supportedReflists))
       reflist.path <- file.path(tv_home, 'Species', refl, dbf)
       
       if(file.access(reflist.path)) {
         if(refl %in% supportedReflists) {
-          cat('\nTaxonomic evaluation list (',dbf, ') of version', refl, 'not available.\n')
-          cat('I will try to download the reference now.\n\n')
-          version <- paste("version", substr(refl, 10, nchar(refl)), sep = "")
-          download.file(paste('http://geobot.botanik.uni-greifswald.de/download/GermanSL',version,'GermanSL.zip',sep='/'), file.path(tv_home, 'Species','GermanSL.zip'))
-          unzip(file.path(tv_home, 'Species/GermanSL.zip'), exdir=file.path(tv_home, 'Species'))
-        } else cat('\nTaxonomic evaluation list (',dbf, ') of ', refl, 'not available.\n')
+          cat('\nTaxonomic evaluation list (',dbf, ') of reflist version', refl, 'not available.\n')
+          cat('I will try to download the list now.\n\n')
+          if(grepl('GermanSL', refl)) {
+            version <- paste("version", substr(refl, 10, nchar(refl)), sep = "")
+            download.file(paste('http://geobot.botanik.uni-greifswald.de/download/GermanSL',version,'GermanSL.zip',sep='/'), file.path(tv_home, 'Species','TaxRefDownload.zip'))
+            unzip(file.path(tv_home, 'Species', 'TaxRefDownload.zip'), exdir=file.path(tv_home, 'Species'))
+          }
+          if(grepl('Czsk', refl)) {
+            version <- paste("version", substr(refl, 6, nchar(refl)), sep = "")
+            download.file(paste('http://geobot.botanik.uni-greifswald.de/download/CZSK',version, 'Czsk.zip',sep='/'), file.path(tv_home, 'Species','TaxRefDownload.zip'))
+            unzip(file.path(tv_home, 'Species', 'TaxRefDownload.zip'), exdir=file.path(tv_home, 'Species'))
+          }
+      } else cat('\nTaxonomic evaluation list (',dbf, ') of ', refl, 'not available.\n')
       }
       species <- read.dbf(file.path(tv_home, 'Species', refl, dbf))
       names(species) <- TCS.replace(names(species))
@@ -30,8 +37,7 @@ load.taxlist <- function(refl, reflist.type= 'Turboveg', verbose, ...) {
       if(refl %in% supportedReflists && verbose==FALSE) species <- species[,c('TaxonUsageID','LETTERCODE','TaxonName','VernacularName','SYNONYM', 'TaxonConceptID')] else {
         include <- !names(species) %in% c('SHORTNAME')
         species <- species[, include]
-      }
-      
+      }   
       store(reflist, species)
     } else  species <- store(reflist)       
   } else stop('Only reflisttype Turboveg implemented until now')
@@ -68,11 +74,14 @@ taxname.abbr <- function(x, enc="ISO-8859-1") {
     x <- sub('\ s[.]str[.]', ' s. str.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ s[.]\ str[.]', ' sensustricto', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ s[.]\ l[.]', ' sensulato', x, perl=TRUE, useBytes=TRUE)
+    x <- sub('\ s[.]lat[.]', ' sensulato', x, perl=TRUE, useBytes=TRUE)
+    x <- sub('\ s[.] lat[.]', ' sensulato', x, perl=TRUE, useBytes=TRUE)
     x <- gsub('\ s[.]\ ', ' subsp. ', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ sensustricto', ' s. str.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ sensulato', ' s. l.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ f[.]\ ', ' fo. ', x, perl=TRUE, useBytes=TRUE)
-#  Sys.setlocale(category='LC_CTYPE', locale=loc)
+    x <- sub('\ sp[.]', ' spec.', x, perl=TRUE, useBytes=TRUE)
+    #  Sys.setlocale(category='LC_CTYPE', locale=loc)
    return(x)  
 }
 
@@ -96,6 +105,11 @@ TCS.replace <- function(x) {
   x <- replace(x, x=='NAMNR', 'TaxonUsageID')
   x <- replace(x, x=='AGG_NAME', 'IsChildTaxonOf')
   x <- replace(x, x=='AGGNR', 'IsChildTaxonOfID')
+## ESveg
+  x <- replace(x, x=="taxonCode", 'TaxonUsageID')
+  x <- replace(x, x=="observationCode", "RELEVE_NR")
+  x <- replace(x, x=="stratumCode", "LAYER")
+  x <- replace(x, x=="coverPercent", "COVER_PERC")
   return(x)
 }
 
@@ -156,7 +170,7 @@ select.taxa <- function(x, species, strict, vernacular, ...) {
 
 ##### end of tax internal functions #####
 
-refl <- tv.refl(refl, tv_home=tv_home)
+if(missing(refl)) refl <- tv.refl(refl, tv_home=tv_home)
 if(!quiet) cat('Reference list used:', refl, '\n')	
 species <- load.taxlist(refl, reflist.type='Turboveg', verbose=verbose)
 
@@ -164,7 +178,6 @@ species <- load.taxlist(refl, reflist.type='Turboveg', verbose=verbose)
 # if(!is.null(concept)) species <- concept.FUN(species, concept)
 if(x[1] != 'all') species <- select.taxa(x, species, strict, vernacular, ...)
   if(!syn) species <- species[species$SYNONYM == FALSE,]
-
 return(species)
 }
 #  ls(pos='package:vegdata')
@@ -176,5 +189,4 @@ tax.veg <- function(veg, ...) {
   cat('Taxa in vegetation matrix:\n\n')
   return(taxa$TaxonName[match(names(veg), taxa$LETTERCODE)])
 }
-
 

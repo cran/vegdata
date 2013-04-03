@@ -1,5 +1,5 @@
-\name{ESveg.veg}
-\alias{ESveg.veg}
+\name{ESveg}
+\alias{ESveg.obs}
 \alias{ESveg.site}
 
 \title{Load vegetation data from ESveg formatted data files}
@@ -8,24 +8,26 @@
 Until now only very basic support, without any taxonomic emendation and layer combination.}
 
 \usage{
-ESveg.veg(db, refl, ...)
+ESveg.obs(db, ...)
 ESveg.site(db, ...)
 }
 
 \arguments{
-\item{db}{Name of your ESveg formatted file}
-\item{refl}{Taxonomic reference list. No yet implemented.}
-\item{...}{additional arguments for included functions}
+  \item{db}{Name and path to your ESveg formatted file}
+  \item{...}{additional arguments}
 }
 
 \value{
-Function returns an matrix object of class 'veg'
+  The function returns an matrix object of class 'veg'
 }
 
 \examples{
+\dontrun{
 path <- system.file(package = "vegdata")
-veg <- ESveg.veg(file.path(path,'tvdata', 'Data', 'tvexport.xml'))
-names(veg)
+obs <- ESveg.obs(file.path(path,'tvdata', 'Data', 'elbaue.xml'))
+veg <- tv.veg(obs=obs, refl='GermanSL 1.2', taxval=TRUE, convcode=FALSE, )
+dimnames(veg)
+}
 }
 
 \author{Florian Jansen

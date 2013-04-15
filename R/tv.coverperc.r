@@ -34,8 +34,10 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
       perc <- scala[seq(5,p,2)][1,]
       d.f <- data.frame(code=code[,1], perc = as.numeric(perc))
       if(!quiet) {
-        cat('\n Cover code used: ', as.character(tvscale[i, 2]), '\n')
-        write.table(t(d.f), col.names = FALSE, sep = "\t", quote = FALSE)
+        cat('\n Cover code used: ',i , as.character(tvscale[i, 2]), '\n')
+      #  write.table(t(d.f), col.names = FALSE, sep = "\t", quote = FALSE)
+      #  print(table(t(d.f), col.names = FALSE, sep = "\t", quote = FALSE))
+        print(as.table(t(d.f)), col.names = FALSE, sep = "\t", quote = FALSE)
       }
       obs[[i]]["COVER_PERC"] <- d.f$perc[match(obs[[i]][,"COVER_CODE"], d.f$code)]
   }

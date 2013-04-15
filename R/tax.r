@@ -89,6 +89,7 @@ TCS.replace <- function(x) {
 ## Turboveg  
   x <- replace(x, x=='ABBREVIAT', 'TaxonName')
   x <- replace(x, x=='taxonName', 'TaxonName')
+  x <- replace(x, x=="Species name", 'TaxonUsageID') # temporary shortcut for TV3
   x <- replace(x, x=='SPECIES_NR', 'TaxonUsageID')
   x <- replace(x, x=='VALID_NAME', 'TaxonConcept')
   x <- replace(x, x=='VALID_NR', 'TaxonConceptID')
@@ -108,7 +109,10 @@ TCS.replace <- function(x) {
 ## ESveg
   x <- replace(x, x=="taxonCode", 'TaxonUsageID')
   x <- replace(x, x=="observationCode", "RELEVE_NR")
+  x <- replace(x, x=="ObservationID", "RELEVE_NR")
   x <- replace(x, x=="stratumCode", "LAYER")
+  x <- replace(x, x=="Stratum", "LAYER")
+  x <- replace(x, x=="Percentage_mean", "COVER_PERC")
   x <- replace(x, x=="coverPercent", "COVER_PERC")
   return(x)
 }

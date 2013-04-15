@@ -97,7 +97,7 @@ options(tv_home="path_to_your_Turboveg_root_directory")
 @
 
 <<echo=FALSE>>=
-options(tv_home=file.path(.path.package("vegdata"), 'tvdata'))
+options(tv_home=system.file('tvdata', package='vegdata'))
 @
 
 

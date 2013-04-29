@@ -1,9 +1,3 @@
-# R
-# library(vegdata)
-# 
-# db <- 'taxatest'
-# obs <- tv.coverperc(db)
-# site <- tv.site(db)
 
 tv.write <- function(x, site, name, cover=c('code','perc'), overwrite = FALSE, ...) {
 warning('This function is highly experimental and will most probably not work as expected.')
@@ -26,7 +20,6 @@ warning('This function is highly experimental and will most probably not work as
 
   if(!overwrite) if(file.exists(file.path(options('tv_home'), 'Data', name))) stop('Database ', name, ' already exists.')
   site$DATE <- gsub('-','',site$DATE)
-#  site$RELEVE_NR <- as.integer(as.character(site$RELEVE_NR))
   dir.create(file.path(options('tv_home'), 'Data', name), showWarnings = TRUE)
   write.dbf(site, file.path(options('tv_home'), 'Data', name, 'tvhabita.dbf'))
   write.dbf(X, file.path(options('tv_home'), 'Data', name, 'tvabund.dbf'))
@@ -37,4 +30,3 @@ warning('This function is highly experimental and will most probably not work as
       'If Turboveg is not able to open the database, try to exclude the biggest text fields.\n')
 }
 
-# tv.write(obs, site, 'test2', overwrite=TRUE)

@@ -14,11 +14,14 @@ export(tv.biblio, tv.compRefl, tv.coverperc, tv.db, tv.home, tv.traits, tv.metai
 ## Export S3 methods
 S3method(tax, default)
 S3method(tax, veg)
+S3method(print, syntab)
 
 ## do NOT export the following internal functions
 ## export(first.word}
 
 ## Registration of S3 methods
 importFrom(foreign, read.dbf)
-# importFrom(utils, head, tail)
+# importFrom(permute, permControl)
+importFrom(indicspecies, multipatt)
+importFrom(XML, getNodeSet, xmlName, xmlParse, xmlRoot, xmlSApply, xmlToDataFrame, xmlValue)
 # import(vegan)

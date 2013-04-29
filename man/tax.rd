@@ -10,7 +10,8 @@
 \title{Query of taxonomic reference list including concept synonomy and taxonomic hierarchy.}
 
 \usage{
-\method{tax}{default}(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, vernacular = FALSE, quiet = FALSE, ...)
+\method{tax}{default}(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, 
+vernacular = FALSE, quiet = FALSE, ...)
 childs(x, refl, species, gen = 4, tree = FALSE, quiet = FALSE, syn = FALSE, ...)
 parents(x, refl, species, rank, quiet = FALSE, ...)
 syn(x, refl, species, quiet = FALSE, ...)

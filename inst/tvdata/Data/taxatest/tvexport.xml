@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <ESVeg xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ESVeg-2.4.xsd">
 <userdefined>
+<userDefinedName>LONGITUDE</userDefinedName>
+<userDefinedType>float</userDefinedType>
+<userDefinedTableName>observation</userDefinedTableName>
+</userdefined>
+<userdefined>
+<userDefinedName>LATITUDE</userDefinedName>
+<userDefinedType>float</userDefinedType>
+<userDefinedTableName>observation</userDefinedTableName>
+</userdefined>
+<userdefined>
 <userDefinedName>X_COORD</userDefinedName>
 <userDefinedType>float</userDefinedType>
 <userDefinedTableName>observation</userDefinedTableName>
@@ -52,8 +62,6 @@
 <plotCode>jansen000001</plotCode>
 <projectCode>jansen</projectCode>
 <plotNumber>1</plotNumber>
-<realLatitude>54.08517342</realLatitude>
-<realLongitude>13.40332031</realLongitude>
 <country>Germany</country>
 <area>16.00</area>
 </plot>
@@ -61,8 +69,6 @@
 <plotCode>jansen000002</plotCode>
 <projectCode>jansen</projectCode>
 <plotNumber>2</plotNumber>
-<realLatitude>54.09173420</realLatitude>
-<realLongitude>13.03320310</realLongitude>
 <country>Germany</country>
 <area>16.00</area>
 <slopeGradient>10</slopeGradient>
@@ -71,8 +77,6 @@
 <plotCode>jansen000003</plotCode>
 <projectCode>jansen</projectCode>
 <plotNumber>3</plotNumber>
-<realLatitude>54.08517342</realLatitude>
-<realLongitude>13.13203100</realLongitude>
 <country>Germany</country>
 <area>20.00</area>
 <slopeGradient>20</slopeGradient>
@@ -80,128 +84,121 @@
 <coverindex>
 <coverMethod>Braun/Blanquet (old)</coverMethod>
 <coverCode>r</coverCode>
-<upperLimit>1.00</upperLimit>
-<lowerLimit>1.00</lowerLimit>
-<coverPercent>1.00</coverPercent>
+<upperLimit>1.0</upperLimit>
+<lowerLimit>1.0</lowerLimit>
+<coverPercent>1.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (old)</coverMethod>
 <coverCode>+</coverCode>
-<upperLimit>2.00</upperLimit>
-<lowerLimit>2.00</lowerLimit>
-<coverPercent>2.00</coverPercent>
+<upperLimit>2.0</upperLimit>
+<lowerLimit>2.0</lowerLimit>
+<coverPercent>2.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (old)</coverMethod>
 <coverCode>1</coverCode>
-<upperLimit>3.00</upperLimit>
-<lowerLimit>3.00</lowerLimit>
-<coverPercent>3.00</coverPercent>
+<upperLimit>3.0</upperLimit>
+<lowerLimit>3.0</lowerLimit>
+<coverPercent>3.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (old)</coverMethod>
 <coverCode>2</coverCode>
-<upperLimit>13.00</upperLimit>
-<lowerLimit>13.00</lowerLimit>
-<coverPercent>13.00</coverPercent>
+<upperLimit>13.0</upperLimit>
+<lowerLimit>13.0</lowerLimit>
+<coverPercent>13.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (old)</coverMethod>
 <coverCode>3</coverCode>
-<upperLimit>38.00</upperLimit>
-<lowerLimit>38.00</lowerLimit>
-<coverPercent>38.00</coverPercent>
+<upperLimit>38.0</upperLimit>
+<lowerLimit>38.0</lowerLimit>
+<coverPercent>38.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (old)</coverMethod>
 <coverCode>4</coverCode>
-<upperLimit>68.00</upperLimit>
-<lowerLimit>68.00</lowerLimit>
-<coverPercent>68.00</coverPercent>
+<upperLimit>68.0</upperLimit>
+<lowerLimit>68.0</lowerLimit>
+<coverPercent>68.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (old)</coverMethod>
 <coverCode>5</coverCode>
-<upperLimit>88.00</upperLimit>
-<lowerLimit>88.00</lowerLimit>
-<coverPercent>88.00</coverPercent>
+<upperLimit>88.0</upperLimit>
+<lowerLimit>88.0</lowerLimit>
+<coverPercent>88.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (old)</coverMethod>
 <coverCode>x</coverCode>
-<upperLimit>1.00</upperLimit>
-<lowerLimit>1.00</lowerLimit>
-<coverPercent>1.00</coverPercent>
+<upperLimit>1.0</upperLimit>
+<lowerLimit>1.0</lowerLimit>
+<coverPercent>1.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (new)</coverMethod>
 <coverCode>r</coverCode>
-<upperLimit>1.00</upperLimit>
-<lowerLimit>1.00</lowerLimit>
-<coverPercent>1.00</coverPercent>
+<upperLimit>1.0</upperLimit>
+<lowerLimit>1.0</lowerLimit>
+<coverPercent>1.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (new)</coverMethod>
 <coverCode>+</coverCode>
-<upperLimit>2.00</upperLimit>
-<lowerLimit>2.00</lowerLimit>
-<coverPercent>2.00</coverPercent>
+<upperLimit>2.0</upperLimit>
+<lowerLimit>2.0</lowerLimit>
+<coverPercent>2.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (new)</coverMethod>
 <coverCode>1</coverCode>
-<upperLimit>3.00</upperLimit>
-<lowerLimit>3.00</lowerLimit>
-<coverPercent>3.00</coverPercent>
+<upperLimit>3.0</upperLimit>
+<lowerLimit>3.0</lowerLimit>
+<coverPercent>3.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (new)</coverMethod>
 <coverCode>2m</coverCode>
-<upperLimit>4.00</upperLimit>
-<lowerLimit>4.00</lowerLimit>
-<coverPercent>4.00</coverPercent>
+<upperLimit>4.0</upperLimit>
+<lowerLimit>4.0</lowerLimit>
+<coverPercent>4.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (new)</coverMethod>
 <coverCode>2a</coverCode>
-<upperLimit>8.00</upperLimit>
-<lowerLimit>8.00</lowerLimit>
-<coverPercent>8.00</coverPercent>
+<upperLimit>8.0</upperLimit>
+<lowerLimit>8.0</lowerLimit>
+<coverPercent>8.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (new)</coverMethod>
 <coverCode>2b</coverCode>
-<upperLimit>18.00</upperLimit>
-<lowerLimit>18.00</lowerLimit>
-<coverPercent>18.00</coverPercent>
+<upperLimit>18.0</upperLimit>
+<lowerLimit>18.0</lowerLimit>
+<coverPercent>18.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (new)</coverMethod>
 <coverCode>3</coverCode>
-<upperLimit>38.00</upperLimit>
-<lowerLimit>38.00</lowerLimit>
-<coverPercent>38.00</coverPercent>
+<upperLimit>38.0</upperLimit>
+<lowerLimit>38.0</lowerLimit>
+<coverPercent>38.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (new)</coverMethod>
 <coverCode>4</coverCode>
-<upperLimit>68.00</upperLimit>
-<lowerLimit>68.00</lowerLimit>
-<coverPercent>68.00</coverPercent>
+<upperLimit>68.0</upperLimit>
+<lowerLimit>68.0</lowerLimit>
+<coverPercent>68.0</coverPercent>
 </coverindex>
 <coverindex>
 <coverMethod>Braun/Blanquet (new)</coverMethod>
 <coverCode>5</coverCode>
-<upperLimit>88.00</upperLimit>
-<lowerLimit>88.00</lowerLimit>
-<coverPercent>88.00</coverPercent>
-</coverindex>
-<coverindex>
-<coverMethod>Braun/Blanquet (new)</coverMethod>
-<coverCode>0</coverCode>
-<upperLimit>0.00</upperLimit>
-<lowerLimit>0.00</lowerLimit>
-<coverPercent>0.00</coverPercent>
+<upperLimit>88.0</upperLimit>
+<lowerLimit>88.0</lowerLimit>
+<coverPercent>88.0</coverPercent>
 </coverindex>
 <reference>
 <referenceCode>Germansl 1_2</referenceCode>
@@ -211,40 +208,36 @@
 <projectCode>jansen</projectCode>
 <obsEndDate>1901-01-01</obsEndDate>
 <coverMethod>Braun/Blanquet (old)</coverMethod>
-<def01Name>X_COORD</def01Name>
-<def01Value>5400000.000</def01Value>
-<def02Name>Y_COORD</def02Name>
-<def02Value>6000000.000</def02Value>
-<def03Name>L_MEA_B</def03Name>
-<def03Value>6.89</def03Value>
-<def04Name>T_MEA_B</def04Name>
-<def04Value>2.33</def04Value>
-<def05Name>K_MEA_B</def05Name>
-<def05Value>3.40</def05Value>
+<def05Name>L_MEA_B</def05Name>
+<def05Value>6.20</def05Value>
+<def06Name>T_MEA_B</def06Name>
+<def06Value>2.10</def06Value>
+<def07Name>K_MEA_B</def07Name>
+<def07Value>3.40</def07Value>
 </observation>
 <observation><observationCode>jansen00000220080101</observationCode>
 <plotCode>jansen000002</plotCode>
 <projectCode>jansen</projectCode>
 <obsEndDate>2008-01-01</obsEndDate>
 <coverMethod>Braun/Blanquet (new)</coverMethod>
-<def03Name>L_MEA_B</def03Name>
-<def03Value>7.00</def03Value>
-<def04Name>T_MEA_B</def04Name>
-<def04Value>1.80</def04Value>
-<def05Name>K_MEA_B</def05Name>
-<def05Value>3.40</def05Value>
+<def05Name>L_MEA_B</def05Name>
+<def05Value>5.60</def05Value>
+<def06Name>T_MEA_B</def06Name>
+<def06Value>1.80</def06Value>
+<def07Name>K_MEA_B</def07Name>
+<def07Value>3.40</def07Value>
 </observation>
 <observation><observationCode>jansen00000320080101</observationCode>
 <plotCode>jansen000003</plotCode>
 <projectCode>jansen</projectCode>
 <obsEndDate>2008-01-01</obsEndDate>
 <coverMethod>Braun/Blanquet (old)</coverMethod>
-<def03Name>L_MEA_B</def03Name>
-<def03Value>8.33</def03Value>
-<def04Name>T_MEA_B</def04Name>
-<def04Value>1.50</def04Value>
-<def05Name>K_MEA_B</def05Name>
-<def05Value>1.40</def05Value>
+<def05Name>L_MEA_B</def05Name>
+<def05Value>5.00</def05Value>
+<def06Name>T_MEA_B</def06Name>
+<def06Value>1.20</def06Value>
+<def07Name>K_MEA_B</def07Name>
+<def07Value>1.40</def07Value>
 </observation>
 <taxon>
 <taxonCode>15</taxonCode>

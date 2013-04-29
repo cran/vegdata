@@ -12,7 +12,10 @@ Necessary prerequisite is information about taxonomic status (synonomy) and hier
 }
 
 \usage{
-taxval(obs, refl, db, concept=NULL, syn = c('adapt','conflict','preserve'), ag = c('conflict', 'adapt', 'preserve'), rank, mono = c('higher','lower', 'preserve'), monolist = "monotypic-D", uncertain = NULL, maxtaxlevel = 'ROOT', check = TRUE, quiet = FALSE,  ...)
+taxval(obs, refl, db, concept=NULL, syn = c('adapt','conflict','preserve'), 
+ag = c('conflict', 'adapt', 'preserve'), 
+rank, mono = c('species', 'higher', 'lower', 'preserve'), monolist = "monotypic-D", 
+uncertain = NULL, maxtaxlevel = 'ROOT', check = TRUE, quiet = FALSE,  ...)
 comb.species(x, sel, newname, refl)
 }
 

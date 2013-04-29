@@ -6,7 +6,8 @@
 
 \usage{
 tv.traits(db, trait.db = 'ecodbase.dbf', refl, quiet = FALSE, ...)
-meanTraits(trait, veg, trait.db = 'ecodbase.dbf', join = 'LETTERCODE', refl, zero.is.NA = TRUE, ...)
+meanTraits(trait, veg, refl, trait.db = 'ecodbase.dbf', join = 'LETTERCODE', 
+zero.is.NA = TRUE, ...)
 }
 
 \arguments{

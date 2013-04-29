@@ -1,16 +1,24 @@
-version 0.5.9 Okt 2012
+version 0.6.3 Aug-2013
+  * improved function print.syntab
+  * improved taxval concerning monotypic taxa
+  * improved locale support
+
+version 0.6.2 08-Feb-2013
+  * Column names of taxonomic dataframes and output from tax() are now changed to Taxon Concept Scheme (TCS) standard, no matter from what source
+
+version 0.5.9 17-Nov-2012
   * a first prototype to use ESVeg formatted XML vegetation data
   * function meanTraits calculates mean trait values e.g. (weighted) mean Ellenberg indicator values
   * minor bug in taxval
 
-version 0.5.7 March 2012
+version 0.5.7 Okt 2012
   * function childs now also with synonyms
 
-version 0.5.6 March 2012
+version 0.5.6 22-Mar-2012
   * bug in taxval concerning the coarsening of taxonomic levels
   * slightly improved encoding of vernacular names
 
-version 0.5.4 Jan 2012
+version 0.5.4 16-Jan-2012
   * columns stat and p.value added in syntab if using multipatt
   * improved function parents
 
@@ -43,7 +51,7 @@ version 0.3 May 2011
   * directory permission of extdata changed
   * Access to the German National Vegetation database "VegetWeb" (http://www.floraweb.de/vegetation) through new functions vw.obs, vw.site and vw.veg (alpha stage!)
   * New tv.write function to write Turboveg databases
-  * the taxonomic reference list GermanSL has been outsourced, to be downloaded from http://geobot.botanik.uni-greifswald.de/download, if needed
+  * the taxonomic reference list GermanSL has been outsourced, to be downloaded from http://www.botanik.uni-greifswald.de/germansl.html, if needed
   * child and parent relationships through new functions child() and parents()
   * aggregation of taxa in taxval is now possible through all taxonomic ranks, see vignette
 

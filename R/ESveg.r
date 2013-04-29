@@ -4,20 +4,17 @@
 
 ESveg.obs <- function (db, ...) {
   enc <- "ISO-8859-1"
-  require(XML)
 #  data(lc.1)
   doc <- xmlParse(db)
  # names(xmlChildren(doc))
  # table(names(xmlChildren(xmlRoot(doc))))
   taxrefnode <- getNodeSet(doc, "//reference")
-  taxref <- xmlSApply(taxrefnode[[1]], xmlValue)['referenceCode']
+  taxref <- xmlValue(taxrefnode[[1]])
   userdefined <- xmlToDataFrame(getNodeSet(doc, "//userdefined"))
   ind <- userdefined$userDefinedTableName == "cover"
   if(any(ind)) cat('User defined plot-species attributes not used:', as.character(userdefined$userDefinedName[ind]), '\n') 
   taxa <- xmlToDataFrame(getNodeSet(doc, "//taxon"))
-#  head(taxa)
   obs <- xmlToDataFrame(getNodeSet(doc, "//cover"), stringsAsFactors=FALSE)
-#  str(obs)
   obs$stratumCode <- as.character(obs$stratumCode)
   obs$stratumCode[obs$stratumCode == ''] <- 0
   coverindex <- xmlToDataFrame(getNodeSet(doc, "//coverindex"))
@@ -44,23 +41,15 @@ ESveg.obs <- function (db, ...) {
   return(obs)  
 }
 
-# require(vegdata)
-# obs2 <- tv.obs('taxatest')
-# obs <- ESveg.obs(db)
-# head(obs)
-# veg <- tv.veg(obs=obs, refl='GermanSL 1.2', taxval=FALSE, convcode=FALSE, )
-
 
 
 
 
 ESveg.site <- function (db, ...) {
   # path <- system.file(package = "vegdata")
-  # path <- '~/workspace/vegdata/inst'
   # db <- file.path(path,'tvdata', 'Data', 'tvexport.xml')
   # db <- file.path(path,'tvdata', 'Data', 'elbaue.xml')
   # site <- ESveg.site(db)
-  require(XML)
   doc <- xmlParse(db)
   
   r <- xmlRoot(doc)
@@ -78,8 +67,7 @@ ESveg.site <- function (db, ...) {
     samplenames <- unique(Samples[, 1:ncol(Samples) %in% grep('Name', names(Samples))])
     plotAttr <- plotAttr[which(plotAttr %in% unlist(samplenames))]
     samples <- Samples[, !1:ncol(Samples) %in% grep('Name', names(Samples))]
-    names(samples)[(ncol(samples)-(length(plotAttr)-1)) : ncol(samples)] <- plotAttr
-    
+    names(samples)[(ncol(samples)-(length(plotAttr)-1)) : ncol(samples)] <- plotAttr   
     #  head(samples) # "observation" should better be called "samples"
   }
   
@@ -88,8 +76,6 @@ ESveg.site <- function (db, ...) {
   if(nrow(plot) != nrow(samples)) cat('Multiple observations of plots. This function handles observations. Site conditions will be recycled.')
   site <- cbind(plot[match(as.character(samples$plotCode), plot$plotCode),], samples)
   
-  # for(i in names(site)[lapply(site, class) == 'factor']) 
-  #  site[,i] <- base:::iconv(site[,i], enc, '')
   ### Time
   if(any(site$obsEndDate == '1901-01-01')) warning(sum(site$obsEndDate == '1901-01-01'), ' releves without date.')
     #  site$obsEndDate <- gsub('/','',site$obsEndDate)
@@ -125,7 +111,6 @@ ESveg.site <- function (db, ...) {
   site <- site[order(site$plotNumber),]
   return(site)
 }
-
 
 
 ### VegX

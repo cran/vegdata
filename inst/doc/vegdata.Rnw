@@ -2,7 +2,7 @@
 %\VignetteIndexEntry{An R package for vegetation data access, formatting and taxonomic enhancement}
 %\VignetteDepends{vegan, labdsv, akima, googleVis}
 %\VignetteKeyword{Vegetation}
-
+%\VignetteEngine{knitr::knitr}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[sort&compress]{natbib}
@@ -22,13 +22,12 @@ version \Sexpr{packageDescription("vegdata", field="Version")}}
 % \definecolor{Sinput}{rgb}{0,0,0.56}
 % \definecolor{Scode}{rgb}{0,0,0.56}
 % \definecolor{Soutput}{rgb}{0.56,0,0}
-% \usepackage{Sweave}
-\usepackage{SweaveC}
 
 \begin{document}
+
 %\setkeys{Gin}{width=\textwidth}
 <<prep, echo=FALSE>>=
-options(width=100,digits=2)
+options(width=90,digits=2)
 @
 %Sys.setlocale("LC_TIME", "de_DE.iso8859")
 
@@ -53,7 +52,7 @@ vignette('vegdata')
   \subsection{Database access}
     At the moment vegdata provides direct access to two different vegetation database formats:
 \begin{description}
- \item[Turboveg] is a desktop program, written in VisualBasic. It provides basic functions to enter, import, maintain and export vegetation data. From the 2 000 000 vegetation plot registered in \url{http://www.GIVD.info} approximately 1.5 million are stored in Turboveg databases format.
+ \item[Turboveg] is a desktop program, written in VisualBasic. It provides basic functions to enter, import, maintain and export vegetation data. From the 2 000 000 vegetation plots registered in \url{http://www.GIVD.info} approximately 1.5 million are stored in Turboveg databases format.
 \item[VegetWeb] is the German national vegetation database. VegetWeb is developed as a MySQL-Server database at the Federal Agency for Nature Conservation (BfN) and can used via a PHP framework at \url{http://www.floraweb.de/vegetation/vegetweb/RechercheView.php}.
  \end{description}
 
@@ -82,7 +81,7 @@ vignette('vegdata')
 The best way to introduce the functionalities of the package is a session with example code.
 
 We load the library as usual into our R environment.
-<<load, results=hide>>=
+<<load, results='hide'>>=
 library(vegdata)
 @
 
@@ -119,7 +118,7 @@ tax('Achillea millefolium')
 @
 
 "GermanSL 1.2" is not included in vegdata to keep the R package small. Instead the reference list will be automatically downloaded into the tv\_home directory (see \texttt{tv.home()}), if it is not installed but needed. If you want to use a different list, specify \texttt{refl=<Name of your list>} according to the directory name in the Turboveg directory \emph{Species}.
-Function \texttt{tax} will use the given character string, or 7 letter abbreviation or TaxonUsageID (called SPECIES\_NR in Turboveg) to look for all (partially) matching species names within the reference list
+Function \texttt{tax} will use the given character string, or 7 letter abbreviation or TaxonUsageID (called SPECIES\_NR in Turboveg) to look for all (partially) matching species names within the reference list.
 <<>>=
 tax('Achillea millefolium', strict=TRUE, verbose=TRUE) 
 @
@@ -265,7 +264,7 @@ Completely independent from the questions of correct taxonomic naming of a speci
 
 If you want only taxa of e.g. level "species" in your analyses but no other taxonomic level, use \texttt{taxval(obs, ag='adapt', rank='SPE')}. All hierarchical levels below the species level (including the above specified monotypic subspecies) are set to species level in this case.
 
-<<coarsen, eval=TRUE, results=hide>>=
+<<coarsen, eval=TRUE, results='hide'>>=
 tmp <- taxval(obs.tax, refl='GermanSL 1.2', ag='adapt', rank='FAM')
 tmp$oldTaxon <- tax(obs.tax$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
 tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
@@ -333,7 +332,7 @@ comb <- list(data.frame(SEASON=0:4, COMB=c(0,'Spring','Summer','Autumn','Winter'
 names(tv.veg(db, tax=FALSE, pseudo=comb, quiet=TRUE))
 @
 
-<<layer, results=hide>>=
+<<layer, results='hide'>>=
 data(lc.1)
 veg <- tv.veg(db, lc = "sum", pseudo = list(lc.1, 'LAYER'), dec = 1, quiet=TRUE)
 @
@@ -351,7 +350,8 @@ obs.tax$TaxonUsageID[obs.tax$TaxonUsageID == 27] <- 31
 will replace all occurrences of \emph{Achillea millefolium agg.} with \emph{Achillea millefolium} which might be adequate for your survey and will prevent a too coarse taxon grouping. For a longer list of replacements you can use a dataframe.
 <<replace>>=
 taxon.repl <- data.frame(old=c(27), new=c(31))
-obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID, match(taxon.repl$old, obs.tax$TaxonUsageID), taxon.repl$new)
+obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID, 
+    match(taxon.repl$old, obs.tax$TaxonUsageID), taxon.repl$new)
 @
 
 The second possibility is to use function \texttt{comb.species} on vegetation matrices.
@@ -411,7 +411,7 @@ tv.compRefl('taxref1', 'taxref2')
 
 \texttt{syntab} produces a relative or absolute frequency table of a classified vegetation table with the possibility to filter according to threshold values. To exemplify the function we use the second dataset implemented in the package. It is the demonstration dataset from \cite{Leyer2007}, a selection of grassland relev\'{e}s from the floodplains of the river Elbe.
 
-<<elbaue, results=hide>>=
+<<elbaue, results='hide'>>=
 elbaue <- tv.veg('elbaue')
 elbaue.env <- tv.site('elbaue')
 @
@@ -426,10 +426,15 @@ levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
 @
 
 We can e.g. look at the relative frequency of all species with more than 40\% at least in one column, according to the height of the groundwater table (low or high) and the amplitude of the groundwater table fluctuations (high or low deviations from the mean).
-Additionally we can use the affiliation of species to abiotic clusters with the help of package \texttt{indicspecies}, which calculates species indicator values for one or several cluster \citep{DeCaceres2010} to order the syntaxonical table. 
+Additionally we can use the affiliation of species to abiotic clusters with the help of package \texttt{indicspecies}, which calculates species indicator values for one or several cluster \citep{DeCaceres2010} to order the syntaxonical table. Together with Ellenberg indicator values with will get a comprehensive view into our data.
 
 <<syntab.mupa>>=
-syntab(elbaue, clust, mupa=TRUE, fullnames=TRUE)
+require(indicspecies)
+traits <- tv.traits()
+trait <- data.frame(EIV_F = traits$OEK_F, EIV_N = traits$OEK_N)
+rownames(trait) <- traits$ABBREVIAT
+st <- syntab(elbaue, clust, mupa=TRUE, fullnames=TRUE)
+print(st, limit=30, trait=trait)
 @
 
 
@@ -465,12 +470,19 @@ T302.site$lat <- coordinates(coord)[,2]
 To give some information in the interactive map, we will Provide Hyperlink Tips:
 <<eval=FALSE>>=
 T302.site$loc <- paste(T302.site$LATITUDE, T302.site$LONGITUDE, sep=':')
-T302.site$tip <- paste(paste('Releve_NR:', T302.site$plotCode), paste('Table:', T302.site$referenceTable), paste('Nr. in table:', T302.site$referencePlot), paste('Date:', T302.site$obsEndDate), paste('Landuse:', T302.site$NUTZUNG), paste('Author:', T302.site$ERHEBER), paste('Locality:', T302.site$LOKALIT__T), paste('Longitude:', T302.site$LONGITUDE), paste('Latitude:', T302.site$LATITUDE), paste('geogr. Uncertaintity:', T302.site$GENAUIGKEI), sep='<BR>')
+T302.site$tip <- paste(paste('Releve_NR:', T302.site$plotCode), paste('Table:', 
+  T302.site$referenceTable), paste('Nr. in table:', T302.site$referencePlot), 
+  paste('Date:', T302.site$obsEndDate), paste('Landuse:', T302.site$NUTZUNG), 
+  paste('Author:', T302.site$ERHEBER), paste('Locality:', T302.site$LOKALIT__T), 
+  paste('Longitude:', T302.site$LONGITUDE), paste('Latitude:', T302.site$LATITUDE), 
+  paste('geogr. Uncertaintity:', T302.site$GENAUIGKEI), sep='<BR>')
 @
 and the produced map will open in your web browser.
 
-<<eval=FALSE, fig=FALSE>>=
-places <- gvisMap(T302.site[,c('loc','tip')], 'loc', 'tip', options=list(showTip=TRUE, showLine=FALSE, enableScrollWheel=TRUE, mapType='hybrid', useMapTypeControl=TRUE, width=1000, height=800))
+<<eval=FALSE, fig.keep='none'>>=
+places <- gvisMap(T302.site[,c('loc','tip')], 'loc', 'tip', options=list(showTip=TRUE, 
+  showLine=FALSE, enableScrollWheel=TRUE, mapType='hybrid', useMapTypeControl=TRUE, 
+  width=1000, height=800))
 plot(places)
 @
 \begin{figure}
@@ -487,10 +499,11 @@ We can do, for instance, a
 ``Nonmetric Multidimensional Scaling with Stable Solution from Random Starts Axis Scaling and Species Scores''
 which is a wrapper for Kruskal's Non-metric Multidimensional Scaling \citep{Cox19942001} from Jari Oksanen \citep{Oksanen2008}.
 
-<<nmds, quiet=TRUE, results=hide, eval=TRUE>>=
+<<nmds, quiet=TRUE, results='hide', eval=TRUE>>=
 ## Data analyses
 library(vegan)
-veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE, noshare = 1, expand = TRUE, trace = 2)
+veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE, 
+     noshare = 1, expand = TRUE, trace = 2)
 mT.F <- meanTraits('OEK_F', elbaue)
 mT.N <- meanTraits('OEK_N', elbaue)
 env <- envfit(veg.nmds, data.frame(mT.F,mT.N))
@@ -498,7 +511,7 @@ env <- envfit(veg.nmds, data.frame(mT.F,mT.N))
 
 To show the result in comparison with environmental measurements in a nice graphic we do some plotting magic.
 
-<<nmdsplotfun, quiet=TRUE, results=hide>>=
+<<nmdsplotfun, quiet=TRUE, results='hide'>>=
 library(labdsv)
 library(akima)
 color = function(x)rev(topo.colors(x))
@@ -522,7 +535,7 @@ nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', env = N
 
 \begin{figure}
 \begin{center}
-<<nmdsplot, fig=TRUE, quiet=TRUE, results=hide, eval=TRUE>>=
+<<nmdsplot, quiet=TRUE, results='hide', eval=TRUE>>=
 print(nmds.plot(veg.nmds, elbaue.env, disp='species', 
                 var1="MGL", var2="SDGL", env=env, 
                 plottitle = 'NMDS of Elbaue floodplain vegetation'))
@@ -533,8 +546,6 @@ print(nmds.plot(veg.nmds, elbaue.env, disp='species',
 
 The first axis of our NMDS plot show the influence of mean groundwater level on the patterns of the dataset. \emph{Glyceria maxima} is marking the wet side of the gradient, whereas \emph{Cnidium dubium} \emph{Agrostis capillaris} or \emph{Galium verum agg,} occur only at low mean groundwater level. The second axis can be assigned to the fluctuation of water levels measured as standard deviation of mean groundwater level. Species indicating high water fluctuation are \emph{Agrostis stolonifera} or \emph{Alopecurus geniculatus} whereas \emph{Carex vesicaria} occurs only at more balanced situations.
 
-
-%\bibliographystyle{D:/Institut/Literatur/Bibref/ecol_let} \bibliography{D:/Institut/Literatur/bioind}
 \bibliographystyle{ecol_let}
 \bibliography{vegdata}
 

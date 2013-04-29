@@ -32,8 +32,10 @@ Data frame \code{elbaue.env} contains the following variables:
 
 
 \examples{
-elbaue <- tv.veg('elbaue')
-elbaue.env <- tv.site('elbaue')
+\dontrun{
+  elbaue <- tv.veg('elbaue')
+  elbaue.env <- tv.site('elbaue')
+}
 }
 
 \keyword{datasets}

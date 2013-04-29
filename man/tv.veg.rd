@@ -8,7 +8,9 @@
 It is a wrapper for \code{tv.obs}, \code{taxval}, \code{tv.coverperc}.}
 
 \usage{
-tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max", "sum", "first"), pseudo, values='COVER_PERC', spcnames=c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spcnr,  RelScale, ...)
+tv.veg(db, tv_home, taxval=TRUE,convcode=TRUE,lc = c("layer","mean","max","sum","first"), 
+pseudo, values='COVER_PERC', spcnames=c('short','long','numbers'), dec = 0, 
+cover.transform = c('no', 'pa', 'sqrt'), obs, refl, RelScale, ...)
 }
 
 \arguments{
@@ -24,7 +26,6 @@ tv.veg(db, tv_home, taxval = TRUE, convcode=TRUE, lc = c("layer", "mean", "max",
 \item{cover.transform}{If you want to transform the abundancce values within your samples you can choose 'pa' for presence-absnece or 'squareroot' for the \code{dec} rounded square root.}
 \item{obs}{Observations, optional}
 \item{refl}{Taxonomic reference list, optional}
-\item{spcnr}{If you want to pick only a subset of species numbers.}
 \item{RelScale}{Vector with Cover Scale code per Releve.}
 \item{...}{additional arguments for included functions}
 }
@@ -44,7 +45,8 @@ Function returns an object of class matrix with (combined) cover values.
 }
 
 \examples{
-\dontrun{vignette("vegdata")
+\dontrun{
+vignette("vegdata")
 # If you have Turboveg installed on your computer try for a beginning 
 # tv.veg('databasename', tax=FALSE).
 args(tv.veg)
@@ -52,7 +54,8 @@ help('taxval')
 
 veg <- tv.veg('taxatest')
 names(veg)
-tv.veg('taxatest', uncertain=list('DET_CERT', data.frame(0:2,c('pres','agg','agg'))), pseudo=list(lc.0,'LAYER'), genus = 'delete')
+tv.veg('taxatest', uncertain=list('DET_CERT', data.frame(0:2,c('pres','agg','agg'))), 
+pseudo=list(lc.0,'LAYER'), genus = 'delete')
 }
 }
 

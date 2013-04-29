@@ -3,11 +3,11 @@ concept=NULL,
 syn = c('adapt','conflict','preserve'), 
 ag = c('conflict', 'adapt', 'preserve'), 
 rank, 
-mono = c('higher','lower','preserve'), 
+mono = c('species','higher','lower','preserve'), 
 monolist = "monotypic-D", 
 uncertain = NULL, 
 maxtaxlevel = 'ROOT', 
-check = TRUE,
+check = TRUE, 
 quiet = FALSE, 
 ...)
 {
@@ -67,32 +67,32 @@ if(syn=='adapt') {
 if(syn=='preserve') cat('\nSynonyms preserved! \n')
   
 ## Monotypic taxa
-if (mono %in% c("lower", "higher")) {
-     obsTaxa <- unique(obs$TaxonUsageID)
+if (mono %in% c("species", "lower", "higher")) {
+     obsTaxa <- sort(unique(obs$TaxonUsageID))
     if (file.access(file.path(tv_home, 'Species', refl, paste(monolist, "dbf", sep = ".")))) { 
         warning("You have chosen to care about monotypic taxa but the specified list of monotypic taxa is not available!") 
 	} else {
       Mono <- read.dbf(file.path(tv_home, 'Species', refl, paste(monolist, "dbf", sep = ".")))
-      names(Mono) <-TCS.replace(names(Mono))
       repeat{
         if (mono == "lower") {
 	    tmp <- Mono$MEMBER_NR[match(obs$TaxonUsageID, Mono$AGG_NR)]
 	  }
 #	if (mono == "all") 	tmp <- Mono$AGG_NR[match(obs$TaxonUsageID, Mono$MEMBER_NR)]
-        if (mono == "higher") {
+        if (mono %in% c("higher", "species")) {
 	    tmp <- Mono$AGG_NR[match(obs$TaxonUsageID, Mono$MEMBER_NR)]
-	    tmp[!Mono$MEMB_taxonRank[match(tmp, Mono$AGG_NR)] %in% taxlevels[taxlevels < 'SPE']] <- NA # Universeller schreiben
+	    if(mono == 'species') tmp[Mono$MEMB_taxon[match(tmp, Mono$AGG_NR)] %in% taxlevels[taxlevels <= 'SPE']] <- NA
 	    }
        if(sum(tmp > 0, na.rm = TRUE) == 0) {break}	# cat('\nNo (more) monotypic taxa found.\n'); 
-       cat(paste(' ',nrow(Mono[Mono$AGG_NR %in% obsTaxa, ]), "monotypic taxa found in dataset, set to", mono, "rank.",'\n'))
+       cat(paste(' ', nrow(Mono[Mono$AGG_NR %in% obsTaxa, ]), "monotypic taxa found in dataset, set to", mono, "rank.",'\n'))
        if(!quiet) print(Mono[Mono$AGG_NR %in% obsTaxa, ], row.names = FALSE)
-        obs$TaxonUsageID <- replace(obs$TaxonUsageID, which(tmp > 0), tmp[!is.na(tmp)])
+        obs$TaxonUsageID <- 
+          replace(obs$TaxonUsageID, which(tmp > 0), tmp[!is.na(tmp)])
         obsTaxa <- unique(obs$TaxonUsageID)
       }
   } } else cat('Monotypic taxa preserved!\n')
 
 ## Maximum taxonomic level
-obsTaxa <- unique(obs$TaxonUsageID)
+obsTaxa <- sort(unique(obs$TaxonUsageID))
 if(maxtaxlevel %in% taxlevels) {
   toohigh <- obsTaxa[species$taxonRank[match(obsTaxa, species$TaxonUsageID)] %in% taxlevels[taxlevels > maxtaxlevel]]
   if(length(toohigh) > 0) {

@@ -1,4 +1,7 @@
-tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer","mean","max","sum","first"), pseudo, values = "COVER_PERC", spcnames = c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, refl, spcnr, RelScale, ...) 
+tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, 
+  lc = c("layer","mean","max","sum","first"), pseudo, values = "COVER_PERC", 
+  spcnames = c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), 
+  obs, refl, RelScale, ...) 
 {
 ## Checks
     lc <- match.arg(lc)
@@ -8,10 +11,6 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
     if(missing(obs)) obs <- tv.obs(db, tv_home)
 #     if(suppressWarnings(any(obs < -1e+05, na.rm = TRUE))) 
 #       cat("\n WARNING! Values less than -100,000. \n WARNING! tvabund.dbf may be corrupt. \n WARNING! Please correct by reexporting e.g. with OpenOffice.")
-    if(!missing(spcnr)) {
-      cat('Selecting species numbers ... \n')
-      obs <- obs[obs$TaxonUsageID %in% spcnr,]
-      }
     data(lc.1, envir = environment())
     if(missing(pseudo)) pseudo <- list(lc.1,'LAYER')
 ## Taxa
@@ -65,10 +64,12 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, lc = c("layer",
 	st <- unlist(strsplit(colnames(results), ".", fixed = TRUE))
 	colspc <- st[seq(1, length(st), 2)]
 	species <- tax(as.numeric(colspc), verbose=FALSE, refl = refl, tv_home=tv_home)
-	ll <- st[seq(2, length(st), 2)]
+
 	if(spcnames=='short') coln <- as.character(species$LETTERCODE[match(as.numeric(colspc), species$TaxonUsageID)])
 	if(spcnames=='long') coln <- gsub(' ','_', species$TaxonName[match(as.numeric(colspc), species$TaxonUsageID)]) 
-	cn <- replace(coln, which(ll != 0), paste(coln, ll, sep = ".")[ll != 0])
+
+  ll <- st[seq(2, length(st), 2)]
+  cn <- replace(coln, which(ll != 0), paste(coln, ll, sep = ".")[ll != 0])
 	colnames(results) <- cn
 	}
    }

@@ -35,7 +35,7 @@ tv.traits <- function (db, trait.db = 'ecodbase.dbf', refl, quiet = FALSE, ...) 
 }
 
 
-meanTraits <- function(trait, veg, trait.db = 'ecodbase.dbf', join = 'LETTERCODE', refl, zero.is.NA = TRUE, ...) {
+meanTraits <- function(trait, veg, refl, trait.db = 'ecodbase.dbf', join = 'LETTERCODE', zero.is.NA = TRUE, ...) {
   cat('Maximum performance value:', max(veg, na.rm=TRUE),'\n')
   if(missing(refl)) refl <- attr(veg, 'taxreflist')
   if(is.null(refl)) refl <- tv.refl()

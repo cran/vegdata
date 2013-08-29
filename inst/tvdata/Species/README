@@ -1,7 +1,7 @@
 Taxonomic reference lists are not included in vegdata to keep the package small. 
 For taxonomic harmonization a Turboveg list with additional column ParentID must be available in the search path.
 
-The reference list "GermanSL" will be automatically downloaded 
+The latest version of reference list "GermanSL" will be automatically downloaded 
 from http://geobot.botanik.uni-greifswald.de/reflist
 into the tv_home directory, if needed.
 In the future additional lists might be available.

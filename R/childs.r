@@ -129,10 +129,11 @@ parents <- function (x, refl = 'GermanSL 1.2', species, rank, quiet = FALSE, ...
   return(p)
 }
 
+
 # Synonymy swarm of a taxon
 syn <- function (x, refl = 'GermanSL 1.2', species, quiet=FALSE, ...) {
   if(missing(species)) 
-    species <- tax('all', verbose = TRUE, refl = refl, syn = TRUE, strict = TRUE, quiet = quiet, ...)
+    species <- tax('all', verbose = TRUE, refl = refl, syn = TRUE, strict = TRUE, quiet = TRUE, ...)
   x <- tax(x, refl=refl, strict=TRUE, quiet = quiet)$TaxonUsageID
   if(length(x)>1) {
     warning('More than one match, using only first.')

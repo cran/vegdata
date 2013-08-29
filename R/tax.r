@@ -10,7 +10,7 @@ load.taxlist <- function(refl, reflist.type= 'Turboveg', verbose, ...) {
       supportedReflists <- c(supportedReflists, sub(' ', '', supportedReflists))
       supportedReflists <- c(supportedReflists, tolower(supportedReflists))
       reflist.path <- file.path(tv_home, 'Species', refl, dbf)
-      
+
       if(file.access(reflist.path)) {
         if(refl %in% supportedReflists) {
           cat('\nTaxonomic evaluation list (',dbf, ') of reflist version', refl, 'not available.\n')
@@ -27,19 +27,23 @@ load.taxlist <- function(refl, reflist.type= 'Turboveg', verbose, ...) {
           }
       } else cat('\nTaxonomic evaluation list (',dbf, ') of ', refl, 'not available.\n')
       }
-      species <- read.dbf(file.path(tv_home, 'Species', refl, dbf))
+      species <- read.dbf(file.path(tv_home, 'Species', refl, dbf), as.is=TRUE)
       names(species) <- TCS.replace(names(species))
       species$TaxonName <- taxname.abbr(species$TaxonName)
       if(verbose) {
         species$TaxonConcept <- taxname.abbr(species$TaxonConcept)
-        if('VernacularName' %in% names(species)) species$VernacularName <- iconv(species$VernacularName, 'ISO-8859-1', '')
-      }     
-      if(refl %in% supportedReflists && verbose==FALSE) species <- species[,c('TaxonUsageID','LETTERCODE','TaxonName','VernacularName','SYNONYM', 'TaxonConceptID')] else {
+        species$VernacularName <- iconv(species$VernacularName, from='UTF8', to='')
+        species$AUTHOR <- iconv(species$AUTHOR, from='UTF8', to='')
+      }  else {
+        species$VernacularName <- iconv(species$VernacularName, from='CP850', to='')
+        species$AUTHOR <- iconv(species$AUTHOR, from='CP850', to='')
+      }
+      if(refl %in% supportedReflists && verbose==FALSE) species <- species[,c('TaxonUsageID','LETTERCODE','TaxonName', 'VernacularName','SYNONYM', 'TaxonConceptID')] else {
         include <- !names(species) %in% c('SHORTNAME')
         species <- species[, include]
-      }   
-      store(reflist, species)
-    } else  species <- store(reflist)       
+      }
+       store(reflist, species)
+    } else  species <- store(reflist)      
   } else stop('Only reflisttype Turboveg implemented until now')
   
   return(species)
@@ -55,13 +59,11 @@ store <- local({
 })
 
 # As dBase is an old DOS format, Umlaute  are  stored  using  a  different  code  table
-#    (namely ASCII) than most modern unices (namely ANSI).  If you encounter
-#    such a file, I would recommend piping the output through recode(1) with
-#    ibmpc:latin1 as its argument.
-taxname.abbr <- function(x, enc="ISO-8859-1") {
+#    (namely ASCII) than most modern unices (namely ANSI).
+taxname.abbr <- function(x) {
 #  loc <- Sys.getlocale(category='LC_CTYPE')
 #  Sys.setlocale("LC_ALL","C")
-    x <- iconv(x, enc, "")
+#  print('Executing taxname.abbr ...')
     x <- sub('\ ag[.]', ' agg.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ ssp[.]', ' subsp.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ v[.]\ ', ' var. ', x, perl=TRUE, useBytes=TRUE)

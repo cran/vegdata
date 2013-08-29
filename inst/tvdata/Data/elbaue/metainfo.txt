@@ -1,16 +1,16 @@
 ### Source: Leyer & Wesche 2007: Multivariate Statistik in der Oekologie, p. 221, Springer, Berlin.
 # Data set grasland (p. 5,6)
-# Original data selected from: Leyer 2002 Augruenland der Mittelelbe-Niederung. J. Cramer, Berlin, Stuttgart.
+# Original data selected from: Leyer 2002 Augrünland der Mittelelbe-Niederung. J. Cramer, Berlin, Stuttgart.
 # Data entry: Anette Stolte
 
 ### additional comments #######################################
 
 
 ### Header data         ###################################
-RELEVE_NR			Releve Nr from Leyer and Wesche 2007
-Cover abundance scale		In Leyer and Wesche 2007 as Londo-Scale, here entered as Percentage values
-COUNTRY				Germany, see Country reference
-Nr_IN_TABLE			Releve Nr in published table
+RELEVE_NR								Releve Nr from Leyer & Wesche 2007
+Cover abundance scale		In Leyer & Wesche 2007 as Londo-Scale, here entered as Percentage values
+COUNTRY									Germany, see Country reference
+Nr_IN_TABLE							Releve Nr in published table
 
 ## All remaining predefined fields are unsused. ##
 

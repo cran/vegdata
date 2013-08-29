@@ -9,7 +9,8 @@ Compare different taxonomical reference lists.}
 The function checks for different taxon numbers and, or taxon names in two TURBOVEG reference lists.}
 
 \usage{
-tv.compRefl(refl1, refl2, tv_home, check.nr=FALSE, verbose=FALSE, Sink=TRUE, filter.1, filter.2, new = FALSE, file="compRefl.txt", ...)
+tv.compRefl(refl1, refl2, tv_home, check.nr=FALSE, verbose=FALSE, Sink=TRUE, 
+filter.1, filter.2, new = FALSE, file="compRefl.txt", ...)
 }
 
 \arguments{

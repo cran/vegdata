@@ -13,21 +13,23 @@ load.taxlist <- function(refl, reflist.type= 'Turboveg', verbose, ...) {
 
       if(file.access(reflist.path)) {
         if(refl %in% supportedReflists) {
-          cat('\nTaxonomic evaluation list (',dbf, ') of reflist version', refl, 'not available.\n')
-          cat('I will try to download the list now.\n\n')
-          if(grepl('GermanSL', refl)) {
+          cat('\nTaxonomic list (',dbf, ') of reflist version', refl, 'not available.\n\n')
+            storage <- file.path(tv_home, 'Species')
+          tfile <- tempfile()
+           if(grepl('GermanSL', refl)) {
             version <- paste("version", substr(refl, 10, nchar(refl)), sep = "")
-            download.file(paste('http://geobot.botanik.uni-greifswald.de/download/GermanSL',version,'GermanSL.zip',sep='/'), file.path(tv_home, 'Species','TaxRefDownload.zip'))
-            unzip(file.path(tv_home, 'Species', 'TaxRefDownload.zip'), exdir=file.path(tv_home, 'Species'))
-          }
-          if(grepl('Czsk', refl)) {
+            download.file(paste('http://geobot.botanik.uni-greifswald.de/download/GermanSL',version,'GermanSL.zip',sep='/'), tfile)
+            unzip(tfile, exdir= storage)
+           }
+           if(grepl('Czsk', refl)) {
             version <- paste("version", substr(refl, 6, nchar(refl)), sep = "")
-            download.file(paste('http://geobot.botanik.uni-greifswald.de/download/CZSK',version, 'Czsk.zip',sep='/'), file.path(tv_home, 'Species','TaxRefDownload.zip'))
-            unzip(file.path(tv_home, 'Species', 'TaxRefDownload.zip'), exdir=file.path(tv_home, 'Species'))
-          }
-      } else cat('\nTaxonomic evaluation list (',dbf, ') of ', refl, 'not available.\n')
-      }
-      species <- read.dbf(file.path(tv_home, 'Species', refl, dbf), as.is=TRUE)
+            download.file(paste('http://geobot.botanik.uni-greifswald.de/download/CZSK',version, 'Czsk.zip',sep='/'), tfile)
+            unzip(tfile, exdir= storage)
+           }
+          }  else stop('\nTaxonomic list ', refl, ' not supported.\n')
+      } else storage <- file.path(tv_home, 'Species')
+
+      species <- read.dbf(file.path(storage, refl, dbf), as.is=TRUE)
       names(species) <- TCS.replace(names(species))
       species$TaxonName <- taxname.abbr(species$TaxonName)
       if(verbose) {

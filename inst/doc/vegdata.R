@@ -1,6 +1,6 @@
 
 ## ----prep, echo=FALSE----------------------------------------------------
-options(width=90,digits=2)
+options(width=90, digits=2)
 
 
 ## ----eval=FALSE----------------------------------------------------------
@@ -17,10 +17,6 @@ tv.home()
 
 ## ----eval=FALSE----------------------------------------------------------
 ## options(tv_home="path_to_your_Turboveg_root_directory")
-
-
-## ----echo=FALSE----------------------------------------------------------
-options(tv_home=system.file('tvdata', package='vegdata'))
 
 
 ## ----dblisting-----------------------------------------------------------
@@ -99,7 +95,7 @@ head(obs)
 ## tv.veg(db, pseudo = list(lc.0, c("LAYER")), lc = "layer")
 
 
-## ----lc0, echo=FALSE-----------------------------------------------------
+## ----lc0, echo=FALSE, warning=FALSE--------------------------------------
 data(lc.0)
 tmp <- tv.veg(db, tax=FALSE, pseudo = list(lc.0, "LAYER"), lc = "layer", quiet=TRUE)
 names(tmp)
@@ -110,7 +106,7 @@ comb <- list(data.frame(SEASON=0:4, COMB=c(0,'Spring','Summer','Autumn','Winter'
 names(tv.veg(db, tax=FALSE, pseudo=comb, quiet=TRUE))
 
 
-## ----layer, results='hide'-----------------------------------------------
+## ----layer, results='hide', warning=FALSE--------------------------------
 data(lc.1)
 veg <- tv.veg(db, lc = "sum", pseudo = list(lc.1, 'LAYER'), dec = 1, quiet=TRUE)
 
@@ -143,8 +139,9 @@ site <- tv.site(db)
 
 
 ## ----ESVeg---------------------------------------------------------------
-download.file('http://geobot.botanik.uni-greifswald.de/download/data/T302.xml', "T302.xml")
-T302.site <- ESveg.site('T302.xml')
+destfile <- tempfile()
+download.file('http://geobot.botanik.uni-greifswald.de/download/data/T302.xml', destfile)
+T302.site <- ESveg.site(destfile)
 T302.site <- T302.site[!is.na(T302.site$LONGITUDE),]
 
 
@@ -235,9 +232,8 @@ nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', env = N
 }
 
 
-## ----nmdsplot, quiet=TRUE, results='hide', eval=TRUE---------------------
-print(nmds.plot(veg.nmds, elbaue.env, disp='species', 
-                var1="MGL", var2="SDGL", env=env, 
-                plottitle = 'NMDS of Elbaue floodplain vegetation'))
+## ----nmdsplot, quiet=TRUE, results='hide', eval=TRUE, warning=FALSE------
+nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env, 
+        plottitle = 'NMDS of Elbaue floodplain vegetation')
 
 

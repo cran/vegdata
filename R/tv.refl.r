@@ -4,11 +4,6 @@ tv.refl <- function(refl, db, tv_home) {
 #       cap <- function(s) paste(toupper(substring(s,1,1)), {s <- substring(s,2); if(strict) toupper(s) else s}, sep = "", collapse = " " )
 #       sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))
 #   }
-#   fun <- function(tmprefl) {
-#     try(refl <- match.arg(tmprefl,list.files(file.path(tv_home,'Species')) ), silent=TRUE)
-#     if(exists('refl')) refl
-#   }
-
   if(missing(tv_home)) tv_home <- tv.home()
   if(!missing(db)) {
       dbattr <- file.path(tv_home, 'Data', db,'tvwin.set')
@@ -18,7 +13,7 @@ tv.refl <- function(refl, db, tv_home) {
     if(!missing(refl)) {
       rli <- list.dirs(path = file.path(tv_home, "Species"), full.names = TRUE, recursive = FALSE)
       rli <- sapply(rli, function(x) substring(x, nchar(tv_home) + 10), USE.NAMES = FALSE)
-      refl <- match.arg(refl, rli)
+      if(length(rli) > 0) refl <- match.arg(refl, rli)
     } else refl <- 'GermanSL 1.2'
 #  if(!exists(refl)) refl <- fun(gsub(' ','',refl))
   if(tolower(substr(refl, 1,8)) == 'germansl') refl <- paste('GermanSL', substring(refl, 9, nchar(refl)), sep='')

@@ -47,7 +47,8 @@ clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL >= 50] <- 3
 clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL < 50] <- 4
 levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
 traits <- tv.traits()
-trait <- data.frame(EIV_F = traits$OEK_F, EIV_N = traits$OEK_N); rownames(trait) <- traits$ABBREVIAT
+trait <- data.frame(EIV_F = traits$OEK_F, EIV_N = traits$OEK_N)
+rownames(trait) <- traits$ABBREVIAT
 st <- syntab(elbaue, clust, mupa=TRUE, fullnames=TRUE)
 print(st, limit=30, trait=trait)
 }

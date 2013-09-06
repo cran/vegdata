@@ -3,12 +3,14 @@
 %\VignetteDepends{vegan, labdsv, akima, googleVis}
 %\VignetteKeyword{Vegetation}
 %\VignetteEngine{knitr::knitr}
+
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[sort&compress]{natbib}
-\usepackage[german, english]{babel}
+\usepackage[english]{babel}
 \usepackage{hyperref}
-\usepackage{graphics}
+\usepackage{graphicx} 
+\usepackage{xcolor}
 \usepackage[english=american]{csquotes}
 \usepackage[left=25mm,right=20mm,top=35mm,bottom=35mm]{geometry}
 \usepackage{tikz}
@@ -18,16 +20,10 @@
 \title{Vegetation data access and taxonomic harmonization \\
 version \Sexpr{packageDescription("vegdata", field="Version")}}
 
-% \renewcommand{\Sinput}[1]{\small{\color{#1}{rgb}{0,0,0.56}}}
-% \definecolor{Sinput}{rgb}{0,0,0.56}
-% \definecolor{Scode}{rgb}{0,0,0.56}
-% \definecolor{Soutput}{rgb}{0.56,0,0}
-
 \begin{document}
 
-%\setkeys{Gin}{width=\textwidth}
 <<prep, echo=FALSE>>=
-options(width=90,digits=2)
+options(width=90, digits=2)
 @
 %Sys.setlocale("LC_TIME", "de_DE.iso8859")
 
@@ -93,10 +89,6 @@ tv.home()
 If you want to change this, declare manually by setting option "tv\_home":
 <<eval=FALSE>>=
 options(tv_home="path_to_your_Turboveg_root_directory")
-@
-
-<<echo=FALSE>>=
-options(tv_home=system.file('tvdata', package='vegdata'))
 @
 
 
@@ -316,7 +308,7 @@ data(lc.0)
 tv.veg(db, pseudo = list(lc.0, c("LAYER")), lc = "layer")
 @
 and check the column names:
-<<lc0, echo=FALSE>>=
+<<lc0, echo=FALSE, warning=FALSE>>=
 data(lc.0)
 tmp <- tv.veg(db, tax=FALSE, pseudo = list(lc.0, "LAYER"), lc = "layer", quiet=TRUE)
 names(tmp)
@@ -332,7 +324,7 @@ comb <- list(data.frame(SEASON=0:4, COMB=c(0,'Spring','Summer','Autumn','Winter'
 names(tv.veg(db, tax=FALSE, pseudo=comb, quiet=TRUE))
 @
 
-<<layer, results='hide'>>=
+<<layer, results='hide', warning=FALSE>>=
 data(lc.1)
 veg <- tv.veg(db, lc = "sum", pseudo = list(lc.1, 'LAYER'), dec = 1, quiet=TRUE)
 @
@@ -390,8 +382,9 @@ source('http://geobot.botanik.uni-greifswald.de/download/r_package/vegetweb.r')
 First preliminary functions to load vegetation data from ESVeg formatted XML files are now implemented. As soon as there is a software to use Veg-X, the international TDWG exchange standard for vegetation data, I will implement functions for this.
 
 <<ESVeg>>=
-download.file('http://geobot.botanik.uni-greifswald.de/download/data/T302.xml', "T302.xml")
-T302.site <- ESveg.site('T302.xml')
+destfile <- tempfile()
+download.file('http://geobot.botanik.uni-greifswald.de/download/data/T302.xml', destfile)
+T302.site <- ESveg.site(destfile)
 T302.site <- T302.site[!is.na(T302.site$LONGITUDE),]
 @
 
@@ -535,16 +528,15 @@ nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', env = N
 
 \begin{figure}
 \begin{center}
-<<nmdsplot, quiet=TRUE, results='hide', eval=TRUE>>=
-print(nmds.plot(veg.nmds, elbaue.env, disp='species', 
-                var1="MGL", var2="SDGL", env=env, 
-                plottitle = 'NMDS of Elbaue floodplain vegetation'))
+<<nmdsplot, quiet=TRUE, results='hide', eval=TRUE, warning=FALSE>>=
+nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env, 
+        plottitle = 'NMDS of Elbaue floodplain vegetation')
 @
 \caption{Non-metric multidimensional scaling of the elbaue vegetation data with an overlay of mean groundwater table (colors) and standard deviation of groundwater level fluctuations (lines). Arrows show direction of increasing mean Ellenberg F resp. N}
 \end{center}
 \end{figure}
 
-The first axis of our NMDS plot show the influence of mean groundwater level on the patterns of the dataset. \emph{Glyceria maxima} is marking the wet side of the gradient, whereas \emph{Cnidium dubium} \emph{Agrostis capillaris} or \emph{Galium verum agg,} occur only at low mean groundwater level. The second axis can be assigned to the fluctuation of water levels measured as standard deviation of mean groundwater level. Species indicating high water fluctuation are \emph{Agrostis stolonifera} or \emph{Alopecurus geniculatus} whereas \emph{Carex vesicaria} occurs only at more balanced situations.
+The first axis of our NMDS plot show the influence of mean groundwater level on the patterns of the dataset. \emph{Glyceria maxima} is marking the wet side of the gradient, whereas \emph{Cnidium dubium} \emph{Agrostis capillaris} or \emph{Galium verum agg,} occur only at low mean groundwater level. The second axis can be assigned to the fluctuation of water levels measured as standard deviation of mean groundwater level. Species indicating high water fluctuation are \emph{Agrostis stolonifera} or \emph{Alopecurus geniculatus} whereas \emph{Carex vesicaria} occurs only in more balanced situations.
 
 \bibliographystyle{ecol_let}
 \bibliography{vegdata}

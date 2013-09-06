@@ -1,7 +1,9 @@
 tv.db <- function() {
   tv_home <- tv.home()
-  dir <- list.dirs(path = file.path(tv_home, 'Data'), full.names = TRUE, recursive = TRUE)
-  dir <- sapply(dir, function(x) substring(x, nchar(tv_home)+7), USE.NAMES = FALSE)
+  wd <- getwd()
+  setwd(file.path(tv_home, 'Data'))
+  dir <- list.dirs(full.names = TRUE, recursive = TRUE)
+#  dir <- sapply(dir, function(x) substring(x, nchar(tv_home)+7), USE.NAMES = FALSE)
   return(dir[2:length(dir)])
 }
 

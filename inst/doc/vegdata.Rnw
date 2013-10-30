@@ -107,6 +107,7 @@ However, whenever you use a Turboveg database name in a function, the Reference 
 Package vegdata contains several service functions to query the taxonomic information contained in the reference list.
 <<tax>>=
 tax('Achillea millefolium')
+# tax('Achilleus millefoliae', simplify=TRUE, genus=TRUE, epithet=TRUE)
 @
 
 "GermanSL 1.2" is not included in vegdata to keep the R package small. Instead the reference list will be automatically downloaded into the tv\_home directory (see \texttt{tv.home()}), if it is not installed but needed. If you want to use a different list, specify \texttt{refl=<Name of your list>} according to the directory name in the Turboveg directory \emph{Species}.

@@ -14,7 +14,7 @@ tv.home <- function() {
   }
   if(is.na(tv_home)) {
    cat('\nNo Turbowin installation path found. \n')
-   ANSWER <- readline("Should I use 1) the vegdata package path, or 2) a temporary folder? ")
+   ANSWER <- readline("Should I use \n 1) the vegdata package path, or \n 2) a temporary folder? ")
    tv_home <- switch(substr(ANSWER, 1, 1),
          "1" = file.path(path.package('vegdata'), 'Species'),
          tempdir()

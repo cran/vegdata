@@ -2,6 +2,7 @@
 \alias{tv.home}
 \alias{tv.refl}
 \alias{taxname.abbr}
+\alias{taxname.simplify}
 \alias{vw.con}
 \alias{first.word}
 \alias{reShape.veg}

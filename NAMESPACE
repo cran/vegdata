@@ -1,6 +1,6 @@
 
 ## Export regular function names
-export(childs, parents, syn, syntab, tax, taxname.abbr, taxval, meanTraits, vegetweb)
+export(childs, parents, syn, syntab, tax, taxname.abbr, taxname.simplify, taxval, meanTraits, vegetweb)
 
 ## export regular functions with dot names
 export(comb.species, reShape.veg, print.syntab, ESveg.obs, ESveg.site, TCS.replace)

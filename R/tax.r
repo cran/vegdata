@@ -62,7 +62,7 @@ store <- local({
 
 # As dBase is an old DOS format, Umlaute  are  stored  using  a  different  code  table
 #    (namely ASCII) than most modern unices (namely ANSI).
-taxname.abbr <- function(x) {
+taxname.abbr <- function(x, hybrid=FALSE) {
 #  loc <- Sys.getlocale(category='LC_CTYPE')
 #  Sys.setlocale("LC_ALL","C")
 #  print('Executing taxname.abbr ...')
@@ -80,36 +80,93 @@ taxname.abbr <- function(x) {
     x <- sub('\ s[.]\ l[.]', ' sensulato', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ s[.]lat[.]', ' sensulato', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ s[.] lat[.]', ' sensulato', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('\ s[.]\ ', ' subsp. ', x, perl=TRUE, useBytes=TRUE)
+    x <- sub('\ s[.]\ ', ' subsp. ', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ sensustricto', ' s. str.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ sensulato', ' s. l.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ f[.]\ ', ' fo. ', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ sp[.]', ' spec.', x, perl=TRUE, useBytes=TRUE)
+    x <- sub('\ nothosubsp[.]' , '\ nothossp.', x, perl=TRUE, useBytes=TRUE)
+    if(hybrid)
+      x <- sub('\ x.' , '\ ', x, perl=TRUE, useBytes=TRUE)
     #  Sys.setlocale(category='LC_CTYPE', locale=loc)
    return(x)  
 }
+
+
+taxname.simplify <- function(x, genus=TRUE, epithet=TRUE) {
+#    x <- 'Sëlixae calcarae subsp. holdae'
+    x <- gsub('\U00EB', 'e', x, perl=TRUE, useBytes=TRUE)
+    x <- gsub('\U00CF', 'i', x, perl=TRUE, useBytes=TRUE)
+    x <- gsub('ii', 'i', x, perl=TRUE, useBytes=TRUE)
+    x <- gsub('nn', 'n', x, perl=TRUE, useBytes=TRUE)
+    x <- gsub('ph', 'p', x, perl=TRUE, useBytes=TRUE)
+    x <- gsub('rh', 'h', x, perl=TRUE, useBytes=TRUE)
+    x <- gsub('th', 't', x, perl=TRUE, useBytes=TRUE)
+    x <- gsub('tt', 't', x, perl=TRUE, useBytes=TRUE)
+    x <- gsub('y', 'i', x, perl=TRUE, useBytes=TRUE)
+if(epithet) {
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('ae\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('arum\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('ea\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('ei\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('eos\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('ia\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('ium\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('ius\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('orum\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('a\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('e\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('ens\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('es\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('i\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('is\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('on\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('um\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+    x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('us\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
+}
+if(genus) {
+    x <-	paste(sub('a$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
+    x <-	paste(sub('as$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
+    x <-	paste(sub('e$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
+    x <-	paste(sub('es$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
+    x <-	paste(sub('eus$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
+    x <-	paste(sub('is$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
+    x <-	paste(sub('on$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
+    x <-	paste(sub('u$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
+    x <-	paste(sub('um$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
+    x <-	paste(sub('us$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
+}
+return(x)
+}
+# taxname.simplify(x, Gattungsendung=TRUE, Artendung=TRUE)
+
 
 TCS.replace <- function(x) {
 ## Turboveg  
   x <- replace(x, x=='ABBREVIAT', 'TaxonName')
   x <- replace(x, x=='taxonName', 'TaxonName')
-  x <- replace(x, x=="Species name", 'TaxonUsageID') # temporary shortcut for TV3
+  x <- replace(x, x=='Taxon', 'TaxonName')
   x <- replace(x, x=='SPECIES_NR', 'TaxonUsageID')
   x <- replace(x, x=='VALID_NAME', 'TaxonConcept')
   x <- replace(x, x=='VALID_NR', 'TaxonConceptID')
   x <- replace(x, x=='AGG_NAME', 'IsChildTaxonOf')
   x <- replace(x, x=='AGG', 'IsChildTaxonOfID')
-  x <- replace(x, x=='SECUNDUM', 'publishedInCitation')
+  x <- replace(x, x=='SECUNDUM', 'AccordingTo')
   x <- replace(x, x=='NATIVENAME', 'VernacularName')
-  x <- replace(x, x=='RANG', 'taxonRank')
+  x <- replace(x, x=='RANG', 'TaxonRank')
+  x <- replace(x, x=='CLASSIFICA', 'Classification')
 ## Florkart Germany (BfN lists)
   x <- replace(x, x=='TAXNAME', 'TaxonName')
   x <- replace(x, x=='sipnr', 'TaxonConceptID')
   x <- replace(x, x=='SIPNR', 'TaxonConceptID')
   x <- replace(x, x=='namnr', 'TaxonUsageID')
   x <- replace(x, x=='NAMNR', 'TaxonUsageID')
+  x <- replace(x, x=='TAXNR', 'TaxonUsageID')
   x <- replace(x, x=='AGG_NAME', 'IsChildTaxonOf')
   x <- replace(x, x=='AGGNR', 'IsChildTaxonOfID')
+  x <- replace(x, x=='RANK', 'TaxonRank')  
+  x <- replace(x, x=='Rank', 'TaxonRank')  
 ## ESveg
   x <- replace(x, x=="taxonCode", 'TaxonUsageID')
   x <- replace(x, x=="observationCode", "RELEVE_NR")
@@ -118,6 +175,9 @@ TCS.replace <- function(x) {
   x <- replace(x, x=="Stratum", "LAYER")
   x <- replace(x, x=="Percentage_mean", "COVER_PERC")
   x <- replace(x, x=="coverPercent", "COVER_PERC")
+## CDM
+  x <- replace(x, x=='Taxon', 'TaxonName')
+  x <- replace(x, x=='Taxon.ID', 'TaxonUsageID')  
   return(x)
 }
 
@@ -129,7 +189,7 @@ TCS.replace <- function(x) {
 
 "tax" <- function(...) UseMethod("tax")
 
-tax.default <- function(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, vernacular = FALSE, quiet = FALSE, ...) {
+tax.default <- function(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, vernacular = FALSE, simplify=FALSE, quiet = FALSE, ...) {
 	tv_home <- tv.home()
 #########################################################
 ## internal functions
@@ -141,34 +201,41 @@ concept.FUN <- function(species, concept, dbf, ...) {
   species$TaxonName <- as.character(species$TaxonName)
   species$TaxonConcept <- as.character(species$TaxonConcept)
   species$IsChildTaxonOf <- as.character(species$IsChildTaxonOf)
-  species$publishedInCitation <- as.character(species$publishedInCitation)
+  species$AccordingTo <- as.character(species$AccordingTo)
   conc <- read.dbf(file.path(tv_home, 'Species', refl, paste(concept,'dbf',sep='.')), as.is=TRUE)
   co <- conc[match(species$TaxonUsageID, conc$TaxonUsageID, nomatch = 0),]
   species[match(conc$TaxonUsageID,species$TaxonUsageID),c('SYNONYM','TaxonConceptID','IsChildTaxonOfID')] <- co[match(conc$TaxonUsageID,co$TaxonUsageID),c('SYNONYM','TaxonConceptID','IsChildTaxonOfID')]
   species$TaxonName[match(conc$TaxonUsageID,species$TaxonUsageID,nomatch = 0)] <- co$TaxonName[match(conc$TaxonUsageID,co$TaxonUsageID,nomatch = 0)]
   species$TaxonConcept[match(conc$TaxonUsageID,species$TaxonUsageID,nomatch = 0)] <- co$TaxonConcept[match(conc$TaxonUsageID,co$TaxonUsageID,nomatch = 0)]
-  species$taxonRank[match(conc$TaxonUsageID,species$TaxonUsageID,nomatch = 0)] <- co$taxonRank[match(conc$TaxonUsageID,co$TaxonUsageID,nomatch = 0)]
+  species$TaxonRank[match(conc$TaxonUsageID,species$TaxonUsageID,nomatch = 0)] <- co$TaxonRank[match(conc$TaxonUsageID,co$TaxonUsageID,nomatch = 0)]
   species$IsChildTaxonOf[match(conc$TaxonUsageID,species$TaxonUsageID,nomatch = 0)] <- co$IsChildTaxonOf[match(conc$TaxonUsageID,co$TaxonUsageID,nomatch = 0)]
-  species$publishedInCitation[match(conc$TaxonUsageID,species$TaxonUsageID,nomatch = 0)] <- co$publishedInCitation[match(conc$TaxonUsageID,co$TaxonUsageID,nomatch = 0)]
+  species$AccordingTo[match(conc$TaxonUsageID,species$TaxonUsageID,nomatch = 0)] <- co$AccordingTo[match(conc$TaxonUsageID,co$TaxonUsageID,nomatch = 0)]
 }
 
 # Subsetting
-select.taxa <- function(x, species, strict, vernacular, ...) {
+select.taxa <- function(x, species, strict, vernacular = FALSE, simplify = FALSE, genus = TRUE, epithet = TRUE, ...) {
   if(is.factor(x)) x <- as.character(x)
+  if(simplify) strict <- TRUE
   if(is.numeric(x) | is.integer(x))
     l <- species[match(x, species$TaxonUsageID),]  ## Tax numbers
   if(is.character(x)) {
     if(nchar(x[1]) == 7 & x[1] == toupper(x[1]))  {  ## Lettercode
       l <- species[species$LETTERCODE %in% x,] 
     } else {		## Taxnames
-      l <- species[species$TaxonUsageID==(-1),]
+    	l <- species[species$TaxonUsageID==(-1),]
       for(i in 1:length(x))
         if(vernacular) {
           l <- if(!strict) rbind(l, species[grep(x[i], species$VernacularName, useBytes=TRUE), ]) else 
             rbind(l, species[match(species$VernacularName, x[i], nomatch = 0) > 0, ])
         }
       else {
-        l <- if(!strict) rbind(l, species[grep(x[i], species$TaxonName, useBytes=TRUE), ]) else 
+        l <- if(!strict) 
+        	# if(simplify) rbind(l, species[grep(x[i], species$TaxonName, useBytes=TRUE), ])
+        		rbind(l, species[grep(x[i], species$TaxonName, useBytes=TRUE), ]) else 
+        	if(simplify) {
+        		# print(taxname.simplify(species$TaxonName, genus=TRUE))
+        		rbind(l, species[match(taxname.simplify(species$TaxonName, genus, epithet, ...), taxname.simplify(x[i], genus, epithet, ...), nomatch = 0) > 0, ]) 
+        		} else
           rbind(l, species[match(species$TaxonName, x[i], nomatch = 0) > 0, ])
       }}
   }
@@ -184,8 +251,9 @@ species <- load.taxlist(refl, reflist.type='Turboveg', verbose=verbose)
 
 ### Filter
 # if(!is.null(concept)) species <- concept.FUN(species, concept)
-if(x[1] != 'all') species <- select.taxa(x, species, strict, vernacular, ...)
+if(x[1] != 'all') species <- select.taxa(x, species, strict, vernacular, simplify, ...)
   if(!syn) species <- species[species$SYNONYM == FALSE,]
+if(simplify) species$simpleSpeciesName <- taxname.simplify(species$TaxonName, ...)
 return(species)
 }
 #  ls(pos='package:vegdata')

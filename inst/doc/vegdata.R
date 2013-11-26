@@ -29,6 +29,7 @@ tv.refl()
 
 ## ----tax-----------------------------------------------------------------
 tax('Achillea millefolium')
+# tax('Achilleus millefoliae', simplify=TRUE, genus=TRUE, epithet=TRUE)
 
 
 ## ------------------------------------------------------------------------

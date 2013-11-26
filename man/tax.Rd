@@ -6,12 +6,11 @@
 \alias{parents}
 \alias{syn}
 
-
 \title{Query of taxonomic reference list including concept synonomy and taxonomic hierarchy.}
 
 \usage{
 \method{tax}{default}(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, 
-vernacular = FALSE, quiet = FALSE, ...)
+vernacular = FALSE, simplify = FALSE, quiet = FALSE, ...)
 childs(x, refl, species, gen = 4, tree = FALSE, quiet = FALSE, syn = FALSE, ...)
 parents(x, refl, species, rank, quiet = FALSE, ...)
 syn(x, refl, species, quiet = FALSE, ...)
@@ -25,6 +24,7 @@ syn(x, refl, species, quiet = FALSE, ...)
 \item{concept}{Name of alternatice taxon view file within the reference list director}
 \item{strict}{Exact match or partial matching with \code{\link{grep}}}
 \item{vernacular}{Search in vernacular names instead of scientific names.}
+\item{simplify}{Will simplify species names for matching.}
 \item{species}{Taxonomic reference list (dataframe according to tax() output. If not given, tax(...) will be used}
 \item{gen}{Number of child generations to return}
 \item{quiet}{Hide screen messages}
@@ -41,6 +41,7 @@ Input is either species number (integer), shortletter (7 characters) or full (ex
 \dfn{concept}: GermanSL is a list with a single taxon view according to the standard lists of the different taxon groups (e.g Wisskirchen and Haeupler for higher plants, see). 
 Nevertheless a hugh number of synonyms is included which allows in many cases the transformation into different concepts. 
 For illustration the concept of \emph{Armeria maritima} from Korneck 1996 is included, which accepts e.g. \emph{Armeria maritima ssp. bottendorfensis}.
+\dfn{simplify}: Before string comparison with reference list names it will eliminate diacritic marks, double consonants, "th", "y" and others. If genus=TRUE critical, i.e. non stable endings of genus names will be ignored, epithet = TRUE will eliminate specific endings for the last epithet.
 }
 
 \seealso{package vegdata}

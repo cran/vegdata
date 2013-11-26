@@ -47,7 +47,7 @@ if(syn=='conflict') {
 if(syn=='adapt') {
 #   adapt <- function(expr, fr) {    
     obsTaxa <- unique(obs$TaxonUsageID)
-    species$AGG_taxonRank <- species$taxonRank[match(species$IsChildTaxonOfID,species$TaxonUsageID)]
+    species$AGG_TaxonRank <- species$TaxonRank[match(species$IsChildTaxonOfID,species$TaxonUsageID)]
     temp <- species[species$SYNONYM == TRUE & species$TaxonUsageID %in% obsTaxa,]
 
     vec <- temp[match(obs$TaxonUsageID, temp$TaxonUsageID), 'TaxonConceptID']
@@ -94,10 +94,10 @@ if (mono %in% c("species", "lower", "higher")) {
 ## Maximum taxonomic level
 obsTaxa <- sort(unique(obs$TaxonUsageID))
 if(maxtaxlevel %in% taxlevels) {
-  toohigh <- obsTaxa[species$taxonRank[match(obsTaxa, species$TaxonUsageID)] %in% taxlevels[taxlevels > maxtaxlevel]]
+  toohigh <- obsTaxa[species$TaxonRank[match(obsTaxa, species$TaxonUsageID)] %in% taxlevels[taxlevels > maxtaxlevel]]
   if(length(toohigh) > 0) {
     cat('\n', length(toohigh), 'taxa higher than specified maximal taxonomic level',maxtaxlevel,'found. Deleted.\n')
-    print(species[species$TaxonUsageID %in% toohigh, c('TaxonUsageID','TaxonName','publishedInCitation')],row.names=FALSE)
+    print(species[species$TaxonUsageID %in% toohigh, c('TaxonUsageID','TaxonName','AccordingTo')],row.names=FALSE)
     obs <- obs[!obs$TaxonUsageID %in% toohigh,]
   } else cat(' No taxa higher than', maxtaxlevel,'found.\n')
 }
@@ -152,7 +152,7 @@ obs <- switch(ag,
 	for(i in 1:length(obsTaxa)) {
 	    temp <- parents(obsTaxa[i], refl=refl, species=species, quiet=TRUE)
 #print(4)
-	    if(rank %in% temp$taxonRank) obs$TaxonUsageID[obs$TaxonUsageID == obsTaxa[i]] <- temp$TaxonUsageID[temp$taxonRank == rank]
+	    if(rank %in% temp$TaxonRank) obs$TaxonUsageID[obs$TaxonUsageID == obsTaxa[i]] <- temp$TaxonUsageID[temp$TaxonRank == rank]
 	}
 	agg.conflict(obs, quiet = TRUE)
      }
@@ -191,7 +191,7 @@ if(check) {
   auct$to_check <- sub("\ auct.", "", auct$TaxonName, perl=TRUE)
   auct$check_No <- species$TaxonUsageID[match(auct$to_check, species$TaxonName)]
   auct <- auct[!is.na(auct$check_No), ]
-  auct <- auct[,  c('to_check', 'check_No', 'TaxonName','TaxonUsageID', 'publishedInCitation')]
+  auct <- auct[,  c('to_check', 'check_No', 'TaxonName','TaxonUsageID', 'AccordingTo')]
   names(auct)[3] <- "check against"
   if (any(obs$TaxonUsageID %in% auct$check_No)) {
       cat('Warning: Critical Pseudonym(s) in dataset, please check\n')
@@ -202,14 +202,14 @@ if(check) {
 ### Extent of taxon interpretation
 #species <<- species
 #print(names(species))
- sl <- species[grep("\ s.\ l.", species$TaxonName, perl=TRUE), c('TaxonUsageID','TaxonName','TaxonConceptID','TaxonConcept','taxonRank','IsChildTaxonOfID','IsChildTaxonOf','publishedInCitation') ] # c(1:5, 11, 13, 14, 15)
+ sl <- species[grep("\ s.\ l.", species$TaxonName, perl=TRUE), c('TaxonUsageID','TaxonName','TaxonConceptID','TaxonConcept','TaxonRank','IsChildTaxonOfID','IsChildTaxonOf','AccordingTo') ] # c(1:5, 11, 13, 14, 15)
  sl$to_check <- sub("\ s.\ l.$", "", sl$TaxonName, perl=TRUE)
- sstr <- species[grep("\ s.\ str.$", species$TaxonName, perl=TRUE), c('TaxonUsageID','TaxonName','TaxonConceptID','TaxonConcept','taxonRank','IsChildTaxonOfID','IsChildTaxonOf','publishedInCitation')]
+ sstr <- species[grep("\ s.\ str.$", species$TaxonName, perl=TRUE), c('TaxonUsageID','TaxonName','TaxonConceptID','TaxonConcept','TaxonRank','IsChildTaxonOfID','IsChildTaxonOf','AccordingTo')]
  sstr$to_check <- sub("\ s.\ str.$", "", sstr$TaxonName, perl=TRUE)
  ext <- rbind(sl,sstr)
 
  ext$check_No <- species$TaxonUsageID[match(ext$to_check, species$TaxonName)]
- ext <- ext[!is.na(ext$check_No), c('to_check', 'check_No', 'TaxonName','TaxonUsageID', 'publishedInCitation')] #  c(10, 11, 2, 1, 5, 4, 6)
+ ext <- ext[!is.na(ext$check_No), c('to_check', 'check_No', 'TaxonName','TaxonUsageID', 'AccordingTo')] #  c(10, 11, 2, 1, 5, 4, 6)
  names(ext)[3] <- "check against"
  if (any(obs$TaxonUsageID %in% ext$check_No)) {
      cat('Warning: Critical species in dataset, please check\n')

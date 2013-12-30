@@ -15,6 +15,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
   if (missing(obs))
       obs <- tv.obs(db, tv.home(), quiet=TRUE)
   obs$COVERSCALE <- RelScale$COVERSCALE[match(obs$RELEVE_NR, RelScale$RELEVE_NR)]
+#  obs$COVER_CODE[is.na(obs$COVERSCALE) | obs$COVERSCALE == '9x']
   g <- obs$COVERSCALE
   if(any(is.na(g)))  {
     print(unique(obs[is.na(g),'COVER_CODE']))
@@ -23,8 +24,11 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
   paste('Split')
   obs <- split(obs, g, drop = FALSE)
   for (i in names(obs)) {
-    if (i == "00") 
+    if (i == "00") {
+    	obs[[i]]$COVER_CODE <- replace(as.character(obs[[i]]$COVER_CODE), obs[[i]]$COVER_CODE == '9X', '100')
+    	if(any(is.na(as.numeric(obs[[i]]$COVER_CODE)))) stop('Not all percentage cover values in your databse are numeric, please check in Turboveg.')
       obs[[i]] <- data.frame(obs[[i]], COVER_PERC = as.numeric(as.character(obs[[i]][, "COVER_CODE"])))
+    }
     else {
       p <- which(is.na(tvscale[i,]))[1]
       if(is.na(p)) p <- ncol(tvscale)
@@ -34,7 +38,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
       perc <- scala[seq(5,p,2)][1,]
       d.f <- data.frame(code=code[,1], perc = as.numeric(perc))
       if(!quiet) {
-        cat('\n Cover code used: ',i , as.character(tvscale[i, 2]), '\n')
+        cat('Cover code used: ',i , as.character(tvscale[i, 2]))
       #  write.table(t(d.f), col.names = FALSE, sep = "\t", quote = FALSE)
       #  print(table(t(d.f), col.names = FALSE, sep = "\t", quote = FALSE))
         print(as.table(t(d.f)), col.names = FALSE, sep = "\t", quote = FALSE)

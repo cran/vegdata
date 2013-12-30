@@ -15,7 +15,7 @@ Necessary prerequisite is information about taxonomic status (synonomy) and hier
 taxval(obs, refl, db, concept=NULL, syn = c('adapt','conflict','preserve'), 
 ag = c('conflict', 'adapt', 'preserve'), 
 rank, mono = c('species', 'higher', 'lower', 'preserve'), monolist = "monotypic-D", 
-uncertain = NULL, maxtaxlevel = 'ROOT', check = TRUE, quiet = FALSE,  ...)
+uncertain = NULL, maxtaxlevel = 'ROOT', check.critical = TRUE, sink = TRUE, ...)
 comb.species(x, sel, newname, refl)
 }
 
@@ -31,8 +31,8 @@ comb.species(x, sel, newname, refl)
   \item{monolist}{Name of monotypic species list, must be in dbase format and in the same directory as the reference list, e.g. \code{"monotypic-D"} for the area of germany.}
   \item{uncertain}{List of length two, first the column name of uncertainty information, second a dataframe with uncertainty value and in column two one of 'delete','aggregate','preserve', see example.}
   \item{maxtaxlevel}{Maximum taxonomic levels to be used. See details.}
-  \item{check}{Check for critical namesin your dataset and give warnings.'}
-  \item{quiet}{Suppress messages about changed names.}
+  \item{check.critical}{Check for critical names in your dataset and give warnings.'}
+  \item{sink}{Write information about taxonomic harmonisation in a temporary file or print it on standrad output.}
   \item{x}{Dataframe of class 'veg'. See \code{\link{tv.veg}}}
   \item{sel}{Vector of species (column names) to be combined.}
   \item{newname}{Name of the combined taxon.}

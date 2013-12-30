@@ -3,17 +3,19 @@
 \alias{tax.default}
 \alias{tax.veg}
 \alias{childs}
+\alias{child}
 \alias{parents}
+\alias{parent}
 \alias{syn}
 
-\title{Query of taxonomic reference list including concept synonomy and taxonomic hierarchy.}
+\title{Query of Turboveg 2 taxonomic reference lists including concept synonomy and taxonomic hierarchy.}
 
 \usage{
 \method{tax}{default}(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, 
-vernacular = FALSE, simplify = FALSE, quiet = FALSE, ...)
-childs(x, refl, species, gen = 4, tree = FALSE, quiet = FALSE, syn = FALSE, ...)
-parents(x, refl, species, rank, quiet = FALSE, ...)
-syn(x, refl, species, quiet = FALSE, ...)
+vernacular = FALSE, simplify = FALSE, quiet = FALSE, reflist.type = 'Turboveg', ...)
+child(x, refl = tv.refl(), gen = 4, tree = FALSE, quiet = FALSE, syn = FALSE, ...)
+parent(x, refl = tv.refl(), rank, quiet = FALSE, ...)
+syn(x, refl = tv.refl(), quiet = FALSE, ...)
 }
 
 \arguments{
@@ -25,9 +27,9 @@ syn(x, refl, species, quiet = FALSE, ...)
 \item{strict}{Exact match or partial matching with \code{\link{grep}}}
 \item{vernacular}{Search in vernacular names instead of scientific names.}
 \item{simplify}{Will simplify species names for matching.}
-\item{species}{Taxonomic reference list (dataframe according to tax() output. If not given, tax(...) will be used}
 \item{gen}{Number of child generations to return}
 \item{quiet}{Hide screen messages}
+\item{reflist.type}{Type of taxonomic reference list to use. Until now only Turboveg lsits are suppported in the official package.}
 \item{tree}{Opens a gWidgets window with interactive taxonomic tree view. Requires package gWidgets}
 \item{rank}{Taxonomical level of parentship to find}
 \item{...}{additional attributes}

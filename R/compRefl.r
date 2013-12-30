@@ -1,4 +1,4 @@
-tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, verbose = FALSE, Sink = TRUE, filter.1, filter.2, new = FALSE, file="compRefl.txt", ...)  {
+tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRUE, verbose = FALSE, Sink = TRUE, filter.1, filter.2, new = FALSE, file="compRefl.txt", ...)  {
   if (missing(tv_home)) tv_home <- tv.home()
     refl.1 <- if(is.character(refl1)) read.dbf(file.path(tv_home, "Species", refl1, "tax.dbf")) else refl1
     refl.2 <- if(is.character(refl2)) read.dbf(file.path(tv_home, "Species", refl2, "species.dbf")) else refl2
@@ -6,8 +6,13 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, verbose = FALS
     names(refl.2) <- TCS.replace(names(refl.2))
     refl1 <- deparse(substitute(refl1))
     refl2 <- deparse(substitute(refl2))
+  	refl.1[, "TaxonNameOriginal"] <- refl.1[, "TaxonName"]; refl.2[, "TaxonNameOriginal"] <- refl.2[, "TaxonName"]
     refl.1[, "TaxonName"] <- taxname.abbr(refl.1[, "TaxonName"])
     refl.2[, "TaxonName"] <- taxname.abbr(refl.2[, "TaxonName"])
+  if(simplify) {
+    refl.1[, "TaxonName"] <- taxname.simplify(refl.1[, "TaxonName"])
+    refl.2[, "TaxonName"] <- taxname.simplify(refl.2[, "TaxonName"])  	
+  }
   diff.A <- sort(as.character(refl.2[!refl.2[, "TaxonName"] %in% refl.1[, "TaxonName"], "TaxonName"]))
   diff.B <- sort(as.character(refl.1[!refl.1[, "TaxonName"] %in% refl.2[, "TaxonName"], "TaxonName"]))
     if (check.nr) {
@@ -63,7 +68,7 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, verbose = FALS
     else {
       if(!missing(filter.1)) diff.B <- diff.B[!diff.B %in% filter.1]
       if (length(diff.B) > 0) {
-            cat("\n", length(diff.B), "TaxNames of", refl1, "not occurring in", refl2, "\n")
+            cat("\n", length(diff.B), "TaxNames of reflist nr 1 =", refl1, "not occurring in reflist nr 2 =", refl2, "\n")
             if (verbose) 
                 print(diff.B, quote = FALSE, row.names=FALSE)
       }
@@ -72,7 +77,7 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, verbose = FALS
       }
     
       if (length(diff.A) > 0) {
-          cat("\n", length(diff.A), "TaxNames of", refl2, "not occurring in", refl1, ": \n")
+          cat("\n", length(diff.A), "TaxNames of reflist nr 2 =", refl2, "not occurring in reflist nr 1 =", refl1, ": \n")
           if (verbose) 
               print(diff.A, quote = FALSE, row.names=FALSE)
       }
@@ -98,8 +103,10 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, verbose = FALS
         cat("\n Report is written to file \"", file, " \n")
         if (check.nr) write.csv(nonmatchingNumbers, file='differentNumbers.csv')
         if(!missing(filter.1)) write.csv(nonmatchingNames[!nonmatchingNames[,2] %in% filter.1,], file='differentNames.csv')
-        write.csv(diff.B[!diff.B %in% nonmatchingNames], file='noMatches_inRefl_2.csv')
-        write.csv(diff.A[!diff.A %in% nonmatchingNames], file='noMatches_inRefl_1.csv')
+#         write.csv(diff.B[!diff.B %in% nonmatchingNames], file='noMatches_inRefl_2.csv')
+#         write.csv(diff.A[!diff.A %in% nonmatchingNames], file='noMatches_inRefl_1.csv')
+        write.csv(refl.1[refl.1[, "TaxonName"] %in% diff.B, c("TaxonNameOriginal","TaxonName")], file='noMatches_inRefl_2.csv')
+        write.csv(refl.2[refl.2[, "TaxonName"] %in% diff.A, c("TaxonNameOriginal","TaxonName")], file='noMatches_inRefl_1.csv')
     }
     if (new) {
       names(refl.1) <- replace(names(refl.1), names(refl.1)=='TaxonName','ABBREVIAT')

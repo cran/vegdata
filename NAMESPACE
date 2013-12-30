@@ -1,15 +1,16 @@
 
 ## Export regular function names
-export(childs, parents, syn, syntab, tax, taxname.abbr, taxname.simplify, taxval, meanTraits, vegetweb)
+export(child, meanTraits, monotypic, parent, syn, syntab, tax, taxval, vegetweb, childs, parents)
 
 ## export regular functions with dot names
 export(comb.species, reShape.veg, print.syntab, ESveg.obs, ESveg.site, TCS.replace)
-export(tv.biblio, tv.compRefl, tv.coverperc, tv.db, tv.home, tv.traits, tv.metainfo, tv.mono, tv.obs, tv.refl, tv.site, tv.veg, tv.write)
+export(taxname.abbr, taxname.simplify, tv.biblio, tv.compRefl, tv.coverperc, tv.db, tv.home, tv.traits, tv.metainfo, tv.obs, tv.refl, tv.site, tv.veg, tv.write)
 
 ## Register? internal functions
 
 ## Export deprecated functions
-# export(agg, spc, tv.taxval, tv.eco, sub.abbr)
+# export(agg, spc, tv.taxval, tv.eco, sub.abbr, 
+export(tv.mono)
 
 ## Export S3 methods
 S3method(tax, default)
@@ -22,6 +23,6 @@ S3method(print, syntab)
 ## Registration of S3 methods
 importFrom(foreign, read.dbf)
 # importFrom(permute, permControl)
-importFrom(indicspecies, multipatt)
+# importFrom(indicspecies, multipatt)
 importFrom(XML, getNodeSet, xmlName, xmlParse, xmlRoot, xmlSApply, xmlToDataFrame, xmlValue)
 # import(vegan)

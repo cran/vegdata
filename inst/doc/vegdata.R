@@ -1,6 +1,9 @@
 
 ## ----prep, echo=FALSE----------------------------------------------------
-options(width=90, digits=2)
+library(knitr)
+options(width=110, digits=2)
+opts_chunk$set(comment = "", warning = FALSE, message = TRUE, echo = TRUE, tidy = TRUE, size="footnotesize")
+# read_chunk("some/script/I/want/to/load.R")
 
 
 ## ----eval=FALSE----------------------------------------------------------
@@ -16,11 +19,11 @@ tv.home()
 
 
 ## ----eval=FALSE----------------------------------------------------------
-## options(tv_home="path_to_your_Turboveg_root_directory")
+## # options(tv_home="path_to_your_Turboveg_root_directory")
 
 
-## ----dblisting-----------------------------------------------------------
-tv.db()
+## ----dblisting, eval=FALSE-----------------------------------------------
+## tv.db()
 
 
 ## ------------------------------------------------------------------------
@@ -29,11 +32,11 @@ tv.refl()
 
 ## ----tax-----------------------------------------------------------------
 tax('Achillea millefolium')
-# tax('Achilleus millefoliae', simplify=TRUE, genus=TRUE, epithet=TRUE)
 
 
 ## ------------------------------------------------------------------------
-tax('Achillea millefolium', strict=TRUE, verbose=TRUE) 
+tax('Achillea millefolium', strict=TRUE, verbose=TRUE)
+tax('Achylleus x millefoliae', simplify=TRUE, hybrid=TRUE)
 
 
 ## ----syn-----------------------------------------------------------------
@@ -63,16 +66,17 @@ head(obs.tax[,c('RELEVE_NR','TaxonUsageID','COVER_CODE','LAYER','TaxonName')])
 
 
 ## ----taxval, eval=TRUE---------------------------------------------------
-obs.taxval <- taxval(obs.tax, db=db, mono='lower')
+obs.taxval <- taxval(obs.tax, db=db, mono='lower', sink=FALSE)
 
 
 ## ----Taxon---------------------------------------------------------------
 obs.taxval$TaxonName <-  species$TaxonName[match(obs.taxval$TaxonUsageID, species$TaxonUsageID)]
-obs.taxval[,c('RELEVE_NR', 'COVER_CODE', 'TaxonName')]
+obs.taxval$OriginalName <- obs.tax$TaxonName
+obs.taxval[,c('RELEVE_NR', 'COVER_CODE', 'TaxonName', 'OriginalName')]
 
 
 ## ----coarsen, eval=TRUE, results='hide'----------------------------------
-tmp <- taxval(obs.tax, refl='GermanSL 1.2', ag='adapt', rank='FAM')
+tmp <- taxval(obs.tax, refl='GermanSL 1.2', ag='adapt', rank='FAM', sink=FALSE)
 tmp$oldTaxon <- tax(obs.tax$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
 tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
 
@@ -82,13 +86,15 @@ head(tmp[,c('oldTaxon','newTaxon')], 10)
 
 
 ## ----taxonviews, eval=FALSE----------------------------------------------
-## newconcept <- taxval(obs, db=db, concept='korneck1996')
+## newconcept <- taxval(obs, db=db, concept='korneck1996', sink=FALSE)
 
 
-## ----coverperc-----------------------------------------------------------
+## ----coverperc, echo=2:4-------------------------------------------------
+options(width=120)
 obs <- tv.obs(db)
 obs <- tv.coverperc(db, obs)
-head(obs)
+tail(obs)
+options(width=110)
 
 
 ## ----pseudo1, eval=FALSE-------------------------------------------------

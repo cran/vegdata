@@ -23,7 +23,10 @@ version \Sexpr{packageDescription("vegdata", field="Version")}}
 \begin{document}
 
 <<prep, echo=FALSE>>=
-options(width=90, digits=2)
+library(knitr)
+options(width=110, digits=2)
+opts_chunk$set(comment = "", warning = FALSE, message = TRUE, echo = TRUE, tidy = TRUE, size="footnotesize")
+# read_chunk("some/script/I/want/to/load.R")
 @
 %Sys.setlocale("LC_TIME", "de_DE.iso8859")
 
@@ -88,12 +91,12 @@ tv.home()
 
 If you want to change this, declare manually by setting option "tv\_home":
 <<eval=FALSE>>=
-options(tv_home="path_to_your_Turboveg_root_directory")
+# options(tv_home="path_to_your_Turboveg_root_directory")
 @
 
 
 \section{Service functions}
-<<dblisting>>=
+<<dblisting, eval=FALSE>>=
 tv.db()
 @
 will give you a list of possible database names (directories within the Turboveg Data directory).
@@ -107,17 +110,17 @@ However, whenever you use a Turboveg database name in a function, the Reference 
 Package vegdata contains several service functions to query the taxonomic information contained in the reference list.
 <<tax>>=
 tax('Achillea millefolium')
-# tax('Achilleus millefoliae', simplify=TRUE, genus=TRUE, epithet=TRUE)
 @
 
-"GermanSL 1.2" is not included in vegdata to keep the R package small. Instead the reference list will be automatically downloaded into the tv\_home directory (see \texttt{tv.home()}), if it is not installed but needed. If you want to use a different list, specify \texttt{refl=<Name of your list>} according to the directory name in the Turboveg directory \emph{Species}.
-Function \texttt{tax} will use the given character string, or 7 letter abbreviation or TaxonUsageID (called SPECIES\_NR in Turboveg) to look for all (partially) matching species names within the reference list.
+The GermanSL is not included in vegdata to keep the R package small. Instead the reference list will be automatically downloaded into the tv\_home directory (see \texttt{tv.home()}) or a temporyra folder, if it is not installed but needed. If you want to use a different list, specify \texttt{refl=<Name of your list>} according to the directory name in the Turboveg directory \emph{Species}.
+Function \texttt{tax} can use the given species name (with option strict=FALSE also name parts), or 7 letter abbreviation or the TaxonUsageID (called SPECIES\_NR in Turboveg) to look for all (partially) matching species names within the reference list.
 <<>>=
-tax('Achillea millefolium', strict=TRUE, verbose=TRUE) 
+tax('Achillea millefolium', strict=TRUE, verbose=TRUE)
+tax('Achylleus x millefoliae', simplify=TRUE, hybrid=TRUE)
 @
 Additional to the Turboveg standard fields comprehensive information for every taxon is stored in an extra file (tax.dbf) which can be used with option \textit{verbose=TRUE}. \\
 \textit{tax} will give you all matching names by default. If you set option \textit{strict=TRUE}, only the species with exact match to the given character string will be returned. \\
-\textit{syn} will give you all taxon names within the swarm of synonyms. The valid name is markes in colum SYNONYM with FALSE.
+\textit{syn} will give you all taxon names within the swarm of synonyms. The valid name is marked in column SYNONYM with FALSE.
 
 <<syn>>=
 tax('Elytrigia repens')$TaxonName
@@ -220,16 +223,21 @@ This condensed format shows only presences of species observations. Every specie
 \caption{Steps of taxonomic interpretation}
 \end{figure}
 
+
+
 \subsection{Function taxval}
 
 We are using the taxonomic reference list GermanSL \citep{Jansen2008} which contains not only information about synonymy of species names, but also about the taxonomic hierarchy. This enables several semi-automatic enhancements of the taxonomic information stored in your vegetation database. If your database is not referenced to GermanSL (and can not be converted), you have to dismiss function \texttt{taxval} (option tax=FALSE in \texttt{tv.veg}) and do the taxonomic harmonization by hand (function \texttt{comb.species}).
 
-<<taxval, eval=TRUE>>=
-obs.taxval <- taxval(obs.tax, db=db, mono='lower')
-@
+\footnotesize
 
-The database contains 25 different names in the beginning.
-\paragraph{Synonyms} 5 of the species names are synonyms and are therefore transferred to legal taxon names, respectively numbers (see option syn='adapt'). If you want to preserve synonyms, choose option syn='conflict' or 'preserve'.
+<<taxval, eval=TRUE>>=
+obs.taxval <- taxval(obs.tax, db=db, mono='lower', sink=FALSE)
+@
+\normalsize
+
+The database contains 20 different names in the beginning.
+\paragraph{Synonyms} 4 of the species names are synonyms and are therefore transferred to legal taxon names, respectively numbers (see option syn='adapt'). If you want to preserve synonyms, choose option syn='conflict' or 'preserve'.
 
 \paragraph{Monotypic species within the area}
 Monotypic taxa are valid taxa which are the only child of their next higher taxonomic rank within the survey area. By default they will be converted by \texttt{taxval} to the higher rank. For instance \emph{Poa trivialis} is in Germany only represented by \emph{Poa trivialis subspecies trivialis}. Both taxa are valid, but for most analysis only one name for these identical entities must be used. By default a list of monotypic taxa within the GermanSL (whole Germany) is considered (see \texttt{tv.mono('GermanSL 1.2')}). The default is to set all monotypic species to the higher rank (because many monotypic subspecies can occur in vegetation databases). \\
@@ -244,10 +252,14 @@ The procedure has to be repeated until all occurring taxonomical levels are cons
 Especially with aggregates and their members the coarsening to the higher level can be a sad fate. If you have 100 occurrences of \textit{Achillea millefolium} but a single one with \textit{A. mill. agg.} you might want to clean your observational dataframe beforehand or do the aggregation afterwards manually with tv.veg(db, ag='preserve') and a manual correction with function comb.species (see below).
 
 I confess that it is a strange and complete artificial example. Starting with 25 names in the beginning only 13 taxa survived the valuation. All others had to be converted.
+
+\footnotesize
 <<Taxon>>=
 obs.taxval$TaxonName <-  species$TaxonName[match(obs.taxval$TaxonUsageID, species$TaxonUsageID)]
-obs.taxval[,c('RELEVE_NR', 'COVER_CODE', 'TaxonName')]
+obs.taxval$OriginalName <- obs.tax$TaxonName
+obs.taxval[,c('RELEVE_NR', 'COVER_CODE', 'TaxonName', 'OriginalName')]
 @
+\normalsize
 
 \paragraph{Critical Pseudonyms}
 Taxon misapplication is maybe the greatest danger in using survey data. Known misapplications of names (.auct) are embedded within GermanSL. Please pay attention, if these might also be relevant for your dataset. \\
@@ -258,7 +270,7 @@ Completely independent from the questions of correct taxonomic naming of a speci
 If you want only taxa of e.g. level "species" in your analyses but no other taxonomic level, use \texttt{taxval(obs, ag='adapt', rank='SPE')}. All hierarchical levels below the species level (including the above specified monotypic subspecies) are set to species level in this case.
 
 <<coarsen, eval=TRUE, results='hide'>>=
-tmp <- taxval(obs.tax, refl='GermanSL 1.2', ag='adapt', rank='FAM')
+tmp <- taxval(obs.tax, refl='GermanSL 1.2', ag='adapt', rank='FAM', sink=FALSE)
 tmp$oldTaxon <- tax(obs.tax$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
 tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
 @
@@ -271,10 +283,11 @@ Check \texttt{?taxval} and \texttt{args(taxval)} for more options.
 
 \subsection{Implementing other taxon views}
 
-If you wish to use another taxonomic concept (see \cite{Berendsohn1995}) than the default, you can use a conversion table to change synonymy etc. to catch your needs. 
+If you wish to use another taxonomic concept (\cite{Berendsohn1995}) than the default, you can use a conversion table to change synonymy etc. to catch your needs. 
 <<taxonviews, eval=FALSE>>=
-newconcept <- taxval(obs, db=db, concept='korneck1996')
+newconcept <- taxval(obs, db=db, concept='korneck1996', sink=FALSE)
 @
+However, writing files which contain the necessary changes is tidious and other taxon concept based systems have to be developed and used to cover the challenges of different taxon views.
 
 
 \section{Vegetation matrices}
@@ -288,10 +301,12 @@ Additionally care about species-plot attribute differentiation and combination, 
 
 At least in Europe most vegetation plots have information about the performance of a species within the survey area, often given in some kind of alphanumeric code for cover percentage within the survey plot. Different code systems are combined by using the mean cover percentage per cover code class. Function \texttt{tv.coverperc} will do this job according to the definitions in \emph{Turboveg/Popup/tvscale.dbf} and the entries in the header data column \texttt{COVERSCALE}.
 
-<<coverperc>>=
+<<coverperc, echo=2:4>>=
+options(width=120)
 obs <- tv.obs(db)
 obs <- tv.coverperc(db, obs)
-head(obs)
+tail(obs)
+options(width=110)
 @
 
 A few simple possibilities for percentage cover transformations are directly included in the \texttt{tv.veg} code, e.g. to use only presence-absence information you can choose option \texttt{cover.transform = 'pa'}.
@@ -371,7 +386,7 @@ It is stated in the output, if you have to check and possibly correct 0 values.
 
 \section{VegetWeb, the National German vegetation plot repository}
 
-To prevent incompatibilities with Windows users who want to use Turboveg data but do not want to use VegetWeb data or are not able to install R package RMySQL, I excluded the VegetWeb functions from package vegdata. They can still be downloaded from the following website
+To prevent incompatibilities with Windows users who want to use Turboveg data but do not want to use \url{http://www.vegetweb.de}{VegetWeb} data or are not able to install R package RMySQL, I excluded the VegetWeb functions from package vegdata. They can still be downloaded from the address:
 
 <<VegetWeb, eval=FALSE>>=
 source('http://geobot.botanik.uni-greifswald.de/download/r_package/vegetweb.r')
@@ -380,7 +395,7 @@ source('http://geobot.botanik.uni-greifswald.de/download/r_package/vegetweb.r')
 \section{ESVeg, a XML exchange format for vegetation data}
 \label{ESVeg}
 
-First preliminary functions to load vegetation data from ESVeg formatted XML files are now implemented. As soon as there is a software to use Veg-X, the international TDWG exchange standard for vegetation data, I will implement functions for this.
+Some preliminary functions to load vegetation data from ESVeg formatted XML files are now implemented.
 
 <<ESVeg>>=
 destfile <- tempfile()
@@ -389,7 +404,9 @@ T302.site <- ESveg.site(destfile)
 T302.site <- T302.site[!is.na(T302.site$LONGITUDE),]
 @
 
+As soon as there is a software to use \texttt{Veg-X}, the international TDWG exchange standard for vegetation data, I will try to implement functions for this.
 
+ 
 \section{Additional functions}
 
 Use help(package='vegdata') for a complete list of available functions and data sets in vegdata.
@@ -443,12 +460,12 @@ The package \emph{vegdata} serves mostly as a helper for the analysis of vegetat
 
 \subsection{Plot coordinates of vegetation relev\'{e}s into an interactive Google Map}
 
-We will use data from VegetWeb (Schmitt, Fartmann, Hoelzel 2010 Phytosociology and ecology of \emph{Gladiolus palustris} in southern Bavaria, Tuexenia 30, p. 105-128.) to make an interactive map of plot locations. The data has already been loaded through the ESVeg functionality \ref{ESVeg}.
+We will use data from url{http://www.vegetweb.de}{VegetWeb} (Schmitt, Fartmann, Hoelzel 2010 Phytosociology and ecology of \emph{Gladiolus palustris} in southern Bavaria, Tuexenia 30, p. 105-128.) to make an interactive map of plot locations. The data has already been loaded through the ESVeg functionality \ref{ESVeg}.
 
 
 A database with \Sexpr{nrow(T302.site)} plots with plot locations.
 
-If you do not have geodesic coordinates as used in Google Earth (EPSG-Code 4326), you could convert coordinates with R packages rgdal.
+If you do not have geodesic coordinates as used in Google Earth (EPSG-Code 4326), you can convert coordinates with R packages rgdal.
 
 <<eval=FALSE>>=
 library(rgdal)
@@ -541,5 +558,6 @@ The first axis of our NMDS plot show the influence of mean groundwater level on 
 
 \bibliographystyle{ecol_let}
 \bibliography{vegdata}
+
 
 \end{document}

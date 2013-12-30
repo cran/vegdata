@@ -9,8 +9,9 @@ Compare different taxonomical reference lists.}
 The function checks for different taxon numbers and, or taxon names in two TURBOVEG reference lists.}
 
 \usage{
-tv.compRefl(refl1, refl2, tv_home, check.nr=FALSE, verbose=FALSE, Sink=TRUE, 
-filter.1, filter.2, new = FALSE, file="compRefl.txt", ...)
+   tv.compRefl(refl1, refl2, tv_home, check.nr=FALSE, 
+   simplify = TRUE, verbose=FALSE, Sink=TRUE, 
+   filter.1, filter.2, new = FALSE, file="compRefl.txt", ...)
 }
 
 \arguments{
@@ -18,6 +19,7 @@ filter.1, filter.2, new = FALSE, file="compRefl.txt", ...)
   \item{refl2}{Second reference list to compare.}
   \item{tv_home}{TURBOVEG installation path. If not specified, guessed by code{tv.home} }
   \item{check.nr}{Check equality of species numbers.}
+  \item{simplify}{normalize taxon names with function taxname.simplify}
   \item{verbose}{Print species names on screen.}
   \item{Sink}{Write text file with differences.}
   \item{filter.1}{Character vector of filter keywords for refl1 to omit taxa from the comparison.}

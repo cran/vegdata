@@ -17,7 +17,7 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE,
     if(missing(refl)) refl <- tv.refl(db = db[1], tv_home = tv_home)
     cat('Taxonomic reference list: ',refl, '\n')
     if(taxval) 
-	obs <- taxval(obs=obs, refl = refl, ...)
+    		obs <- taxval(obs=obs, refl = refl, ...)
 ## CoverCode
     if(convcode){
         cat('converting cover code ... \n')

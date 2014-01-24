@@ -28,11 +28,13 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
     names(st) <- levels(clust)
 
     if(!is.null(mupa) | class(mupa)=='multipatt' & ncl < 1) {
-      if(class(mupa)!='multipatt') mu <- multipatt(veg, clust, ...) else mu <- mupa
-      #      st <- st[rownames(st) %in% rownames(sig),]     
-      o <- order(mu$sign[,'index'])
+      if(class(mupa)!='multipatt') {
+      	 require(indicspecies) || stop("Needs package indicspecies (function multipatt)")
+    	    mu <- multipatt(veg, clust, ...) } else mu <- mupa
+      # st <- st[rownames(st) %in% rownames(sig),]     
+      # o <- order(mu$sign[,'index'])
       df <- mu$sign
-      df[, 1:ncl] <- mu$sign[,1:ncl] * st
+      df[, 1:ncl] <- st # mu$sign[,1:ncl] * st
       colnames(df)[1:ncl] <- levels(clust)
       st <- df
     }

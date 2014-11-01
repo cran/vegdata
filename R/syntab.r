@@ -1,3 +1,5 @@
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("multipatt"))
+
 syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, mupa=NULL, dec = 0, refl, ...)
 {
 #    if(fullnames & missing(refl)) stop('Please specify taxonomic reference list for fullnames.')
@@ -6,10 +8,11 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
     ncl <- length(unique(clust))
     cat(' Number of clusters: ', ncl, '\n')
     nb.rel.clust <- as.numeric(table(clust))
-    cat('Cluster frequency', nb.rel.clust,'\n')
+    cat(' Cluster frequency', nb.rel.clust,'\n')
+    if(any(nb.rel.clust == 0)) stop("All cluster levels must be represented by plots.")
     if(is.null(levels(clust))) levels(clust) <- 1:length(table(clust))
-    sp.veg <- split(veg, clust, drop=FALSE)
     if(any(colSums(veg)==0)) stop('Some species without occurrence.')
+    sp.veg <- split(veg, clust, drop=FALSE)
     if(type=='rel') {
     	tmp <- lapply(sp.veg, function(x) colSums(x > 0))
     	temp <- vector('list', length=ncl)
@@ -45,24 +48,30 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
       nam <- tax(rownames(st), verbose=FALSE, syn=FALSE, refl, ...)
       rownames(st) <- nam$TaxonName[match(rownames(st), nam$LETTERCODE)]
       }
-    class(st) <- c('syntab', 'data.frame')
-#    print(st)
-    return(st)
+    out <- list(syntab=st, clust=clust)
+    class(out) <- c('syntab', 'list')
+#    print(out)
+    return(out)
 }
 
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("st"))
+
 print.syntab <- function(x, zero.print='.', trait, limit = 1, minstat = 0, alpha = 0.05, ...) {
+  clust <- st[[2]]
+  x <- x$syntab
   if(any(c('stat','index','p.value') %in% names(x))) {
     if(any(is.na(x[1:(ncol(x)-3)]))) stop('NA values in frequency table. Do you have species without occurrences in your matrix?')
-    mu=TRUE } else {
+    mu=TRUE 
+    } else {
       if(any(is.na(x))) stop('NA values in frequency table. Do you have species without occurrences in your matrix?')
-      mu=FALSE
+    mu=FALSE
   }
   if(mu) {
     stat <- x[,'stat']; x <- x[,-which(names(x)=='stat')]
     index <- x[,'index']; x <- x[,-which(names(x)=='index')]
     p.value <- x[,'p.value']; x <- x[,-which(names(x)=='p.value')]
     select <- stat > minstat & !is.na(stat) & p.value < alpha & !is.na(p.value) & apply(x, 1, function(y) max(y) >= limit)
-    } else  select <- rep(TRUE, length = nrow(x))
+    } else  select <- apply(x, 1, function(y) max(y) >= limit)
   x <- x[select, ]
   if(zero.print != "0" && any(i0 <- x == 0)) {
       x[i0] <- sub("0", zero.print, x[i0])
@@ -82,6 +91,11 @@ print.syntab <- function(x, zero.print='.', trait, limit = 1, minstat = 0, alpha
 		x <- cbind(x, trait)
 #		names(x)[names(x)=='trait'] <- traitname
 	}
+ncl <- length(unique(clust))
+cat(' Number of clusters: ', ncl, '\n')
+nb.rel.clust <- as.numeric(table(clust))
+cat(' Cluster frequency', nb.rel.clust,'\n')
+
   print.data.frame(x, ...)
  }
 

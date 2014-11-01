@@ -12,15 +12,16 @@ tv.home <- function() {
               tv_home <- NA
   }
   if(is.na(tv_home)) {
-   cat('\nNo Turbowin installation path found. \n')
-   ANSWER <- readline("Should I use \n 1) the vegdata package path, or \n 2) a temporary folder? ")
+   message('\nNo Turbowin installation path found. \n')
+   ANSWER <- readline("Should I use \n 1) the vegdata package path (recommended),  or \n 2) a temporary folder? ")
    tv_home <- switch(substr(ANSWER, 1, 1),
-         "1" = file.path(path.package('vegdata'), 'tvdata', 'Species'),
+         "1" = file.path(path.package('vegdata'), 'tvdata'),
          tempdir()
    )
-   for(d in c('Popup', 'Data', 'Species')) {
+   if(!file.exists(file.path(tv_home, 'tvdata', 'Popup', 'tvscale.dbf')))
+     for(d in c('Popup', 'Data', 'Species')) {
      dir.create(file.path(tv_home, d))
-     if(d=='Data') {
+     if(d == 'Data') {
        wd <- getwd()
        setwd(file.path(path.package('vegdata'), 'tvdata', 'Data')  )
        dbs <- list.dirs(, recursive=TRUE, full.names=FALSE)
@@ -40,7 +41,7 @@ tv.home <- function() {
   options(tv_home=tv_home)
   } else {
   tv_home <- getOption('tv_home')
-#  cat('Turboveg root directory has already been set to "', tv_home,'".\n', sep='')
+#  message('Turboveg root directory has already been set to "', tv_home,'".\n', sep='')
   }
   invisible(tv_home)
 }

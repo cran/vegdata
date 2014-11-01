@@ -1,3 +1,5 @@
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("write.dbf"))
+
 tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRUE, verbose = FALSE, Sink = TRUE, filter.1, filter.2, new = FALSE, file="compRefl.txt", ...)  {
   if (missing(tv_home)) tv_home <- tv.home()
     refl.1 <- if(is.character(refl1)) read.dbf(file.path(tv_home, "Species", refl1, "tax.dbf")) else refl1

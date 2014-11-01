@@ -1,3 +1,4 @@
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("gwindow", "gtree", "addHandlerDoubleclick", "svalue"))
 
 ##### Child taxa of a taxon
 child <- function (x, refl = tv.refl(), gen=4, tree=FALSE, quiet=FALSE, syn=FALSE, ...) {
@@ -44,8 +45,9 @@ child <- function (x, refl = tv.refl(), gen=4, tree=FALSE, quiet=FALSE, syn=FALS
       x <- species[match(x, species$TaxonUsageID),]
       if(syn) {
         ch <- species[which(species$IsChildTaxonOfID == x$TaxonUsageID),'TaxonUsageID']
-        ch <- do.call(rbind, lapply(ch, function(x) syn(x, quiet=TRUE, refl=refl)))
-      } else ch <- species[which(species$IsChildTaxonOfID == x$TaxonUsageID),]
+        if(length(ch)>0) ch <- do.call(rbind, lapply(ch, function(x) syn(x, quiet=TRUE, refl=refl)))
+      } else 
+      	ch <- species[which(species$IsChildTaxonOfID == x$TaxonUsageID),]
       if(is.null(ch)) stop('ch is NULL')
        else
         if(nrow(ch)==0) {

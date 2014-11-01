@@ -1,3 +1,5 @@
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("lc.1"))
+
 tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, 
   lc = c("layer","mean","max","sum","first"), pseudo, values = "COVER_PERC", 
   spcnames = c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), 
@@ -76,7 +78,6 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE,
    if (any(is.na(colnames(results)))) warning("Some taxa without names, check reference list!")
 ## Result
 #   results <- results[, order(names(results))]
-   class(results) <- c("veg", "data.frame")
    if(cover.transform!='no') {
       if(cover.transform == 'pa') results <- as.data.frame(ifelse(results > 0, 1,0))
       if(cover.transform == 'sqrt') results <- as.data.frame(round(sqrt(results),dec))

@@ -1,7 +1,7 @@
 Package: vegdata
-Version: 0.6-6
+Version: 0.6-7
 Encoding: UTF-8
-Date: Jan 2014
+Date: Oct 2014
 Title: Functions to access vegetation databases (Turboveg) and prepare
         vegetation data especially its taxonomy for analysis
 Author: Florian Jansen <jansen@uni-greifswald.de>
@@ -12,10 +12,10 @@ Suggests: vegan, labdsv, akima, gWidgets, googleVis, indicspecies,
         knitr
 LazyData: Yes
 VignetteBuilder: knitr
-Description: Handling of vegetation data sets from Turboveg, VegetWeb and ESVeg Exports. Taxonomic harmonization of datasets with appropriate taxonomic lists (e.g. the German taxonomical standard list "GermanSL").
+Description: Handling of vegetation data from Turboveg, VegetWeb and ESVeg Exports. Taxonomic harmonization of data with appropriate taxonomic lists (e.g. the German taxonomical standard list "GermanSL").
 License: GPL (>= 2)
 URL: http://www.botanik.uni-greifswald.de/GermanSL.html
-Packaged: 2014-01-24 17:04:02 UTC; jansen
+Packaged: 2014-11-01 12:16:28 UTC; jansen
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2014-01-24 18:46:55
+Date/Publication: 2014-11-01 15:36:09

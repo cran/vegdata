@@ -1,12 +1,13 @@
 
 # As dBase is an old DOS format, Umlaute  are  stored  using  a  different  code  table
 #    (namely ASCII) than most modern unices (namely ANSI).
-taxname.abbr <- function(x, hybrid=FALSE, species=FALSE) {
+taxname.abbr <- function(x, hybrid=FALSE, addition=FALSE, species=FALSE) {
 #  loc <- Sys.getlocale(category='LC_CTYPE')
 #  Sys.setlocale("LC_ALL","C")
 #  print('Executing taxname.abbr ...')
     x <- sub('\ ag[.]', ' agg.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ aggr[.]', ' agg.', x, perl=TRUE, useBytes=TRUE)
+    x <- sub('\ species group[\ ]', ' agg.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ ssp[.]', ' subsp.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ v[.]\ ', ' var. ', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ sv[.]\ ', ' subvar. ', x, perl=TRUE, useBytes=TRUE)
@@ -39,6 +40,7 @@ taxname.abbr <- function(x, hybrid=FALSE, species=FALSE) {
 			} else {
 			x <- sub('\ sp[.]' , '', x, perl=TRUE, useBytes=TRUE)
 			x <- sub('\ spec[.]' , '', x, perl=TRUE, useBytes=TRUE)
+			x <- sub('\ species' , '', x, perl=TRUE, useBytes=TRUE)
 			}
     #  Sys.setlocale(category='LC_CTYPE', locale=loc)
    return(x)  

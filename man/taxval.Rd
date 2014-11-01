@@ -26,7 +26,7 @@ comb.species(x, sel, newname, refl)
   \item{concept}{Character vector calling the desired taxonomical concepts dataframe(s), see details}
   \item{syn}{Treatment of synonyms, see details}
   \item{ag}{Treatment of childs and parents within the dataset, see details}
-  \item{rank}{If ag='adapt', rank specifies the taxonomic rank to which taxa should be coarsened to. All higher taxa will be deleted.}
+  \item{rank}{If ag='adapt', rank specifies the taxonomic rank to which taxa should be coarsened to. All higher taxa in this taxonomic tree will be deleted, see maxtaxlevel.}
   \item{mono}{Should monotypic taxa be combined at subspecies = \option{lower} or species level = \option{higher}}
   \item{monolist}{Name of monotypic species list, must be in dbase format and in the same directory as the reference list, e.g. \code{"monotypic-D"} for the area of germany.}
   \item{uncertain}{List of length two, first the column name of uncertainty information, second a dataframe with uncertainty value and in column two one of 'delete','aggregate','preserve', see example.}

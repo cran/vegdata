@@ -18,8 +18,9 @@ load.taxlist <- function(refl, reflist.type= c('Turboveg', 'EDIT') , verbose=FAL
           tfile <- tempfile()
            if(grepl('GermanSL', refl)) {
             version <- paste("version", substr(refl, 10, nchar(refl)), sep = "")
-            download.file(paste('http://geobot.botanik.uni-greifswald.de/download/GermanSL',version,'GermanSL.zip',sep='/'), tfile)
-            unzip(tfile, exdir= storage)
+            m <- try(download.file(paste('http://geobot.botanik.uni-greifswald.de/download/GermanSL',version,'GermanSL.zip',sep='/'), tfile), silent=TRUE)
+            if(m == 0) unzip(tfile, exdir= storage) else 
+              unzip(file.path(path.package('vegdata'), 'tvdata','Species','TaxrefExample.zip'), exdir = storage)
            }
            if(grepl('Czsk', refl)) {
             version <- paste("version", substr(refl, 6, nchar(refl)), sep = "")

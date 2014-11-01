@@ -1,4 +1,4 @@
-
+# x <- c('Aconitum vulgare', 'Homalothecium lutescens')
 #########################################################
 ## function tax
 #########################################################
@@ -34,16 +34,16 @@ select.taxa <- function(x, species, strict, vernacular = FALSE, simplify = FALSE
 #?  if(simplify) strict <- TRUE
   if(is.numeric(x) | is.integer(x))
     l <- species[match(x, species$TaxonUsageID),]  	## Tax numbers
+  if(vernacular) species$TaxonName <- species$VernacularName
   if(is.character(x)) {															## Selecting by string
-    if(nchar(x[1]) == 7 & x[1] == toupper(x[1]))  { ## Lettercode
+  	if(nchar(x[1]) == 7 & x[1] == toupper(x[1]))  { ## Lettercode
       l <- species[species$LETTERCODE %in% x,]
       if(nrow(l) > 1) l <- l[!l$SYNONYM,]
-    } else 
-   	if(nchar(x) == 36) {
+    } else {
+   	if(all(sapply(x, function(x) nchar(x) == 36))) {
    	  message('x is interpreted as 36 character representation of a GUID Taxon ID.')
       l <- species[match(x, species$TaxonUsageID),] ## GUID Tax ID's		
-    } else {	      																				## Taxnames
-    if(vernacular) species$TaxonName <- species$VernacularName
+    }   																				## Taxnames
     x <- taxname.abbr(x)
 		  if(simplify) {
 		  	species$TaxonName <- taxname.simplify(species$TaxonName, genus, epithet, ...)
@@ -57,11 +57,10 @@ select.taxa <- function(x, species, strict, vernacular = FALSE, simplify = FALSE
 			if(!strict) {
 				s <- sapply(x, function(f) grep(f, species$TaxonName, useBytes=TRUE))
 				l <- species[unlist(s),]
-			} else
-				l <- species[sapply(x, function(f) match(species$TaxonName, f, nomatch = 0) > 0),]
-#	  		l <- rbind(l, species[match(species$TaxonName, x[i], nomatch = 0) > 0, ])
+			} else {
+				l <- species[match(x, species$TaxonName),]
     }
-  }
+  } }
  	if(nrow(l) == 0) message('No species found!')
  	return(l)
 }
@@ -69,7 +68,7 @@ select.taxa <- function(x, species, strict, vernacular = FALSE, simplify = FALSE
 ##### end of tax internal functions #####
 
 #### beginning to execute function tax()
-if(missing(refl)) refl <- tv.refl(refl, tv_home=tv_home)
+if(missing(refl)) refl <- tv.refl(tv_home=tv_home)
 if(!quiet) cat('Reference list used:', refl, '\n')	
 species <- load.taxlist(refl, reflist.type=reflist.type, verbose=verbose)
 # refl='GermanSL 1.2'; verbose=FALSE; vernacular=FALSE;simplify=FALSE; strict=FALSE

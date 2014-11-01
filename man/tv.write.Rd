@@ -5,7 +5,8 @@
 \description{Write species-plot observations and site information to Turboveg database.}
 
 \usage{
-tv.write(x, site, name, cover = c("code", "perc"), overwrite = FALSE, ...)
+tv.write(x, site, name, cover = c("code", "perc"), overwrite = FALSE, 
+                                              iconv="ISO-8859-1", ...)
 }
 
 \arguments{
@@ -14,6 +15,7 @@ tv.write(x, site, name, cover = c("code", "perc"), overwrite = FALSE, ...)
   \item{name}{Name of the database.}
   \item{cover}{Use of covercodes or (mean) cover percentages, see Details.}
   \item{overwrite}{Logical. Should an existing database be overwritten.}
+  \item{iconv}{specify locale if necessary}
   \item{\dots}{Additional arguments.}
 }
 

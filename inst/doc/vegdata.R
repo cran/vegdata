@@ -1,167 +1,124 @@
-
-## ----prep, echo=FALSE----------------------------------------------------
+## ----prep, echo=FALSE---------------------------------------------------------------------------------------
 library(knitr)
 options(width=110, digits=2)
 opts_chunk$set(comment = "", warning = FALSE, message = TRUE, echo = TRUE, tidy = TRUE, size="footnotesize")
 # read_chunk("some/script/I/want/to/load.R")
 
+## ----eval=FALSE---------------------------------------------------------------------------------------------
+#  vignette('vegdata')
 
-## ----eval=FALSE----------------------------------------------------------
-## vignette('vegdata')
-
-
-## ----load, results='hide'------------------------------------------------
+## ----load, results='hide'-----------------------------------------------------------------------------------
 library(vegdata)
 
-
-## ----eval=TRUE-----------------------------------------------------------
+## ----eval=TRUE----------------------------------------------------------------------------------------------
 tv.home()
 
+## ----eval=FALSE---------------------------------------------------------------------------------------------
+#  # options(tv_home="path_to_your_Turboveg_root_directory")
 
-## ----eval=FALSE----------------------------------------------------------
-## # options(tv_home="path_to_your_Turboveg_root_directory")
+## ----dblisting, eval=FALSE----------------------------------------------------------------------------------
+#  tv.db()
 
-
-## ----dblisting, eval=FALSE-----------------------------------------------
-## tv.db()
-
-
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------------------------------------
 tv.refl()
 
-
-## ----tax-----------------------------------------------------------------
+## ----tax----------------------------------------------------------------------------------------------------
 tax('Achillea millefolium')
 
-
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------------------------------------
 tax('Achillea millefolium', strict=TRUE, verbose=TRUE)
 tax('Achylleus x millefoliae', simplify=TRUE, hybrid=TRUE)
 
-
-## ----syn-----------------------------------------------------------------
+## ----syn----------------------------------------------------------------------------------------------------
 tax('Elytrigia repens')$TaxonName
 syn('Elytrigia repens')
 
-
-## ----childs--------------------------------------------------------------
+## ----childs-------------------------------------------------------------------------------------------------
 childs(27, quiet=TRUE)$TaxonName
 parents('ACHIMIL')
 
-
-## ----db------------------------------------------------------------------
+## ----db-----------------------------------------------------------------------------------------------------
 db <- 'taxatest'
 
+## ----meta, eval=FALSE---------------------------------------------------------------------------------------
+#  tv.metainfo(db)
 
-## ----meta, eval=FALSE----------------------------------------------------
-## tv.metainfo(db)
-
-
-## ----obs-----------------------------------------------------------------
+## ----obs----------------------------------------------------------------------------------------------------
 obs.tax <- tv.obs(db)
 # Adding species names
 species <- tax('all')
 obs.tax$TaxonName <-  species$TaxonName[match(obs.tax$TaxonUsageID, species$TaxonUsageID)]
 head(obs.tax[,c('RELEVE_NR','TaxonUsageID','COVER_CODE','LAYER','TaxonName')])
 
-
-## ----taxval, eval=TRUE---------------------------------------------------
+## ----taxval, eval=TRUE--------------------------------------------------------------------------------------
 obs.taxval <- taxval(obs.tax, db=db, mono='lower', sink=FALSE)
 
-
-## ----Taxon---------------------------------------------------------------
+## ----Taxon--------------------------------------------------------------------------------------------------
 obs.taxval$TaxonName <-  species$TaxonName[match(obs.taxval$TaxonUsageID, species$TaxonUsageID)]
 obs.taxval$OriginalName <- obs.tax$TaxonName
 obs.taxval[,c('RELEVE_NR', 'COVER_CODE', 'TaxonName', 'OriginalName')]
 
-
-## ----coarsen, eval=TRUE, results='hide'----------------------------------
+## ----coarsen, eval=TRUE, results='hide'---------------------------------------------------------------------
 tmp <- taxval(obs.tax, refl='GermanSL 1.2', ag='adapt', rank='FAM', sink=FALSE)
 tmp$oldTaxon <- tax(obs.tax$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
 tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
 
-
-## ----print.coarsen-------------------------------------------------------
+## ----print.coarsen------------------------------------------------------------------------------------------
 head(tmp[,c('oldTaxon','newTaxon')], 10)
 
+## ----taxonviews, eval=FALSE---------------------------------------------------------------------------------
+#  newconcept <- taxval(obs, db=db, concept='korneck1996', sink=FALSE)
 
-## ----taxonviews, eval=FALSE----------------------------------------------
-## newconcept <- taxval(obs, db=db, concept='korneck1996', sink=FALSE)
-
-
-## ----coverperc, echo=2:4-------------------------------------------------
+## ----coverperc, echo=2:4------------------------------------------------------------------------------------
 options(width=120)
 obs <- tv.obs(db)
 obs <- tv.coverperc(db, obs)
 tail(obs)
 options(width=110)
 
+## ----pseudo1, eval=FALSE------------------------------------------------------------------------------------
+#  data(lc.0)
+#  tv.veg(db, pseudo = list(lc.0, c("LAYER")), lc = "layer")
 
-## ----pseudo1, eval=FALSE-------------------------------------------------
-## data(lc.0)
-## tv.veg(db, pseudo = list(lc.0, c("LAYER")), lc = "layer")
-
-
-## ----lc0, echo=FALSE, warning=FALSE--------------------------------------
+## ----lc0, echo=FALSE, warning=FALSE-------------------------------------------------------------------------
 data(lc.0)
 tmp <- tv.veg(db, tax=FALSE, pseudo = list(lc.0, "LAYER"), lc = "layer", quiet=TRUE)
 names(tmp)
 
-
-## ----Season--------------------------------------------------------------
+## ----Season-------------------------------------------------------------------------------------------------
 comb <- list(data.frame(SEASON=0:4, COMB=c(0,'Spring','Summer','Autumn','Winter')),'SEASON')
 names(tv.veg(db, tax=FALSE, pseudo=comb, quiet=TRUE))
 
-
-## ----layer, results='hide', warning=FALSE--------------------------------
+## ----layer, results='hide', warning=FALSE-------------------------------------------------------------------
 data(lc.1)
 veg <- tv.veg(db, lc = "sum", pseudo = list(lc.1, 'LAYER'), dec = 1, quiet=TRUE)
 
-
-## ----layerdiff-----------------------------------------------------------
+## ----layerdiff----------------------------------------------------------------------------------------------
 veg[,1:10]
 
-
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------------------------------------
 obs.tax$TaxonUsageID[obs.tax$TaxonUsageID == 27] <- 31
 
-
-## ----replace-------------------------------------------------------------
+## ----replace------------------------------------------------------------------------------------------------
 taxon.repl <- data.frame(old=c(27), new=c(31))
 obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID, 
     match(taxon.repl$old, obs.tax$TaxonUsageID), taxon.repl$new)
 
-
-## ----comb.spec, eval=TRUE------------------------------------------------
+## ----comb.spec, eval=TRUE-----------------------------------------------------------------------------------
 veg <- tv.veg('taxatest', quiet=TRUE)
 comb.species(veg, sel=c('QUERROB','QUERROB.Tree'))
 
-
-## ----site.echo, eval=TRUE------------------------------------------------
+## ----site.echo, eval=TRUE-----------------------------------------------------------------------------------
 site <- tv.site(db)
 
+## ----eval=FALSE---------------------------------------------------------------------------------------------
+#  tv.compRefl('taxref1', 'taxref2')
 
-## ----VegetWeb, eval=FALSE------------------------------------------------
-## source('http://geobot.botanik.uni-greifswald.de/download/r_package/vegetweb.r')
-
-
-## ----ESVeg---------------------------------------------------------------
-destfile <- tempfile()
-download.file('http://geobot.botanik.uni-greifswald.de/download/data/T302.xml', destfile)
-T302.site <- ESveg.site(destfile)
-T302.site <- T302.site[!is.na(T302.site$LONGITUDE),]
-
-
-## ----eval=FALSE----------------------------------------------------------
-## tv.compRefl('taxref1', 'taxref2')
-
-
-## ----elbaue, results='hide'----------------------------------------------
+## ----elbaue, results='hide'---------------------------------------------------------------------------------
 elbaue <- tv.veg('elbaue')
 elbaue.env <- tv.site('elbaue')
 
-
-## ----cluster-------------------------------------------------------------
+## ----cluster------------------------------------------------------------------------------------------------
 clust <- vector('integer', nrow(elbaue.env))
 clust[elbaue.env$MGL < -50 & elbaue.env$SDGL < 50] <- 1		# dry sites, low deviation
 clust[elbaue.env$MGL < -50 & elbaue.env$SDGL >= 50] <- 2	# dry sites, high deviation
@@ -169,8 +126,7 @@ clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL >= 50] <- 3	# wet sites, high devi
 clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL < 50] <- 4	# wet sites, low deviation
 levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
 
-
-## ----syntab.mupa---------------------------------------------------------
+## ----syntab.mupa--------------------------------------------------------------------------------------------
 require(indicspecies)
 traits <- tv.traits()
 trait <- data.frame(EIV_F = traits$OEK_F, EIV_N = traits$OEK_N)
@@ -178,36 +134,7 @@ rownames(trait) <- traits$ABBREVIAT
 st <- syntab(elbaue, clust, mupa=TRUE, fullnames=TRUE)
 print(st, limit=30, trait=trait)
 
-
-## ----eval=FALSE----------------------------------------------------------
-## library(rgdal)
-## library(googleVis)
-## coord <- data.frame(lat=T302.site$LATITUDE, long=T302.site$LONGITUDE)
-## coordinates(coord) <- c("long", "lat")
-## proj4string(coord) <- CRSargs(CRS("+init=epsg:31468")) # GK, 4. Stripe
-## coord <- spTransform(coord, CRS("+init=epsg:4326")) # WGS 84, geographical coordinates, decimal degrees
-## T302.site$long <- coordinates(coord)[,1]
-## T302.site$lat <- coordinates(coord)[,2]
-
-
-## ----eval=FALSE----------------------------------------------------------
-## T302.site$loc <- paste(T302.site$LATITUDE, T302.site$LONGITUDE, sep=':')
-## T302.site$tip <- paste(paste('Releve_NR:', T302.site$plotCode), paste('Table:',
-##   T302.site$referenceTable), paste('Nr. in table:', T302.site$referencePlot),
-##   paste('Date:', T302.site$obsEndDate), paste('Landuse:', T302.site$NUTZUNG),
-##   paste('Author:', T302.site$ERHEBER), paste('Locality:', T302.site$LOKALIT__T),
-##   paste('Longitude:', T302.site$LONGITUDE), paste('Latitude:', T302.site$LATITUDE),
-##   paste('geogr. Uncertaintity:', T302.site$GENAUIGKEI), sep='<BR>')
-
-
-## ----eval=FALSE, fig.keep='none'-----------------------------------------
-## places <- gvisMap(T302.site[,c('loc','tip')], 'loc', 'tip', options=list(showTip=TRUE,
-##   showLine=FALSE, enableScrollWheel=TRUE, mapType='hybrid', useMapTypeControl=TRUE,
-##   width=1000, height=800))
-## plot(places)
-
-
-## ----nmds, quiet=TRUE, results='hide', eval=TRUE-------------------------
+## ----nmds, quiet=TRUE, results='hide', eval=TRUE------------------------------------------------------------
 ## Data analyses
 library(vegan)
 veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE, 
@@ -216,8 +143,7 @@ mT.F <- meanTraits('OEK_F', elbaue)
 mT.N <- meanTraits('OEK_N', elbaue)
 env <- envfit(veg.nmds, data.frame(mT.F,mT.N))
 
-
-## ----nmdsplotfun, quiet=TRUE, results='hide'-----------------------------
+## ----nmdsplotfun, quiet=TRUE, results='hide'----------------------------------------------------------------
 library(labdsv)
 library(akima)
 color = function(x)rev(topo.colors(x))
@@ -238,9 +164,7 @@ nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', env = N
   ,...)
 }
 
-
-## ----nmdsplot, quiet=TRUE, results='hide', eval=TRUE, warning=FALSE------
+## ----nmdsplot, quiet=TRUE, results='hide', eval=TRUE, warning=FALSE-----------------------------------------
 nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env, 
         plottitle = 'NMDS of Elbaue floodplain vegetation')
-
 

@@ -1,5 +1,9 @@
+version 0.6.7 Oct 2014
+  * enhanced tv.write function
+
 version 0.6.6 Jan 2014
-  * faster tax
+  * faster tax function
+  * child and parent now also possible with synonyms
   * inconsistencies in taxval for regional monotypic taxa fixed
   * result of taxval will now be written on hard disk by default
   * Turboveg 2 replaces 100% cover values by "9x", workaround by tv.coverperc implemented

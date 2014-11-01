@@ -8,7 +8,7 @@
 \alias{parent}
 \alias{syn}
 
-\title{Query of Turboveg 2 taxonomic reference lists including concept synonomy and taxonomic hierarchy.}
+\title{Query of Turboveg 2 taxonomic reference lists including (if available) concept synonomy and taxonomic hierarchy.}
 
 \usage{
 \method{tax}{default}(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, 

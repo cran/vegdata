@@ -18,7 +18,7 @@ tv.traits <- function (db, trait.db = 'ecodbase.dbf', refl, quiet = FALSE, ...) 
     for(i in 1:ncol(ecodb)) if(is.factor(ecodb[,i])) {
       ecoDB[,i] <- iconv(as.character(ecodb[,i], "ISO-8859-1", ""))
       ecoDB[,i] <- type.convert(ecoDB[,i]) }
-    for(i in 1:ncol(ecoDB))  if(class(ecodb[,i]) != class(ecoDB[,i])) if(!quiet) message('Class of', names(ecoDB)[i], 'changed to ', class(ecoDB[,i]), '\n')
+    for(i in 1:ncol(ecoDB))  if(class(ecodb[,i]) != class(ecoDB[,i])) if(!quiet) message('Dat format of ', names(ecoDB)[i], ' changed to ', class(ecoDB[,i]), '\n')
     ecoDB
 }
 

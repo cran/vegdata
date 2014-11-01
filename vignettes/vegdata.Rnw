@@ -11,7 +11,6 @@
 \usepackage{hyperref}
 \usepackage{graphicx} 
 \usepackage{xcolor}
-\usepackage[english=american]{csquotes}
 \usepackage[left=25mm,right=20mm,top=35mm,bottom=35mm]{geometry}
 \usepackage{tikz}
 \usetikzlibrary{shapes}
@@ -382,30 +381,6 @@ The function is quite straightforward. After loading the file \emph{tvhabita.dbf
 It is stated in the output, if you have to check and possibly correct 0 values.
 
 
-
-
-\section{VegetWeb, the National German vegetation plot repository}
-
-To prevent incompatibilities with Windows users who want to use Turboveg data but do not want to use \url{http://www.vegetweb.de}{VegetWeb} data or are not able to install R package RMySQL, I excluded the VegetWeb functions from package vegdata. They can still be downloaded from the address:
-
-<<VegetWeb, eval=FALSE>>=
-source('http://geobot.botanik.uni-greifswald.de/download/r_package/vegetweb.r')
-@
-
-\section{ESVeg, a XML exchange format for vegetation data}
-\label{ESVeg}
-
-Some preliminary functions to load vegetation data from ESVeg formatted XML files are now implemented.
-
-<<ESVeg>>=
-destfile <- tempfile()
-download.file('http://geobot.botanik.uni-greifswald.de/download/data/T302.xml', destfile)
-T302.site <- ESveg.site(destfile)
-T302.site <- T302.site[!is.na(T302.site$LONGITUDE),]
-@
-
-As soon as there is a software to use \texttt{Veg-X}, the international TDWG exchange standard for vegetation data, I will try to implement functions for this.
-
  
 \section{Additional functions}
 
@@ -456,51 +431,6 @@ print(st, limit=30, trait=trait)
 \section{Vegetation analyses}
 
 The package \emph{vegdata} serves mostly as a helper for the analysis of vegetation data. Several powerful R packages like \emph{vegan} and others exist, to provide a very broad range of possibilities.
-
-
-\subsection{Plot coordinates of vegetation relev\'{e}s into an interactive Google Map}
-
-We will use data from url{http://www.vegetweb.de}{VegetWeb} (Schmitt, Fartmann, Hoelzel 2010 Phytosociology and ecology of \emph{Gladiolus palustris} in southern Bavaria, Tuexenia 30, p. 105-128.) to make an interactive map of plot locations. The data has already been loaded through the ESVeg functionality \ref{ESVeg}.
-
-
-A database with \Sexpr{nrow(T302.site)} plots with plot locations.
-
-If you do not have geodesic coordinates as used in Google Earth (EPSG-Code 4326), you can convert coordinates with R packages rgdal.
-
-<<eval=FALSE>>=
-library(rgdal)
-library(googleVis)
-coord <- data.frame(lat=T302.site$LATITUDE, long=T302.site$LONGITUDE)
-coordinates(coord) <- c("long", "lat")
-proj4string(coord) <- CRSargs(CRS("+init=epsg:31468")) # GK, 4. Stripe
-coord <- spTransform(coord, CRS("+init=epsg:4326")) # WGS 84, geographical coordinates, decimal degrees
-T302.site$long <- coordinates(coord)[,1]
-T302.site$lat <- coordinates(coord)[,2]
-@
-
-To give some information in the interactive map, we will Provide Hyperlink Tips:
-<<eval=FALSE>>=
-T302.site$loc <- paste(T302.site$LATITUDE, T302.site$LONGITUDE, sep=':')
-T302.site$tip <- paste(paste('Releve_NR:', T302.site$plotCode), paste('Table:', 
-  T302.site$referenceTable), paste('Nr. in table:', T302.site$referencePlot), 
-  paste('Date:', T302.site$obsEndDate), paste('Landuse:', T302.site$NUTZUNG), 
-  paste('Author:', T302.site$ERHEBER), paste('Locality:', T302.site$LOKALIT__T), 
-  paste('Longitude:', T302.site$LONGITUDE), paste('Latitude:', T302.site$LATITUDE), 
-  paste('geogr. Uncertaintity:', T302.site$GENAUIGKEI), sep='<BR>')
-@
-and the produced map will open in your web browser.
-
-<<eval=FALSE, fig.keep='none'>>=
-places <- gvisMap(T302.site[,c('loc','tip')], 'loc', 'tip', options=list(showTip=TRUE, 
-  showLine=FALSE, enableScrollWheel=TRUE, mapType='hybrid', useMapTypeControl=TRUE, 
-  width=1000, height=800))
-plot(places)
-@
-\begin{figure}
-\includegraphics[width=04cm]{googleVis}
-\caption{Spatial distribution of vegetation plots from a VegetWeb project. The map is interactive and scalable.}
-\end{figure}
-
 
 \subsection{Multivariate Ordinations}
 

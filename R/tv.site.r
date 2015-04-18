@@ -1,11 +1,11 @@
-tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="ISO-8859-1", ...) 
+tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="WINDOWS-1252", ...) 
 {
-ow <- options('warn')
+#  ow <- options('warn')
 # if(quiet) { options(warn=-1) }
 # if (is.list(db)) site <- tv.mysql(db, "tvhabita") else {
   if (missing(tv_home)) tv_home <- tv.home()
   site <- read.dbf(file.path(tv_home, "Data", db[1], "tvhabita.dbf"), as.is=TRUE)
-  if (suppressWarnings(any(site < -1e+05, na.rm = TRUE))) 
+  if (suppressWarnings(any(site[,sapply(site, is.numeric)] < -1e+05, na.rm = TRUE))) 
     print(c("WARNING! Values less than -100,000. \n", "WARNING! tvhabita.dbf may be corrupt. \n", "WARNING! Please correct by im- / exporting e.g. with OpenOffice."), quote = FALSE)
   if(length(db)>1) for(i in 2:length(db)) {
 	site.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvhabita.dbf'))
@@ -30,7 +30,8 @@ ow <- options('warn')
     for(i in names(site)) if(is.character(site[,i])) site[,i] <- iconv(site[,i], iconv, '')
 
     ### Time
-    if(any(is.na(site$DATE))) warning(sum(is.na(site$DATE)), ' releves without date. Not converted from factor to date format.') else {
+    if(any(is.na(site$DATE))) 
+      warning(sum(is.na(site$DATE)), ' releves without date. Not converted from factor to date format.') else {
     site$DATE <- gsub('/','',site$DATE)
 #      Date <- rep('no date', nrow(site))
     index <- nchar(as.character(site$DATE))==4
@@ -51,7 +52,7 @@ ow <- options('warn')
   fun <- function(x) all(is.na(x))
   na <- apply(site, 2, fun)
   if (drop) {
-      cat('\n The following columns contain no data and are omitted \n')
+      message('\n The following columns contain no data and are omitted:')
       print(names(site)[na], quote = FALSE)
       site <- site[, !na]
   }
@@ -59,22 +60,25 @@ ow <- options('warn')
   leer <- apply(site, 2, fun.2)
   if (drop) 
       if (any(leer)) {
-	  cat('\n The following numeric columns contain only 0 values and are omitted \n')
-	  print(names(site)[leer], quote = FALSE)
-	  site <- site[, !leer]
+  	  message('\n The following numeric columns contain only 0 values and are omitted:')
+	    print(names(site)[leer], quote = FALSE)
+	    site <- site[, !leer]
   }
   fun.3 <- function(x) is.numeric(x) & any(x == 0, na.rm = TRUE)
   null <- logical()
   for (i in 1:length(site)) null[i] <- fun.3(site[, i])
 
-    if (any(null)) {
-      cat(paste('\n', "The following numeric fields contain 0 values:", '\n'))
-    print(names(site)[null], quote = FALSE)
-    cat(' Please check if these are really measured as 0 values or if they are not measured \n and wrongly assigned because of Dbase restrictions. \n')
-    cat(" If so, use something like: \n site$Column_name[site$Column_name==0] <- NA \n summary(site[,c('", paste(names(site)[null], 
-	  collapse = "','"), "')]) \n", sep = "")       
-          }
+    if (any(null) && getOption('warn') >= 0) {
+#        options(warn=1)
+        message('\n', "The following numeric fields contain 0 values:")
+        print(names(site)[null], quote = FALSE)
+        message('Please check if these are really meant as 0 or if they are erroneously assigned because of DBase restrictions.')
+        message(paste("If so, use something like:"))
+        message("site$Column_name[site$Column_name==0] <- NA", '\n')
+#       paste("summary(site[,c('", paste(names(site)[null], collapse = "','"), "')]) \n", sep = "")
+      }
   site <- site[order(site$RELEVE_NR),]
+#  warning(ow)
   site
 }
 

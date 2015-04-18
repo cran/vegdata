@@ -1,6 +1,6 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("lc.1"))
 
-tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE, 
+tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE, 
   lc = c("layer","mean","max","sum","first"), pseudo, values = "COVER_PERC", 
   spcnames = c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), 
   obs, refl, RelScale, ...) 
@@ -15,6 +15,7 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE,
 #       cat("\n WARNING! Values less than -100,000. \n WARNING! tvabund.dbf may be corrupt. \n WARNING! Please correct by reexporting e.g. with OpenOffice.")
     data(lc.1, envir = environment())
     if(missing(pseudo)) pseudo <- list(lc.1,'LAYER')
+
 ## Taxa
     if(missing(refl)) refl <- tv.refl(db = db[1], tv_home = tv_home)
     cat('Taxonomic reference list: ',refl, '\n')
@@ -24,10 +25,10 @@ tv.veg <- function (db, tv_home, taxval = TRUE, convcode = TRUE,
     if(convcode){
         cat('converting cover code ... \n')
         if(missing(RelScale)) {
-	  if(missing(db)) stop('\nEither database name or a vector with CoverScale per releve has to be permitted, to cope with Cover Scale information\n')
-          if(missing(RelScale)) RelScale <- tv.site(db, tv_home=tv_home, quiet = TRUE)[, c("RELEVE_NR", "COVERSCALE")]
-          obs <- tv.coverperc(obs=obs, RelScale = RelScale, tv_home = tv_home, ...) 
-          } else 	obs <- tv.coverperc(db=db[1], obs=obs, RelScale=RelScale, tv_home = tv_home, ...)
+        if(missing(db)) stop('\nEither database name or a vector with CoverScale per releve has to be permitted, to cope with Cover Scale information\n')
+          RelScale <- tv.site(db, tv_home, quiet = TRUE)[, c("RELEVE_NR", "COVERSCALE")]
+          obs <- tv.coverperc(db, obs=obs, RelScale = RelScale, tv_home = tv_home, ...) 
+          } else 	obs <- tv.coverperc(db=db[1], obs=obs, RelScale = RelScale, tv_home = tv_home, ...)
       } else {
       if (!any(names(obs) == values)) stop(paste(values, " could not be found.")) 
           obs[,values] <- type.convert(as.character(obs[,values]))

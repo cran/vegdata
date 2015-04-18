@@ -6,11 +6,10 @@ load.taxlist <- function(refl, reflist.type= c('Turboveg', 'EDIT') , verbose=FAL
     reflist <- paste(refl, ifelse(verbose,'.verbose',''), sep='')
     if(is.null(store(reflist))) { # load.species(refl=refl, verbose = verbose)
       dbf <- if(verbose) 'tax.dbf' else 'species.dbf'
-      supportedReflists <- c('GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2', 'Czsk 0.1')
+      supportedReflists <- c('GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2', 'GermanSL 1.3', 'Czsk 0.1')
       supportedReflists <- c(supportedReflists, sub(' ', '', supportedReflists))
       supportedReflists <- c(supportedReflists, tolower(supportedReflists))
       reflist.path <- file.path(tv_home, 'Species', refl, dbf)
-      
       if(file.access(reflist.path)) {
         if(refl %in% supportedReflists) {
           message('\nTaxonomic list (',dbf, ') of reflist (version) ', refl, ' not available.\n\n')
@@ -27,7 +26,7 @@ load.taxlist <- function(refl, reflist.type= c('Turboveg', 'EDIT') , verbose=FAL
             download.file(paste('http://geobot.botanik.uni-greifswald.de/download/CZSK',version, 'Czsk.zip',sep='/'), tfile)
             unzip(tfile, exdir= storage)
            }
-          }  else stop('\nTaxonomic list ', refl, ' not supported.\n')
+          }  else warning('\nTaxonomic list ', refl, ' not supported.\n')
       } else storage <- file.path(tv_home, 'Species')
 
       species <- read.dbf(file.path(storage, refl, dbf), as.is=TRUE)
@@ -38,8 +37,8 @@ load.taxlist <- function(refl, reflist.type= c('Turboveg', 'EDIT') , verbose=FAL
         if('VernacularName' %in% names(species)) species$VernacularName <- iconv(species$VernacularName, from='UTF8', to='')
         if('Author' %in% names(species)) species$AUTHOR <- iconv(species$AUTHOR, from='UTF8', to='')
       }  else {
-        if('VernacularName' %in% names(species)) species$VernacularName <- iconv(species$VernacularName, from='CP850', to='')
-        if('Author' %in% names(species)) species$AUTHOR <- iconv(species$AUTHOR, from='CP850', to='')
+        if('VernacularName' %in% names(species)) species$VernacularName <- iconv(species$VernacularName, from='WINDOWS-1252', to='') # CP850
+        if('Author' %in% names(species)) species$AUTHOR <- iconv(species$AUTHOR, from='WINDOWS-1252', to='') # CP850
       }
       if(refl %in% supportedReflists && verbose==FALSE) species <- species[,c('TaxonUsageID','LETTERCODE','TaxonName', 'VernacularName','SYNONYM', 'TaxonConceptID')] else {
         include <- !names(species) %in% c('SHORTNAME')
@@ -70,7 +69,7 @@ tv.refl <- function(refl, db, tv_home) {
 #   }
   if(missing(tv_home)) tv_home <- tv.home()
   if(!missing(db)) {
-      dbattr <- file.path(tv_home, 'Data', db,'tvwin.set')
+      dbattr <- file.path(tv.home(), 'Data', db, 'tvwin.set')
       if(file.access(dbattr)==0) refl <-  sub('A\002', '', readBin(dbattr,what='character', n=3)[3]) else 
     stop('Database attribute file tvwin.set from database "', db, '" not available. Please specify name of taxonomic reference list!') 
   } else  

@@ -1,11 +1,14 @@
+## ----include=FALSE-------------------------------------------------------
+library(knitr)
+opts_chunk$set(
+concordance=TRUE,
+results="tex")
+
 ## ----prep, echo=FALSE---------------------------------------------------------------------------------------
 library(knitr)
 options(width=110, digits=2)
-opts_chunk$set(comment = "", warning = FALSE, message = TRUE, echo = TRUE, tidy = TRUE, size="footnotesize")
+opts_chunk$set(comment = "", warning = FALSE, message = TRUE, echo = TRUE, size="footnotesize")
 # read_chunk("some/script/I/want/to/load.R")
-
-## ----eval=FALSE---------------------------------------------------------------------------------------------
-#  vignette('vegdata')
 
 ## ----load, results='hide'-----------------------------------------------------------------------------------
 library(vegdata)
@@ -51,23 +54,24 @@ obs.tax$TaxonName <-  species$TaxonName[match(obs.tax$TaxonUsageID, species$Taxo
 head(obs.tax[,c('RELEVE_NR','TaxonUsageID','COVER_CODE','LAYER','TaxonName')])
 
 ## ----taxval, eval=TRUE--------------------------------------------------------------------------------------
-obs.taxval <- taxval(obs.tax, db=db, mono='lower', sink=FALSE)
+obs.tax$OriginalName <- obs.tax$TaxonName
+obs.taxval <- taxval(obs.tax, db=db, mono='lower', maxtaxlevel='AGG', sink=FALSE)
 
 ## ----Taxon--------------------------------------------------------------------------------------------------
+obs.taxval$OriginalName <- obs.taxval$TaxonName
 obs.taxval$TaxonName <-  species$TaxonName[match(obs.taxval$TaxonUsageID, species$TaxonUsageID)]
-obs.taxval$OriginalName <- obs.tax$TaxonName
-obs.taxval[,c('RELEVE_NR', 'COVER_CODE', 'TaxonName', 'OriginalName')]
+obs.taxval[!duplicated(obs.taxval$OriginalName),c('RELEVE_NR', 'COVER_CODE', 'TaxonName', 'OriginalName')]
 
 ## ----coarsen, eval=TRUE, results='hide'---------------------------------------------------------------------
 tmp <- taxval(obs.tax, refl='GermanSL 1.2', ag='adapt', rank='FAM', sink=FALSE)
-tmp$oldTaxon <- tax(obs.tax$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
+# tmp$oldTaxon <- tax(obs.tax$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
 tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
 
 ## ----print.coarsen------------------------------------------------------------------------------------------
-head(tmp[,c('oldTaxon','newTaxon')], 10)
+head(tmp[,c('OriginalName','newTaxon')], 10)
 
 ## ----taxonviews, eval=FALSE---------------------------------------------------------------------------------
-#  newconcept <- taxval(obs, db=db, concept='korneck1996', sink=FALSE)
+#  newconcept <- taxval(obs.tax, db=db, concept='korneck1996', sink=FALSE)
 
 ## ----coverperc, echo=2:4------------------------------------------------------------------------------------
 options(width=120)
@@ -109,7 +113,7 @@ veg <- tv.veg('taxatest', quiet=TRUE)
 comb.species(veg, sel=c('QUERROB','QUERROB.Tree'))
 
 ## ----site.echo, eval=TRUE-----------------------------------------------------------------------------------
-site <- tv.site(db)
+site <- tv.site('taxatest')
 
 ## ----eval=FALSE---------------------------------------------------------------------------------------------
 #  tv.compRefl('taxref1', 'taxref2')

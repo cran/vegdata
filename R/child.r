@@ -9,8 +9,6 @@ child <- function (x, refl = tv.refl(), gen=4, tree=FALSE, quiet=FALSE, syn=FALS
   x <- s$TaxonConceptID
 # if(is.character(x) & nchar(x) != 36) stop('x must be given as Taxon ID (GUID or integer).')
   if(tree) {
-    require(gWidgets)
-    if(length(find.package('gWidgetstcltk', quiet=TRUE)) == 0) warning('Please install gWidgetstcltk.')
     root <- childs(x, gen=1, ...)
     if(!is.null(root)) {
       offspring <- function(path, ...) {
@@ -35,11 +33,13 @@ child <- function (x, refl = tv.refl(), gen=4, tree=FALSE, quiet=FALSE, syn=FALS
           )
         out
       }
-      w <- gwindow(paste("Taxonomic Tree of", species$TaxonName[species$TaxonUsageID==x]))
-      tr <- gtree(offspring=offspring, container=w)  
-      addHandlerDoubleclick(tr, handler=function(h,...) {
-        print(childs(svalue(h$obj), gen=1, syn=syn , quiet=TRUE)[, c('TaxonUsageID' , 'LETTERCODE' , 'TaxonName' , 'GRUPPE' , 'TaxonRank' , 'SYNONYM', 'IsChildTaxonOfID' , 'AccordingTo' , 'EDITSTATUS')], row.names=FALSE)
+      if (requireNamespace("gWidgets", quietly = TRUE)) {
+      w <- gWidgets::gwindow(paste("Taxonomic Tree of", species$TaxonName[species$TaxonUsageID==x]))
+      tr <- gWidgets::gtree(offspring=offspring, container=w)  
+      gWidgets::addHandlerDoubleclick(tr, handler=function(h,...) {
+        print(childs(gWidgets::svalue(h$obj), gen=1, syn=syn , quiet=TRUE)[, c('TaxonUsageID' , 'LETTERCODE' , 'TaxonName' , 'GRUPPE' , 'TaxonRank' , 'SYNONYM', 'IsChildTaxonOfID' , 'AccordingTo' , 'EDITSTATUS')], row.names=FALSE)
       })
+      } else   stop('Please install gWidgetstcltk to run this function with tree = TRUE.')
   }} else {
       x <- species[match(x, species$TaxonUsageID),'TaxonConceptID']
       x <- species[match(x, species$TaxonUsageID),]

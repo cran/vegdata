@@ -21,10 +21,18 @@ version \Sexpr{packageDescription("vegdata", field="Version")}}
 
 \begin{document}
 
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(
+concordance=TRUE,
+results="tex")
+@
+
+
 <<prep, echo=FALSE>>=
 library(knitr)
 options(width=110, digits=2)
-opts_chunk$set(comment = "", warning = FALSE, message = TRUE, echo = TRUE, tidy = TRUE, size="footnotesize")
+opts_chunk$set(comment = "", warning = FALSE, message = TRUE, echo = TRUE, size="footnotesize")
 # read_chunk("some/script/I/want/to/load.R")
 @
 %Sys.setlocale("LC_TIME", "de_DE.iso8859")
@@ -36,9 +44,10 @@ opts_chunk$set(comment = "", warning = FALSE, message = TRUE, echo = TRUE, tidy 
 \noindent
 An example session to show functionality and usage of R library \texttt{vegdata}. \\
 After installation of  \texttt{vegdata} you can invoke this PDF with
-<<eval=FALSE>>=
+
 vignette('vegdata')
-@
+
+
 \end{abstract}
 
 \section{Preliminary notes}
@@ -83,7 +92,7 @@ We load the library as usual into our R environment.
 library(vegdata)
 @
 
-Many functions use the directory structure of Turboveg. The first time such a function is called, the internal function \texttt{tv.home} tries to find your Turboveg installation path. Depending on whether you have Turboveg installed on your computer or not, it will give you a message about the Turboveg installation path or the path to the Turboveg directory structure of package vegdata.
+Several functions of this package use the directory structure of Turboveg. The first time such a function is called, the internal function \texttt{tv.home} tries to find your Turboveg installation path. Depending on whether you have Turboveg installed on your computer or not, it will give you a message about the Turboveg installation path or the path to the Turboveg directory structure of package vegdata.
 <<eval=TRUE>>=
 tv.home()
 @
@@ -111,7 +120,7 @@ Package vegdata contains several service functions to query the taxonomic inform
 tax('Achillea millefolium')
 @
 
-The GermanSL is not included in vegdata to keep the R package small. Instead the reference list will be automatically downloaded into the tv\_home directory (see \texttt{tv.home()}) or a temporyra folder, if it is not installed but needed. If you want to use a different list, specify \texttt{refl=<Name of your list>} according to the directory name in the Turboveg directory \emph{Species}.
+The GermanSL is not included in vegdata to keep the R package small. Instead the reference list will be automatically downloaded into the tv\_home directory (see \texttt{tv.home()}) or a temporary folder, if it is not installed but needed. If you want to use a different list, specify \texttt{refl=<Name of your list>} according to the directory name in the Turboveg directory \emph{Species}.
 Function \texttt{tax} can use the given species name (with option strict=FALSE also name parts), or 7 letter abbreviation or the TaxonUsageID (called SPECIES\_NR in Turboveg) to look for all (partially) matching species names within the reference list.
 <<>>=
 tax('Achillea millefolium', strict=TRUE, verbose=TRUE)
@@ -138,7 +147,6 @@ If you want to learn more about the taxonomic reference list \emph{GermanSL} for
 \section{Taxonomic harmonisation}
 
 Care about the taxonomic content of the datasets is crucial for every analysis. Some of these steps can be automated with an appropriate taxonomic reference. For background and details see \citep{Jansen2010}.
-
 
 <<db>>=
 db <- 'taxatest'
@@ -231,7 +239,8 @@ We are using the taxonomic reference list GermanSL \citep{Jansen2008} which cont
 \footnotesize
 
 <<taxval, eval=TRUE>>=
-obs.taxval <- taxval(obs.tax, db=db, mono='lower', sink=FALSE)
+obs.tax$OriginalName <- obs.tax$TaxonName
+obs.taxval <- taxval(obs.tax, db=db, mono='lower', maxtaxlevel='AGG', sink=FALSE)
 @
 \normalsize
 
@@ -254,9 +263,9 @@ I confess that it is a strange and complete artificial example. Starting with 25
 
 \footnotesize
 <<Taxon>>=
+obs.taxval$OriginalName <- obs.taxval$TaxonName
 obs.taxval$TaxonName <-  species$TaxonName[match(obs.taxval$TaxonUsageID, species$TaxonUsageID)]
-obs.taxval$OriginalName <- obs.tax$TaxonName
-obs.taxval[,c('RELEVE_NR', 'COVER_CODE', 'TaxonName', 'OriginalName')]
+obs.taxval[!duplicated(obs.taxval$OriginalName),c('RELEVE_NR', 'COVER_CODE', 'TaxonName', 'OriginalName')]
 @
 \normalsize
 
@@ -270,11 +279,11 @@ If you want only taxa of e.g. level "species" in your analyses but no other taxo
 
 <<coarsen, eval=TRUE, results='hide'>>=
 tmp <- taxval(obs.tax, refl='GermanSL 1.2', ag='adapt', rank='FAM', sink=FALSE)
-tmp$oldTaxon <- tax(obs.tax$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
+# tmp$oldTaxon <- tax(obs.tax$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
 tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
 @
 <<print.coarsen>>=
-head(tmp[,c('oldTaxon','newTaxon')], 10)
+head(tmp[,c('OriginalName','newTaxon')], 10)
 @
 
 Check \texttt{?taxval} and \texttt{args(taxval)} for more options.
@@ -284,7 +293,7 @@ Check \texttt{?taxval} and \texttt{args(taxval)} for more options.
 
 If you wish to use another taxonomic concept (\cite{Berendsohn1995}) than the default, you can use a conversion table to change synonymy etc. to catch your needs. 
 <<taxonviews, eval=FALSE>>=
-newconcept <- taxval(obs, db=db, concept='korneck1996', sink=FALSE)
+newconcept <- taxval(obs.tax, db=db, concept='korneck1996', sink=FALSE)
 @
 However, writing files which contain the necessary changes is tidious and other taxon concept based systems have to be developed and used to cover the challenges of different taxon views.
 
@@ -315,7 +324,7 @@ A few simple possibilities for percentage cover transformations are directly inc
 How to account for different vegetation layers or other kinds of species differentiation?
 
 The next step is the separation of pseudo-species. "Pseudo-species" are all kind of taxa split according to species-plot information beyond the performance measure which will be used within the matrix. At this point you have to decide which information should be preserved and which should be aggregated. For instance layer separation must be defined at this step. The default is to differentiate tree, shrub and herb layers but to combine finer layer specifications within them. \\
-If we have more than one occurrence of the same species in a plot, e.g. because tree species growing as young stands and adult specimens were differentiated according to growth height classes, we have to create either pseudo-species which differentiate the occurrences in the resulting vegetation matrix or to combine species occurrences from different layers. For the latter we can use different calculations e.g. to sum up all cover percentages of different layers \texttt{lc='sum'} or the maximum value (\texttt{lc='max'}), mean value (\texttt{lc='mean'}). If we assume an independent occurrence of a species in different vertical layers, we can do the calculations with option lc = 'layer' (the default). This results in a probability sum: A species covering 50\% in tree layer 1 and 50\% in herb layer will get a combined cover of 75\% because both layers will overlap 50\% (1 - 0.5*0.5).\\
+If you have more than one occurrence of the same species in a plot, e.g. because tree species growing as young stands and adult specimens were differentiated according to growth height classes, you have to create either pseudo-species which differentiate the occurrences in the resulting vegetation matrix or to combine species occurrences from different layers. For the latter you can use different calculations e.g. to sum up all cover percentages of different layers \texttt{lc='sum'} or the maximum value (\texttt{lc='max'}), mean value (\texttt{lc='mean'}). If you assume an independent occurrence of a species in different vertical layers, you can do the calculations with option lc = 'layer' (the default). This results in a probability sum: A species covering 50\% in tree layer 1 and 50\% in herb layer will get a combined cover of 75\% because both layers will overlap 50\% (1 - 0.5*0.5).\\
 
 If you want to specify pseudo-species by other species-plot differentiation you can define a combination dataframe. Two example dataframes are included in the package (\texttt{lc.0} and \texttt{lc.1}). Option comb has to be given as a list with first element naming the column name holding the grouping variable and as second element the name of the combination dataframe. Try \\
 <<pseudo1, eval=FALSE>>=
@@ -374,7 +383,7 @@ will use the first name ('QUERROB') for the replacement column with the sum of t
 \texttt{tv.site} will load the site (header) data and does some basic corrections caused by Turboveg dBase format.
 
 <<site.echo, eval=TRUE>>=
-site <- tv.site(db)
+site <- tv.site('taxatest')
 @
 
 The function is quite straightforward. After loading the file \emph{tvhabita.dbf} from the specified database folder, warnings are given for plots without specified relev\'{e} area or date and fields are checked if they are empty (a lot of predefined header fields in Turboveg are often unused) or contain probably mistakable 0 values in numerical fields, due to dBase deficiencies (dBase can not handle NA = not available values reliably).
@@ -412,7 +421,7 @@ levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
 @
 
 We can e.g. look at the relative frequency of all species with more than 40\% at least in one column, according to the height of the groundwater table (low or high) and the amplitude of the groundwater table fluctuations (high or low deviations from the mean).
-Additionally we can use the affiliation of species to abiotic clusters with the help of package \texttt{indicspecies}, which calculates species indicator values for one or several cluster \citep{DeCaceres2010} to order the syntaxonical table. Together with Ellenberg indicator values with will get a comprehensive view into our data.
+Additionally you can use the affiliation of species to abiotic clusters with the help of package \texttt{indicspecies}, which calculates species indicator values for one or several cluster \citep{DeCaceres2010} to order the syntaxonical table. Together with Ellenberg indicator values with will get a comprehensive view into our data.
 
 <<syntab.mupa>>=
 require(indicspecies)
@@ -486,7 +495,6 @@ nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env
 
 The first axis of our NMDS plot show the influence of mean groundwater level on the patterns of the dataset. \emph{Glyceria maxima} is marking the wet side of the gradient, whereas \emph{Cnidium dubium} \emph{Agrostis capillaris} or \emph{Galium verum agg,} occur only at low mean groundwater level. The second axis can be assigned to the fluctuation of water levels measured as standard deviation of mean groundwater level. Species indicating high water fluctuation are \emph{Agrostis stolonifera} or \emph{Alopecurus geniculatus} whereas \emph{Carex vesicaria} occurs only in more balanced situations.
 
-\bibliographystyle{ecol_let}
 \bibliography{vegdata}
 
 

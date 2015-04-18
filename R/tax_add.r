@@ -1,7 +1,7 @@
 
 # As dBase is an old DOS format, Umlaute  are  stored  using  a  different  code  table
 #    (namely ASCII) than most modern unices (namely ANSI).
-taxname.abbr <- function(x, hybrid=FALSE, addition=FALSE, species=FALSE) {
+taxname.abbr <- function(x, hybrid=FALSE, species=FALSE, cf=FALSE) {
 #  loc <- Sys.getlocale(category='LC_CTYPE')
 #  Sys.setlocale("LC_ALL","C")
 #  print('Executing taxname.abbr ...')
@@ -34,13 +34,16 @@ taxname.abbr <- function(x, hybrid=FALSE, addition=FALSE, species=FALSE) {
       x <- sub('\ nssp[.]' , '\ ssp.', x, perl=TRUE, useBytes=TRUE)
       x <- sub('\ nvar[.]' , '\ var.', x, perl=TRUE, useBytes=TRUE)
     }
+    if(cf) x <- sub('^cf.\ ', '', x, ignore.case=TRUE)
 		if(species)  {
       x <- sub('\ sp[.]', ' species', x, perl=TRUE, useBytes=TRUE)
-			x <- sub('\ spec[.]', ' species', x, perl=TRUE, useBytes=TRUE) 
+      x <- sub('\ sp$', ' species', x, perl=TRUE, useBytes=TRUE)
+      x <- sub('\ spec[.]', ' species', x, perl=TRUE, useBytes=TRUE) 
 			} else {
 			x <- sub('\ sp[.]' , '', x, perl=TRUE, useBytes=TRUE)
+			x <- sub('\ sp$', '', x, perl=TRUE, useBytes=TRUE)
 			x <- sub('\ spec[.]' , '', x, perl=TRUE, useBytes=TRUE)
-			x <- sub('\ species' , '', x, perl=TRUE, useBytes=TRUE)
+			x <- sub('\ species$' , '', x, perl=TRUE, useBytes=TRUE)
 			}
     #  Sys.setlocale(category='LC_CTYPE', locale=loc)
    return(x)  

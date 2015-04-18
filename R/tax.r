@@ -58,7 +58,7 @@ select.taxa <- function(x, species, strict, vernacular = FALSE, simplify = FALSE
 				s <- sapply(x, function(f) grep(f, species$TaxonName, useBytes=TRUE))
 				l <- species[unlist(s),]
 			} else {
-				l <- species[match(x, species$TaxonName),]
+				l <- species[match(x, species$TaxonName, nomatch=0),]
     }
   } }
  	if(nrow(l) == 0) message('No species found!')

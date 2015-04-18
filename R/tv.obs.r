@@ -4,7 +4,7 @@
 #    if(is.list(db)) obs <- vw.query(db, 'obs') else
     obs <- read.dbf(file.path(tv_home, 'Data', db[1],'tvabund.dbf'))
     names(obs) <- TCS.replace(names(obs))
-    cat(paste('reading observations ...', '\n'))
+    # cat(paste('reading observations ...', '\n'))
     # Combine multiple databases
     if(length(db)>1) {
       cat('More than 1 database, trying to combine.\n')

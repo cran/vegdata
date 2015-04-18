@@ -8,6 +8,7 @@
 \alias{reShape.veg}
 \alias{TCS.replace}
 \alias{vegetweb}
+\alias{tv.dict}
 
 \title{Internal vegdata functions}
 

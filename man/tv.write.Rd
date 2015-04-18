@@ -6,7 +6,7 @@
 
 \usage{
 tv.write(x, site, name, cover = c("code", "perc"), overwrite = FALSE, 
-                                              iconv="ISO-8859-1", ...)
+iconv="WINDOWS-1252", db, tvadmin = FALSE, ...)
 }
 
 \arguments{
@@ -16,6 +16,8 @@ tv.write(x, site, name, cover = c("code", "perc"), overwrite = FALSE,
   \item{cover}{Use of covercodes or (mean) cover percentages, see Details.}
   \item{overwrite}{Logical. Should an existing database be overwritten.}
   \item{iconv}{specify locale if necessary}
+  \item{db}{name of original database}
+  \item{tvadmin}{Build new TvAdmin.dbf? If FALSE the file from the original database will be copied to the new directory.}
   \item{\dots}{Additional arguments.}
 }
 

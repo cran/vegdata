@@ -8,7 +8,7 @@
 It is a wrapper for \code{tv.obs}, \code{taxval}, \code{tv.coverperc}.}
 
 \usage{
-tv.veg(db, tv_home, taxval=TRUE,convcode=TRUE,lc = c("layer","mean","max","sum","first"), 
+tv.veg(db, taxval=TRUE,tv_home,convcode=TRUE,lc = c("layer","mean","max","sum","first"), 
 pseudo, values='COVER_PERC', spcnames=c('short','long','numbers'), dec = 0, 
 cover.transform = c('no', 'pa', 'sqrt'), obs, refl, RelScale, ...)
 }

@@ -32,8 +32,11 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
 
     if(!is.null(mupa) | class(mupa)=='multipatt' & ncl < 1) {
       if(class(mupa)!='multipatt') {
-      	 require(indicspecies) || stop("Needs package indicspecies (function multipatt)")
-    	    mu <- multipatt(veg, clust, ...) } else mu <- mupa
+        if (requireNamespace("indicspecies", quietly = TRUE)) {
+          mu <- indicspecies::multipatt(veg, clust, ...)
+        } else {
+          stop("Package indicspecies needed (function multipatt)")
+        }} else mu <- mupa
       # st <- st[rownames(st) %in% rownames(sig),]     
       # o <- order(mu$sign[,'index'])
       df <- mu$sign
@@ -57,7 +60,7 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("st"))
 
 print.syntab <- function(x, zero.print='.', trait, limit = 1, minstat = 0, alpha = 0.05, ...) {
-  clust <- st[[2]]
+  clust <- x[[2]]
   x <- x$syntab
   if(any(c('stat','index','p.value') %in% names(x))) {
     if(any(is.na(x[1:(ncol(x)-3)]))) stop('NA values in frequency table. Do you have species without occurrences in your matrix?')

@@ -1,3 +1,8 @@
+version 0.6.9 Mar 2015
+  * added support for Turboveg dictionaries
+  * fixed NA output for tax(y, strict=TRUE)
+  * CRAN policy maintenance
+
 version 0.6.7 Oct 2014
   * enhanced tv.write function
 

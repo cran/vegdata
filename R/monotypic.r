@@ -11,7 +11,7 @@ monotypic <- function(refl, nr.member = 1, reflist.type = c('Turboveg', 'EDIT'),
  NbChildren <- as.integer(sapply(mono$MEMBER_NR, function(x) nrow(child(x, refl=refl, reflist.type=reflist.type, quiet=TRUE)) ), use.names=FALSE)
 # mono$NbChildren <- unlist(mono$NbChildren)
 #mono$NbChildren ch <- child(x, refl=refl, reflist.type=reflist.type) 
- if(write) write.csv(mono[NbChildren <=1,], filename)
+ if(write) write.csv(mono[NbChildren == nr.member,], filename)
  invisible(mono)
 }
 

@@ -1,7 +1,9 @@
-tv.home <- function() {
-  if(is.null(getOption('tv_home'))) {
-    if(.Platform$OS.type == "unix") if(file.access(paste(Sys.getenv('HOME'),'/.wine/drive_c/Turbowin/Popup/tvscale.dbf', sep='')) == 0)   tv_home <- file.path(Sys.getenv('HOME'),'.wine/drive_c/Turbowin') else
-      tv_home <- NA
+tv.home <- function(recheck = FALSE) {
+  if(is.null(getOption('tv_home')) | recheck) {
+    if(.Platform$OS.type == "unix") 
+     if('Turbowin' %in% list.dirs(path=paste(Sys.getenv('HOME'),'/.wine/drive_c', sep=''), full.names=FALSE, recursive = FALSE))
+          tv_home <- file.path(Sys.getenv('HOME'),'.wine/drive_c/Turbowin') else
+          tv_home <- NA
 
   if(.Platform$OS.type == "windows") {
     if(file.access('O:/Turbowin/Popup/tvscale.dbf')==0) tv_home <- 'O:/Turbowin' else 
@@ -18,6 +20,7 @@ tv.home <- function() {
          "1" = file.path(path.package('vegdata'), 'tvdata'),
          tempdir()
    )
+   options(tv.home = tv_home)
    if(!file.exists(file.path(tv_home, 'tvdata', 'Popup', 'tvscale.dbf')))
      for(d in c('Popup', 'Data', 'Species')) {
      dir.create(file.path(tv_home, d))

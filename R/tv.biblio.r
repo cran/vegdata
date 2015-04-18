@@ -1,8 +1,8 @@
-tv.biblio <- function(x='all', site, quiet=FALSE, tv_home, ...) {
+tv.biblio <- function(x='all', site, quiet=FALSE, tv_home, dict ='', iconv = "WINDOWS-1252", ...) {
   if(missing(tv_home)) tv_home <- tv.home()
-
-  biblio <- read.dbf(file.path(tv_home, 'Popup', 'tvrefenc.dbf'), as.is=TRUE)
-  for(i in c('AUTHOR','TITLE','PUBLISHED')) biblio[,i] <- iconv(biblio[,i], "ISO-8859-1", "")  
+  bibliopath <- file.path(tv_home, 'Popup', dict, 'tvrefenc.dbf')
+  biblio <- read.dbf(bibliopath, as.is=TRUE)
+  for(i in c('AUTHOR','TITLE','PUBLISHED')) biblio[,i] <- iconv(biblio[,i], iconv, "")  
   if(!missing(site)) {
     freq <- table(site$REFERENCE) 
     biblio$NBREL <- as.integer(freq[match(biblio$REFERENCE, names(freq))] )
@@ -16,3 +16,7 @@ tv.biblio <- function(x='all', site, quiet=FALSE, tv_home, ...) {
   }
   invisible(biblio)
 }
+
+# sink('umlauteproblem.txt')
+# for(i in iconvlist()) try(cat(i, ": ", iconv(bib$PUBLISHED, from = i, to = 'utf-8'), '\n', collapse=''))
+# sink()

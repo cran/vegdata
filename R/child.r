@@ -3,7 +3,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("gwindow", "gtree", "add
 ##### Child taxa of a taxon
 child <- function (x, refl = tv.refl(), gen=4, tree=FALSE, quiet=FALSE, syn=FALSE, ...) {
   if(missing(refl)) refl <- tv.refl()
-  species <- tax("all", verbose = TRUE, refl = refl, syn = TRUE, quiet =TRUE, ...)
+  species <- tax("all", detailed = TRUE, refl = refl, syn = TRUE, quiet =TRUE, ...)
   if(length(x)>1) { warning('More than one species selected, using only the first.');  x <- x[1]}
   s <- tax(x, refl = refl, strict = TRUE, quiet = TRUE, ...)
   x <- s$TaxonConceptID
@@ -82,7 +82,7 @@ childs <- function(...) child(...)
 ## Parents of a taxon
 parent <- function (x, refl = tv.refl(), rank, quiet = FALSE, ...) {
   taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), ordered=TRUE)
-  species <- tax("all", verbose = TRUE, refl = refl, syn = TRUE, quiet =TRUE, ...)
+  species <- tax("all", detailed = TRUE, refl = refl, syn = TRUE, quiet =TRUE, ...)
   if(length(x)>1) {
   	warning('More than one match, using only first.')
   	x <- x[1]
@@ -139,7 +139,7 @@ parents <- function(...) parent(...)
 
 # Synonymy swarm of a taxon
 syn <- function (x, refl = tv.refl(), quiet=FALSE, ...) {
-  species <- tax('all', verbose = TRUE, refl = refl, syn = TRUE, strict = TRUE, quiet = TRUE, ...)
+  species <- tax('all', detailed = TRUE, refl = refl, syn = TRUE, strict = TRUE, quiet = TRUE, ...)
 if(is.character(x)) 
 	x <- tax(x, refl=refl, strict=TRUE, quiet = TRUE, ...)$TaxonUsageID
   if(length(x) > 1) {

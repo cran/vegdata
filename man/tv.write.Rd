@@ -5,24 +5,25 @@
 \description{Write species-plot observations and site information to Turboveg database.}
 
 \usage{
-tv.write(x, site, name, cover = c("code", "perc"), overwrite = FALSE, 
-iconv="WINDOWS-1252", db, tvadmin = FALSE, ...)
+tv.write(x, site, db, name, cover = c("code", "perc"), overwrite = FALSE, 
+iconv="WINDOWS-1250", newTvAdmin = FALSE, ...)
 }
 
 \arguments{
   \item{x}{Either observations data.frame with RELEVE_NR, TaxonUsageID and COVER_CODE columns or vegetation matrix of class "veg".}
   \item{site}{Header data for plots.}
-  \item{name}{Name of the database.}
+  \item{db}{name of original Turboveg database folder}
+  \item{name}{Name of the new database.}
   \item{cover}{Use of covercodes or (mean) cover percentages, see Details.}
   \item{overwrite}{Logical. Should an existing database be overwritten.}
   \item{iconv}{specify locale if necessary}
-  \item{db}{name of original database}
-  \item{tvadmin}{Build new TvAdmin.dbf? If FALSE the file from the original database will be copied to the new directory.}
+  \item{newTvAdmin}{Build new TvAdmin.dbf? If FALSE the file from original database will be used.}
   \item{\dots}{Additional arguments.}
 }
 
 \details{
-  By default covercode are written to Turboveg. This is only meaningful, if correct coverscales are stored in the site dataframe. In case of e.g. VegetWeb data it is better to choose percentage cover (and Cover code 00) for Turboveg).
+  By default Covercode is written to Turboveg. This is only meaningful, if correct CoverScales are stored in the site dataframe.
+  Database name is iportent to care for TvAdmin.dbf and remarks.dbf and configuration file tvwin.set.
 }
 
 \value{

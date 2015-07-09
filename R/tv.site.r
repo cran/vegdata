@@ -1,4 +1,4 @@
-tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="WINDOWS-1252", ...) 
+tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="WINDOWS-1250", verbose = TRUE, ...) 
 {
 #  ow <- options('warn')
 # if(quiet) { options(warn=-1) }
@@ -6,7 +6,7 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="WINDOW
   if (missing(tv_home)) tv_home <- tv.home()
   site <- read.dbf(file.path(tv_home, "Data", db[1], "tvhabita.dbf"), as.is=TRUE)
   if (suppressWarnings(any(site[,sapply(site, is.numeric)] < -1e+05, na.rm = TRUE))) 
-    print(c("WARNING! Values less than -100,000. \n", "WARNING! tvhabita.dbf may be corrupt. \n", "WARNING! Please correct by im- / exporting e.g. with OpenOffice."), quote = FALSE)
+    message(paste("WARNING! Values less than -100,000. \n", "WARNING! tvhabita.dbf may be corrupt. \n", "WARNING! Please correct by im- / exporting e.g. with OpenOffice."))
   if(length(db)>1) for(i in 2:length(db)) {
 	site.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvhabita.dbf'))
 	if(any(site$RELEVE_NR %in% site.tmp$RELEVE_NR)) stop('Found duplicate releve numbers, aborting!')
@@ -52,29 +52,35 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="WINDOW
   fun <- function(x) all(is.na(x))
   na <- apply(site, 2, fun)
   if (drop) {
-      message('\n The following columns contain no data and are omitted:')
-      print(names(site)[na], quote = FALSE)
+    if(any(na)) {
+      if(verbose) {
+        message('Some columns contain no data and are omitted.')
+        print(names(site)[na], quote = FALSE)
+      }
       site <- site[, !na]
-  }
+  }}
   fun.2 <- function(x) all(x == 0 | is.na(x))
   leer <- apply(site, 2, fun.2)
   if (drop) 
-      if (any(leer)) {
-  	  message('\n The following numeric columns contain only 0 values and are omitted:')
-	    print(names(site)[leer], quote = FALSE)
+    if (any(leer)) {
+      if(verbose) {
+        message('Some numeric columns contain only 0 values and are omitted.')
+  	    print(names(site)[leer], quote = FALSE)
+      }
 	    site <- site[, !leer]
   }
   fun.3 <- function(x) is.numeric(x) & any(x == 0, na.rm = TRUE)
   null <- logical()
   for (i in 1:length(site)) null[i] <- fun.3(site[, i])
-
-    if (any(null) && getOption('warn') >= 0) {
+  if (any(null) && getOption('warn') >= 0) {
+    if(verbose) {
 #        options(warn=1)
-        message('\n', "The following numeric fields contain 0 values:")
+        message("Some numeric fields contain 0 values:")
         print(names(site)[null], quote = FALSE)
         message('Please check if these are really meant as 0 or if they are erroneously assigned because of DBase restrictions.')
         message(paste("If so, use something like:"))
         message("site$Column_name[site$Column_name==0] <- NA", '\n')
+    }
 #       paste("summary(site[,c('", paste(names(site)[null], collapse = "','"), "')]) \n", sep = "")
       }
   site <- site[order(site$RELEVE_NR),]

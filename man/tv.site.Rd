@@ -3,7 +3,8 @@
 \title{Load site data from Turboveg Database}
 
 \usage{
-tv.site(db, tv_home, drop=TRUE, common.only = TRUE, iconv="WINDOWS-1252", ...)
+tv.site(db, tv_home, drop=TRUE, common.only = TRUE, iconv="WINDOWS-1250", verbose = TRUE, 
+...)
 }
 
 \arguments{
@@ -12,6 +13,7 @@ tv.site(db, tv_home, drop=TRUE, common.only = TRUE, iconv="WINDOWS-1252", ...)
   \item{drop}{Drop variables without values.}
   \item{common.only}{Import only header data which occur in all databases with the same name.}
   \item{iconv}{specify locale if necessary}
+  \item{verbose}{print warnings and hints}
   \item{...}{Additional options like \code{dec} for type.convert}
 }
 

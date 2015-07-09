@@ -9,7 +9,7 @@ export(taxname.abbr, taxname.simplify, tv.biblio, tv.compRefl, tv.coverperc, tv.
 ## Register? internal functions
 
 ## Export deprecated functions
-# export(agg, spc, tv.taxval, tv.eco, sub.abbr, 
+# export(agg, spc, tv.taxval, tv.eco, sub.abbr,
 export(tv.mono)
 
 ## Export S3 methods
@@ -25,4 +25,5 @@ importFrom(foreign, read.dbf)
 # importFrom(permute, permControl)
 # importFrom(indicspecies, multipatt)
 importFrom(XML, getNodeSet, xmlName, xmlParse, xmlRoot, xmlSApply, xmlToDataFrame, xmlValue)
+importFrom("utils", "download.file", "type.convert", "unzip", "write.csv")
 # import(vegan)

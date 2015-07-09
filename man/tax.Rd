@@ -11,7 +11,7 @@
 \title{Query of Turboveg 2 taxonomic reference lists including (if available) concept synonomy and taxonomic hierarchy.}
 
 \usage{
-\method{tax}{default}(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, 
+\method{tax}{default}(x, refl, detailed = FALSE, syn = TRUE, concept = NULL, strict = FALSE, 
 vernacular = FALSE, simplify = FALSE, quiet = FALSE, reflist.type = 'Turboveg', ...)
 child(x, refl = tv.refl(), gen = 4, tree = FALSE, quiet = FALSE, syn = FALSE, ...)
 parent(x, refl = tv.refl(), rank, quiet = FALSE, ...)
@@ -21,7 +21,7 @@ syn(x, refl = tv.refl(), quiet = FALSE, ...)
 \arguments{
 \item{x}{Species number, lettercode or species name}
 \item{refl}{Taxonomic reference list}
-\item{verbose}{Load tax.dbf with additional taxonomic information (e.g. Secundum) instead of species.dbf}
+\item{detailed}{Load tax.dbf with additional taxonomic information (e.g. Secundum) instead of species.dbf}
 \item{syn}{Return also synonym names}
 \item{concept}{Name of alternatice taxon view file within the reference list director}
 \item{strict}{Exact match or partial matching with \code{\link{grep}}}

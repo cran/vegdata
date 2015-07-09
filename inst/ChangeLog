@@ -1,3 +1,11 @@
+version 0.7 June 2015
+  * renamed option "verbose" in function tax to "detailed"
+  * further improvements of tv.write
+
+version 0.6.9 Mar 2015
+  * improved tv.write
+  * adaptations for data evaluation for http://www.vegetweb.de import
+
 version 0.6.9 Mar 2015
   * added support for Turboveg dictionaries
   * fixed NA output for tax(y, strict=TRUE)

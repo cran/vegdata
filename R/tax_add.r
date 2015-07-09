@@ -1,7 +1,7 @@
 
 # As dBase is an old DOS format, Umlaute  are  stored  using  a  different  code  table
 #    (namely ASCII) than most modern unices (namely ANSI).
-taxname.abbr <- function(x, hybrid=FALSE, species=FALSE, cf=FALSE) {
+taxname.abbr <- function(x, hybrid=FALSE, species=FALSE, cf=FALSE, ...) {
 #  loc <- Sys.getlocale(category='LC_CTYPE')
 #  Sys.setlocale("LC_ALL","C")
 #  print('Executing taxname.abbr ...')

@@ -6,7 +6,7 @@ Translate cover code into percentage cover values for Turboveg database observat
 }
 
 \usage{
-tv.coverperc(db, obs, RelScale, tv_home, dict='', tvscale, quiet = FALSE,  ...)
+tv.coverperc(db, obs, RelScale, tv_home, tvscale, quiet = FALSE,  ...)
 }
 
 \arguments{
@@ -14,7 +14,6 @@ tv.coverperc(db, obs, RelScale, tv_home, dict='', tvscale, quiet = FALSE,  ...)
 \item{obs}{dataframe of observations, containing Cover Codes, coded in tvscale.dbf of Turboveg installation}
 \item{RelScale}{dataframe of CoverScale codes per releve, if empty it is read from the database}
 \item{tv_home}{Path to Turboveg installation}
-\item{dict}{Name of Turboveg Dictionary (term lists for header data) if not the default one.}
 \item{tvscale}{Cover scale}
 \item{quiet}{Suppress messages}
 \item{...}{Further options}

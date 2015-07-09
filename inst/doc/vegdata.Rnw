@@ -123,10 +123,10 @@ tax('Achillea millefolium')
 The GermanSL is not included in vegdata to keep the R package small. Instead the reference list will be automatically downloaded into the tv\_home directory (see \texttt{tv.home()}) or a temporary folder, if it is not installed but needed. If you want to use a different list, specify \texttt{refl=<Name of your list>} according to the directory name in the Turboveg directory \emph{Species}.
 Function \texttt{tax} can use the given species name (with option strict=FALSE also name parts), or 7 letter abbreviation or the TaxonUsageID (called SPECIES\_NR in Turboveg) to look for all (partially) matching species names within the reference list.
 <<>>=
-tax('Achillea millefolium', strict=TRUE, verbose=TRUE)
+tax('Achillea millefolium', strict=TRUE, detailed=TRUE)
 tax('Achylleus x millefoliae', simplify=TRUE, hybrid=TRUE)
 @
-Additional to the Turboveg standard fields comprehensive information for every taxon is stored in an extra file (tax.dbf) which can be used with option \textit{verbose=TRUE}. \\
+Additional to the Turboveg standard fields comprehensive information for every taxon is stored in an extra file (tax.dbf) which can be used with option \textit{detailed=TRUE}. \\
 \textit{tax} will give you all matching names by default. If you set option \textit{strict=TRUE}, only the species with exact match to the given character string will be returned. \\
 \textit{syn} will give you all taxon names within the swarm of synonyms. The valid name is marked in column SYNONYM with FALSE.
 
@@ -398,7 +398,7 @@ Use help(package='vegdata') for a complete list of available functions and data 
 \subsection{Combine different taxonomic reference lists}
 
 If you have to combine different taxonomic reference lists, functions \texttt{tv.compRefl} might be a starting point, comparing species numbers and/or species names of both lists.
-<<eval=FALSE>>=
+<<compare, eval=FALSE>>=
 tv.compRefl('taxref1', 'taxref2')
 @
 
@@ -428,7 +428,7 @@ require(indicspecies)
 traits <- tv.traits()
 trait <- data.frame(EIV_F = traits$OEK_F, EIV_N = traits$OEK_N)
 rownames(trait) <- traits$ABBREVIAT
-st <- syntab(elbaue, clust, mupa=TRUE, fullnames=TRUE)
+st <- syntab(elbaue, clust, mupa=TRUE)
 print(st, limit=30, trait=trait)
 @
 

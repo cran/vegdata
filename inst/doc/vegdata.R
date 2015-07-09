@@ -29,7 +29,7 @@ tv.refl()
 tax('Achillea millefolium')
 
 ## -----------------------------------------------------------------------------------------------------------
-tax('Achillea millefolium', strict=TRUE, verbose=TRUE)
+tax('Achillea millefolium', strict=TRUE, detailed=TRUE)
 tax('Achylleus x millefoliae', simplify=TRUE, hybrid=TRUE)
 
 ## ----syn----------------------------------------------------------------------------------------------------
@@ -115,7 +115,7 @@ comb.species(veg, sel=c('QUERROB','QUERROB.Tree'))
 ## ----site.echo, eval=TRUE-----------------------------------------------------------------------------------
 site <- tv.site('taxatest')
 
-## ----eval=FALSE---------------------------------------------------------------------------------------------
+## ----compare, eval=FALSE------------------------------------------------------------------------------------
 #  tv.compRefl('taxref1', 'taxref2')
 
 ## ----elbaue, results='hide'---------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ require(indicspecies)
 traits <- tv.traits()
 trait <- data.frame(EIV_F = traits$OEK_F, EIV_N = traits$OEK_N)
 rownames(trait) <- traits$ABBREVIAT
-st <- syntab(elbaue, clust, mupa=TRUE, fullnames=TRUE)
+st <- syntab(elbaue, clust, mupa=TRUE)
 print(st, limit=30, trait=trait)
 
 ## ----nmds, quiet=TRUE, results='hide', eval=TRUE------------------------------------------------------------

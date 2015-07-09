@@ -5,7 +5,7 @@
 
 "tax" <- function(...) UseMethod("tax")
 
-tax.default <- function(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, strict = FALSE, vernacular = FALSE, simplify=FALSE, quiet = FALSE, reflist.type = 'Turboveg', ...) {
+tax.default <- function(x, refl, detailed = FALSE, syn = TRUE, concept = NULL, strict = FALSE, vernacular = FALSE, simplify=FALSE, quiet = FALSE, reflist.type = 'Turboveg', ...) {
 	tv_home <- tv.home()
 #########################################################
 ## internal functions
@@ -13,7 +13,7 @@ tax.default <- function(x, refl, verbose = FALSE, syn = TRUE, concept = NULL, st
 
 concept.FUN <- function(species, concept, dbf, ...) {
   message('\n Will use taxon concept', concept, '.\n\n')
-  verbose=TRUE
+  detailed=TRUE
   species$TaxonName <- as.character(species$TaxonName)
   species$TaxonConcept <- as.character(species$TaxonConcept)
   species$IsChildTaxonOf <- as.character(species$IsChildTaxonOf)
@@ -61,7 +61,7 @@ select.taxa <- function(x, species, strict, vernacular = FALSE, simplify = FALSE
 				l <- species[match(x, species$TaxonName, nomatch=0),]
     }
   } }
- 	if(nrow(l) == 0) message('No species found!')
+ 	if(nrow(l) == 0 & !quiet) message('No species found!')
  	return(l)
 }
 
@@ -70,8 +70,8 @@ select.taxa <- function(x, species, strict, vernacular = FALSE, simplify = FALSE
 #### beginning to execute function tax()
 if(missing(refl)) refl <- tv.refl(tv_home=tv_home)
 if(!quiet) cat('Reference list used:', refl, '\n')	
-species <- load.taxlist(refl, reflist.type=reflist.type, verbose=verbose)
-# refl='GermanSL 1.2'; verbose=FALSE; vernacular=FALSE;simplify=FALSE; strict=FALSE
+species <- load.taxlist(refl, reflist.type=reflist.type, detailed=detailed)
+# refl='GermanSL 1.2'; detailed=FALSE; vernacular=FALSE;simplify=FALSE; strict=FALSE
 
 ### Filter
 # if(!is.null(concept)) species <- concept.FUN(species, concept)

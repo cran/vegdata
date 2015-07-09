@@ -22,7 +22,7 @@ sink = TRUE,
   if(missing(refl)) if(missing(db)) stop('If you do not give a taxonomic reference list name, you have to specify at least a name of a Turboveg database.') else 
   	refl <- tv.refl(db = db[1], tv_home=tv_home)
   species <- 
-    load.taxlist(refl=refl, verbose=TRUE, ...)
+    load.taxlist(refl=refl, detailed=TRUE, ...)
   taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), ordered=TRUE)
 
 if(sink) {
@@ -179,7 +179,7 @@ obs <- switch(ag,
   if(!is.null(uncertain)) {
     cat(' Frequency of uncertainty levels')
     print(table(obs[,uncertain[[1]]]), row.names = FALSE)
-#    species <- load.taxlist(refl = refl, verbose = TRUE, tv_home = tv_home, ...)
+#    species <- load.taxlist(refl = refl, detailed = TRUE, tv_home = tv_home, ...)
 
   uncertainty <- function(obs, column, uncrow, ...) {
     un <- match.arg(as.character(uncrow[[2]]),c('aggregate','preserve','ignore'))

@@ -13,8 +13,9 @@ tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE,
     if(missing(obs)) obs <- tv.obs(db, tv_home)
 #     if(suppressWarnings(any(obs < -1e+05, na.rm = TRUE))) 
 #       cat("\n WARNING! Values less than -100,000. \n WARNING! tvabund.dbf may be corrupt. \n WARNING! Please correct by reexporting e.g. with OpenOffice.")
-    data(lc.1, envir = environment())
-    if(missing(pseudo)) pseudo <- list(lc.1,'LAYER')
+    lc.1 <- data.frame(LAYER=0:9, COMB=c(0,rep('Tree',3),rep('Shrub',2),rep(0,4)))
+#    data("lc.1", package = 'vegdata', envir = 'vegdata')
+    if(missing(pseudo)) pseudo <- list(lc.1, 'LAYER')
 
 ## Taxa
     if(missing(refl)) refl <- tv.refl(db = db[1], tv_home = tv_home)
@@ -26,7 +27,7 @@ tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE,
         cat('converting cover code ... \n')
         if(missing(RelScale)) {
         if(missing(db)) stop('\nEither database name or a vector with CoverScale per releve has to be permitted, to cope with Cover Scale information\n')
-          RelScale <- tv.site(db, tv_home, quiet = TRUE)[, c("RELEVE_NR", "COVERSCALE")]
+          RelScale <- tv.site(db, tv_home, detailed = FALSE)[, c("RELEVE_NR", "COVERSCALE")]
           obs <- tv.coverperc(db, obs=obs, RelScale = RelScale, tv_home = tv_home, ...) 
           } else 	obs <- tv.coverperc(db=db[1], obs=obs, RelScale = RelScale, tv_home = tv_home, ...)
       } else {
@@ -60,13 +61,13 @@ tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE,
       cat('replacing species numbers with ', spcnames, ' names ... \n')
       if(is.null(pseudo)) {
         print(as.numeric(colnames(results)))
-	species <- tax(as.numeric(colnames(results)), verbose=TRUE, syn=FALSE, refl = refl, tv_home=tv_home)
+      	species <- tax(as.numeric(colnames(results)), detailed=TRUE, syn=FALSE, refl = refl, tv_home=tv_home)
 	if(spcnames=='short') colnames(results) <- species$LETTERCODE[match(colnames(results), species$TaxonUsageID)]
 	if(spcnames=='long') colnames(results) <- gsub(' ','_', species$TaxonName[match(colnames(results), species$TaxonUsageID)] )
        } else {
 	st <- unlist(strsplit(colnames(results), ".", fixed = TRUE))
 	colspc <- st[seq(1, length(st), 2)]
-	species <- tax(as.numeric(colspc), verbose=FALSE, refl = refl, tv_home=tv_home)
+	species <- tax(as.numeric(colspc), detailed=FALSE, refl = refl, tv_home=tv_home)
 
 	if(spcnames=='short') coln <- as.character(species$LETTERCODE[match(as.numeric(colspc), species$TaxonUsageID)])
 	if(spcnames=='long') coln <- gsub(' ','_', species$TaxonName[match(as.numeric(colspc), species$TaxonUsageID)]) 

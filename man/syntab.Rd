@@ -12,8 +12,7 @@ package indicspecies from M. Cac\'{e}res with function multipatt for indicator s
 }
 
 \usage{
-syntab(veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, 
-mupa=NULL, dec=0, refl, ...)
+syntab(veg, clust, type = c('rel','abs','mean.cover'), mupa=NULL, dec=0, refl, ...)
 \method{print}{syntab}(x, zero.print = ".", trait, limit = 1, minstat = 0, alpha = 0.05, \dots)
 }
 
@@ -21,7 +20,6 @@ mupa=NULL, dec=0, refl, ...)
 \item{veg}{Vegetation dataframe}
 \item{clust}{Vector with cluster information with length equal to number of rows of veg}
 \item{type}{Relative or absolute frequency, mean species response values or strength of association (see function multipatt in package indicspecis).}
-\item{fullnames}{Replace rownames (LETTERCODES) with full scientific names.}
 \item{mupa}{Either logical for (not) using multipatt from package indispecies to detect significance of cluster association strength or supply output from previous use of multipatt.}
 \item{x}{Object from function syntab}
 \item{zero.print}{Replacement for zero values.}
@@ -47,10 +45,17 @@ clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL >= 50] <- 3
 clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL < 50] <- 4
 levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
 traits <- tv.traits()
-trait <- data.frame(EIV_F = traits$OEK_F, EIV_N = traits$OEK_N)
-rownames(trait) <- traits$ABBREVIAT
-st <- syntab(elbaue, clust, mupa=TRUE, fullnames=TRUE)
+m <- match(rownames(st$syntab), traits$LETTERCODE, nomatch = 0)
+trait <- traits[m, c("OEK_F","OEK_N")]
+rownames(trait) <- traits$LETTERCODE[m]
+st <- syntab(elbaue, clust, mupa=TRUE)
 print(st, limit=30, trait=trait)
+# Manipulation of the syntaxonomic table
+sttable <- st$syntab
+sttable <- sttable[sttable$p.value < 0.05 & !is.na(sttable$p.value), !names(sttable) %in% c('stat')]
+taxa <- tax(rownames(sttable))
+rownames(sttable) <- taxa[match(rownames(sttable), taxa$LETTERCODE, nomatch = 0),'TaxonName']
+write.csv(sttable, 'sttable.csv')
 }
 }
 

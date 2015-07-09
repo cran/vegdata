@@ -1,10 +1,12 @@
-tv.coverperc <- function (db, obs, RelScale, tv_home,dict = "", tvscale, quiet=FALSE, ...) 
+tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...) 
 {
   if(missing(tv_home)) {
     tv_home <- tv.home()
   }
-  if(missing(tvscale)) 
-      tvscale <- read.dbf(file.path(tv_home, "Popup", tv.dict(db), "tvscale.dbf"))
+  
+  if(missing(tvscale)) {
+    tvscale <- read.dbf(file.path(tv_home, "Popup", tv.dict(db), "tvscale.dbf"))    
+  }
   tvscale <- tvscale[!is.na(tvscale$SCALE_NR),]
   rownames(tvscale) <- tvscale[, 1]
   if (missing(RelScale)) {
@@ -14,7 +16,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home,dict = "", tvscale, quiet=F
       options(ow)
       }
   if (missing(obs))
-      obs <- tv.obs(db, tv_home, quiet=TRUE)
+      obs <- tv.obs(db, tv_home, quiet=TRUE, as.is=TRUE)
   obs$COVERSCALE <- RelScale$COVERSCALE[match(obs$RELEVE_NR, RelScale$RELEVE_NR)]
 #  obs$COVER_CODE[is.na(obs$COVERSCALE) | obs$COVERSCALE == '9x']
   g <- obs$COVERSCALE
@@ -22,7 +24,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home,dict = "", tvscale, quiet=F
     print(unique(obs[is.na(g),'COVER_CODE']))
     stop('These releves miss a cover scale value in the header data.')
     }
-  paste('Split')
+  #### Split ###
   obs <- split(obs, g, drop = FALSE)
   for (i in names(obs)) {
     if (i == "00") {
@@ -35,7 +37,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home,dict = "", tvscale, quiet=F
       if(is.na(p)) p <- ncol(tvscale)
       scala <- tvscale[i,]
       if(is.na(scala[1])) stop('Can not find cover scale "', i, '" in ', file.path('Turbowin','Popup', tv.dict(db),'tvscale.dbf'))
-      code <- t(scala[seq(4,(p-1),2)])
+      code <- iconv(t(scala[seq(4,(p-1),2)]), from="WINDOWS-1250", to='UTF-8')
       perc <- scala[seq(5,p,2)][1,]
       d.f <- data.frame(code=code[,1], perc = as.numeric(perc))
       if(!quiet) {

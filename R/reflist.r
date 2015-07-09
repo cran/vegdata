@@ -1,11 +1,11 @@
 # Load taxonomic reference list
-load.taxlist <- function(refl, reflist.type= c('Turboveg', 'EDIT') , verbose=FALSE, ...) {
+load.taxlist <- function(refl, reflist.type= c('Turboveg', 'EDIT'), detailed=FALSE, ...) {
   reflist.type <- match.arg(reflist.type, c('Turboveg', 'EDIT'))
   if(reflist.type == 'Turboveg') {
     tv_home <- tv.home()
-    reflist <- paste(refl, ifelse(verbose,'.verbose',''), sep='')
-    if(is.null(store(reflist))) { # load.species(refl=refl, verbose = verbose)
-      dbf <- if(verbose) 'tax.dbf' else 'species.dbf'
+    reflist <- paste(refl, ifelse(detailed,'.detailed',''), sep='')
+    if(is.null(store(reflist))) { # load.species(refl=refl, detailed = detailed)
+      dbf <- if(detailed) 'tax.dbf' else 'species.dbf'
       supportedReflists <- c('GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2', 'GermanSL 1.3', 'Czsk 0.1')
       supportedReflists <- c(supportedReflists, sub(' ', '', supportedReflists))
       supportedReflists <- c(supportedReflists, tolower(supportedReflists))
@@ -31,16 +31,16 @@ load.taxlist <- function(refl, reflist.type= c('Turboveg', 'EDIT') , verbose=FAL
 
       species <- read.dbf(file.path(storage, refl, dbf), as.is=TRUE)
       names(species) <- TCS.replace(names(species))
-      species$TaxonName <- taxname.abbr(species$TaxonName, ...)
-      if(verbose) {
-        species$TaxonConcept <- taxname.abbr(species$TaxonConcept, ...)
+      species$TaxonName <- taxname.abbr(..., x=species$TaxonName)
+      if(detailed) {
+        species$TaxonConcept <- taxname.abbr( ..., x=species$TaxonConcept)
         if('VernacularName' %in% names(species)) species$VernacularName <- iconv(species$VernacularName, from='UTF8', to='')
         if('Author' %in% names(species)) species$AUTHOR <- iconv(species$AUTHOR, from='UTF8', to='')
       }  else {
-        if('VernacularName' %in% names(species)) species$VernacularName <- iconv(species$VernacularName, from='WINDOWS-1252', to='') # CP850
-        if('Author' %in% names(species)) species$AUTHOR <- iconv(species$AUTHOR, from='WINDOWS-1252', to='') # CP850
+        if('VernacularName' %in% names(species)) species$VernacularName <- iconv(species$VernacularName, from='WINDOWS-1250', to='')
+        if('Author' %in% names(species)) species$AUTHOR <- iconv(species$AUTHOR, from='WINDOWS-1250', to='') # CP850
       }
-      if(refl %in% supportedReflists && verbose==FALSE) species <- species[,c('TaxonUsageID','LETTERCODE','TaxonName', 'VernacularName','SYNONYM', 'TaxonConceptID')] else {
+      if(refl %in% supportedReflists && detailed==FALSE) species <- species[,c('TaxonUsageID','LETTERCODE','TaxonName', 'VernacularName','SYNONYM', 'TaxonConceptID')] else {
         include <- !names(species) %in% c('SHORTNAME')
         species <- species[, include]
       }

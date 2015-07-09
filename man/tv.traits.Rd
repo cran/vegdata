@@ -5,7 +5,7 @@
 \title{Load species traits from Turboveg reference list}
 
 \usage{
-tv.traits(db, trait.db = 'ecodbase.dbf', refl, quiet = FALSE, ...)
+tv.traits(db, trait.db = 'ecodbase.dbf', refl, ...)
 meanTraits(trait, veg, refl, trait.db = 'ecodbase.dbf', join = 'LETTERCODE', 
 zero.is.NA = TRUE, ...)
 }
@@ -14,7 +14,6 @@ zero.is.NA = TRUE, ...)
 \item{db}{Path name to the Turboveg database directory}
 \item{trait.db}{Name of species trait DBase file, default is 'ecodbase'}
 \item{refl}{Name of the taxonomic reference list, if veg is not loaded with tv.veg}
-\item{quiet}{Hide messages}
 \item{trait}{Name of the column to use from the trait table}
 \item{veg}{vegetation matrix}
 \item{join}{Column name of the trait table corresponding to the colnames of the vegetation matrix}

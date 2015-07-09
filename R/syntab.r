@@ -1,10 +1,9 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("multipatt"))
 
-syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FALSE, mupa=NULL, dec = 0, refl, ...)
+syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), mupa=NULL, dec = 0, refl, ...)
 {
-#    if(fullnames & missing(refl)) stop('Please specify taxonomic reference list for fullnames.')
     type <- match.arg(type)
-    if (missing(clust)) clust <- rep(1,nrow(veg))
+    if (missing(clust)) clust <- sample(1:2, size = nrow(veg), replace = TRUE)
     ncl <- length(unique(clust))
     cat(' Number of clusters: ', ncl, '\n')
     nb.rel.clust <- as.numeric(table(clust))
@@ -44,16 +43,9 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), fullnames=FA
       colnames(df)[1:ncl] <- levels(clust)
       st <- df
     }
-    if(fullnames) {
-      if(missing(refl) & is.null(attr(veg, 'taxreflist'))) stop('Either "taxreflist" attribute must be given in veg object or refl must be specified.')
-      if(missing(refl)) refl <- attr(veg, 'taxreflist')
-      if(length(grep('.', rownames(st), fixed=TRUE)) > 0) stop('Fullname substitution only possible without pseudo-species separation (e.g. layers).')
-      nam <- tax(rownames(st), verbose=FALSE, syn=FALSE, refl, ...)
-      rownames(st) <- nam$TaxonName[match(rownames(st), nam$LETTERCODE)]
-      }
+      
     out <- list(syntab=st, clust=clust)
     class(out) <- c('syntab', 'list')
-#    print(out)
     return(out)
 }
 
@@ -64,10 +56,10 @@ print.syntab <- function(x, zero.print='.', trait, limit = 1, minstat = 0, alpha
   x <- x$syntab
   if(any(c('stat','index','p.value') %in% names(x))) {
     if(any(is.na(x[1:(ncol(x)-3)]))) stop('NA values in frequency table. Do you have species without occurrences in your matrix?')
-    mu=TRUE 
+    mu = TRUE 
     } else {
       if(any(is.na(x))) stop('NA values in frequency table. Do you have species without occurrences in your matrix?')
-    mu=FALSE
+    mu = FALSE
   }
   if(mu) {
     stat <- x[,'stat']; x <- x[,-which(names(x)=='stat')]
@@ -75,15 +67,17 @@ print.syntab <- function(x, zero.print='.', trait, limit = 1, minstat = 0, alpha
     p.value <- x[,'p.value']; x <- x[,-which(names(x)=='p.value')]
     select <- stat > minstat & !is.na(stat) & p.value < alpha & !is.na(p.value) & apply(x, 1, function(y) max(y) >= limit)
     } else  select <- apply(x, 1, function(y) max(y) >= limit)
-  x <- x[select, ]
+  if(sum(select)>0) {
+    x <- x[select, ] 
   if(zero.print != "0" && any(i0 <- x == 0)) {
       x[i0] <- sub("0", zero.print, x[i0])
       x[i0] <- sub("0.0", zero.print, x[i0])
       x[i0] <- sub("0.00", zero.print, x[i0]) 
   }
+
   if(mu) {
-#     <- index[select], stat[select], 
-    x <- cbind(x, index=index[select], stat=stat[select], p.value=p.value[select])
+    if(sum(select) > 0)
+      x <- cbind(x, index=index[select], stat=stat[select], p.value=p.value[select])
     x <- x[order(x$index),]
     }
 
@@ -94,11 +88,13 @@ print.syntab <- function(x, zero.print='.', trait, limit = 1, minstat = 0, alpha
 		x <- cbind(x, trait)
 #		names(x)[names(x)=='trait'] <- traitname
 	}
-ncl <- length(unique(clust))
-cat(' Number of clusters: ', ncl, '\n')
-nb.rel.clust <- as.numeric(table(clust))
-cat(' Cluster frequency', nb.rel.clust,'\n')
+  } else warning('NO species exceed the chosen significance threshold.')
 
-  print.data.frame(x, ...)
+  ncl <- length(unique(clust))
+  cat(' Number of clusters: ', ncl, '\n')
+  nb.rel.clust <- as.numeric(table(clust))
+  cat(' Cluster frequency', nb.rel.clust,'\n')
+
+  if(sum(select)>0) print.data.frame(x, ...)
  }
 

@@ -123,10 +123,10 @@ tax('Achillea millefolium')
 The GermanSL is not included in vegdata to keep the R package small. Instead the reference list will be automatically downloaded into the tv\_home directory (see \texttt{tv.home()}) or a temporary folder, if it is not installed but needed. If you want to use a different list, specify \texttt{refl=<Name of your list>} according to the directory name in the Turboveg directory \emph{Species}.
 Function \texttt{tax} can use the given species name (with option strict=FALSE also name parts), or 7 letter abbreviation or the TaxonUsageID (called SPECIES\_NR in Turboveg) to look for all (partially) matching species names within the reference list.
 <<>>=
-tax('Achillea millefolium', strict=TRUE, detailed=TRUE)
+tax('Achillea millefolium', strict=TRUE, verbose=TRUE)
 tax('Achylleus x millefoliae', simplify=TRUE, hybrid=TRUE)
 @
-Additional to the Turboveg standard fields comprehensive information for every taxon is stored in an extra file (tax.dbf) which can be used with option \textit{detailed=TRUE}. \\
+Additional to the Turboveg standard fields comprehensive information for every taxon is stored in an extra file (tax.dbf) which can be used with option \textit{verbose=TRUE}. \\
 \textit{tax} will give you all matching names by default. If you set option \textit{strict=TRUE}, only the species with exact match to the given character string will be returned. \\
 \textit{syn} will give you all taxon names within the swarm of synonyms. The valid name is marked in column SYNONYM with FALSE.
 
@@ -289,14 +289,6 @@ head(tmp[,c('OriginalName','newTaxon')], 10)
 Check \texttt{?taxval} and \texttt{args(taxval)} for more options.
 
 
-\subsection{Implementing other taxon views}
-
-If you wish to use another taxonomic concept (\cite{Berendsohn1995}) than the default, you can use a conversion table to change synonymy etc. to catch your needs. 
-<<taxonviews, eval=FALSE>>=
-newconcept <- taxval(obs.tax, db=db, concept='korneck1996', sink=FALSE)
-@
-However, writing files which contain the necessary changes is tidious and other taxon concept based systems have to be developed and used to cover the challenges of different taxon views.
-
 
 \section{Vegetation matrices}
 
@@ -398,7 +390,7 @@ Use help(package='vegdata') for a complete list of available functions and data 
 \subsection{Combine different taxonomic reference lists}
 
 If you have to combine different taxonomic reference lists, functions \texttt{tv.compRefl} might be a starting point, comparing species numbers and/or species names of both lists.
-<<compare, eval=FALSE>>=
+<<eval=FALSE>>=
 tv.compRefl('taxref1', 'taxref2')
 @
 
@@ -431,8 +423,6 @@ rownames(trait) <- traits$ABBREVIAT
 st <- syntab(elbaue, clust, mupa=TRUE)
 print(st, limit=30, trait=trait)
 @
-
-
 
 
 
@@ -495,7 +485,6 @@ nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env
 
 The first axis of our NMDS plot show the influence of mean groundwater level on the patterns of the dataset. \emph{Glyceria maxima} is marking the wet side of the gradient, whereas \emph{Cnidium dubium} \emph{Agrostis capillaris} or \emph{Galium verum agg,} occur only at low mean groundwater level. The second axis can be assigned to the fluctuation of water levels measured as standard deviation of mean groundwater level. Species indicating high water fluctuation are \emph{Agrostis stolonifera} or \emph{Alopecurus geniculatus} whereas \emph{Carex vesicaria} occurs only in more balanced situations.
 
-\bibliography{vegdata}
-
+\bibliography{lib}
 
 \end{document}

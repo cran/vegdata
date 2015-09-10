@@ -7,31 +7,12 @@
 
 tax.default <- function(x, refl, detailed = FALSE, syn = TRUE, concept = NULL, strict = FALSE, vernacular = FALSE, simplify=FALSE, quiet = FALSE, reflist.type = 'Turboveg', ...) {
 	tv_home <- tv.home()
-#########################################################
-## internal functions
-#########################################################
 
-concept.FUN <- function(species, concept, dbf, ...) {
-  message('\n Will use taxon concept', concept, '.\n\n')
-  detailed=TRUE
-  species$TaxonName <- as.character(species$TaxonName)
-  species$TaxonConcept <- as.character(species$TaxonConcept)
-  species$IsChildTaxonOf <- as.character(species$IsChildTaxonOf)
-  species$AccordingTo <- as.character(species$AccordingTo)
-  conc <- read.dbf(file.path(tv_home, 'Species', refl, paste(concept,'dbf',sep='.')), as.is=TRUE)
-  co <- conc[match(species$TaxonUsageID, conc$TaxonUsageID, nomatch = 0),]
-  species[match(conc$TaxonUsageID,species$TaxonUsageID),c('SYNONYM','TaxonConceptID','IsChildTaxonOfID')] <- co[match(conc$TaxonUsageID,co$TaxonUsageID),c('SYNONYM','TaxonConceptID','IsChildTaxonOfID')]
-  species$TaxonName[match(conc$TaxonUsageID,species$TaxonUsageID,nomatch = 0)] <- co$TaxonName[match(conc$TaxonUsageID,co$TaxonUsageID,nomatch = 0)]
-  species$TaxonConcept[match(conc$TaxonUsageID,species$TaxonUsageID,nomatch = 0)] <- co$TaxonConcept[match(conc$TaxonUsageID,co$TaxonUsageID,nomatch = 0)]
-  species$TaxonRank[match(conc$TaxonUsageID,species$TaxonUsageID,nomatch = 0)] <- co$TaxonRank[match(conc$TaxonUsageID,co$TaxonUsageID,nomatch = 0)]
-  species$IsChildTaxonOf[match(conc$TaxonUsageID,species$TaxonUsageID,nomatch = 0)] <- co$IsChildTaxonOf[match(conc$TaxonUsageID,co$TaxonUsageID,nomatch = 0)]
-  species$AccordingTo[match(conc$TaxonUsageID,species$TaxonUsageID,nomatch = 0)] <- co$AccordingTo[match(conc$TaxonUsageID,co$TaxonUsageID,nomatch = 0)]
-}
-
+###------ internal functions
+#########################################################
 # Subsetting
 select.taxa <- function(x, species, strict, vernacular = FALSE, simplify = FALSE, genus = TRUE, epithet = TRUE, ...) {
   if(is.factor(x)) x <- as.character(x)
-#?  if(simplify) strict <- TRUE
   if(is.numeric(x) | is.integer(x))
     l <- species[match(x, species$TaxonUsageID),]  	## Tax numbers
   if(vernacular) species$TaxonName <- species$VernacularName
@@ -64,13 +45,13 @@ select.taxa <- function(x, species, strict, vernacular = FALSE, simplify = FALSE
  	if(nrow(l) == 0 & !quiet) message('No species found!')
  	return(l)
 }
-
-##### end of tax internal functions #####
+###--- end of tax internal functions ---###
 
 #### beginning to execute function tax()
 if(missing(refl)) refl <- tv.refl(tv_home=tv_home)
 if(!quiet) cat('Reference list used:', refl, '\n')	
 species <- load.taxlist(refl, reflist.type=reflist.type, detailed=detailed)
+
 # refl='GermanSL 1.2'; detailed=FALSE; vernacular=FALSE;simplify=FALSE; strict=FALSE
 
 ### Filter

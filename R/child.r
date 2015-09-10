@@ -9,7 +9,7 @@ child <- function (x, refl = tv.refl(), gen=4, tree=FALSE, quiet=FALSE, syn=FALS
   x <- s$TaxonConceptID
 # if(is.character(x) & nchar(x) != 36) stop('x must be given as Taxon ID (GUID or integer).')
   if(tree) {
-    root <- childs(x, gen=1, ...)
+    root <- child(x, gen=1, ...)
     if(!is.null(root)) {
       offspring <- function(path, ...) {
         ll <- root
@@ -89,11 +89,12 @@ parent <- function (x, refl = tv.refl(), rank, quiet = FALSE, ...) {
   }
   s <- tax(x, refl = refl, strict = TRUE, quiet = TRUE, ...)
   y <- species[match(s$TaxonConceptID, species$TaxonUsageID),]
+  if(y$TaxonUsageID != s$TaxonUsageID) warning('Synonym, will use valid taxon "', y$TaxonName, '" instead.')
   y$GENERATION <- 0
   p <- species[match(unique(y$IsChildTaxonOfID),species$TaxonUsageID),]
   p$GENERATION <- 1
   
-  lo <- function(y,p) {
+  lo <- function(y, p) {
     if(nrow(p)==0) cat(y$TaxonName, 'has no parents.\n') 
     else {
       p2 <- p
@@ -115,25 +116,26 @@ parent <- function (x, refl = tv.refl(), rank, quiet = FALSE, ...) {
       warning('Species is of equal or higher rank than the specified parent level.')
       p <- c(TaxonName='')
     } else {
-      p <- lo(y,p)
+      P <- lo(y, p)
       # oblig.taxlevels <- factor(c('SPE','GAT','FAM','ORD','KLA','ABT','ROOT'), levels= c('SPE','GAT','FAM','ORD','KLA','ABT','ROOT'), ordered=TRUE)
       #  p$TAXLEVEL <- as.integer(oblig.taxlevels[match(p$TaxonRank, oblig.taxlevels)])
-      p <- p[which(p$TaxonRank == rank), ]
+      P <- P[which(P$TaxonRank == rank), ]
 #      if(nrow(p) == 0) p <- c(TaxonName='Incertae_sedis')
       #    tv <- oblig.taxlevels[(which(oblig.taxlevels == y$TaxonRank)+1):length(oblig.taxlevels)]
       #    if(!all(tv %in% p$TaxonRank)) 
       cat('Parent level', rank, ' of', y$TaxonName, '(', y$TaxonUsageID, '):\n')
-  if(nrow(p)==0) cat('"Incertae sedis" = uncertain placement within this level.\n') 
+  if(nrow(P)==0) cat('"Incertae sedis" = uncertain placement within this level.\n') 
 #      else
 #         print(p[,c('TaxonUsageID','TaxonName','AccordingTo','TaxonRank','GENERATION')], row.names=FALSE)
     }
-  }  else p <- lo(y, p)
+  }  else P <- lo(y, p)
   if(!quiet) {
     cat('Parents of ', s$TaxonName, ' (', y$TaxonUsageID, ')', if(y$TaxonUsageID != s$TaxonUsageID) {paste(" = Synonym of", y$TaxonName, '(', y$TaxonConceptID, ')')}, ':\n', sep='')
-    print(p[, names(p)[names(p) %in% c('TaxonUsageID','TaxonName','TaxonRank','IsChildTaxonOfID','GENERATION')]], row.names=FALSE)
+    print(P[, names(P)[names(P) %in% c('TaxonUsageID','TaxonName','TaxonRank','IsChildTaxonOfID','GENERATION')]], row.names=FALSE)
   }
-  invisible(p)
+  invisible(P)
 }
+
 parents <- function(...) parent(...)
 
 

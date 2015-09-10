@@ -3,10 +3,11 @@
 export(child, meanTraits, monotypic, parent, syn, syntab, tax, taxval, vegetweb, childs, parents)
 
 ## export regular functions with dot names
-export(comb.species, reShape.veg, print.syntab, ESveg.obs, ESveg.site, TCS.replace)
-export(taxname.abbr, taxname.simplify, tv.biblio, tv.compRefl, tv.coverperc, tv.db, tv.dict, tv.home, tv.traits, tv.metainfo, tv.obs, tv.refl, tv.site, tv.veg, tv.write)
+export(comb.species, reShape.veg, print.syntab, TCS.replace, taxname.abbr, taxname.simplify)
+export(tv.biblio, tv.compRefl, tv.coverperc, tv.db, tv.dict, tv.home, tv.traits, tv.metainfo, tv.obs, tv.refl, tv.site, tv.veg, tv.write)
 
 ## Register? internal functions
+export(load.taxlist)
 
 ## Export deprecated functions
 # export(agg, spc, tv.taxval, tv.eco, sub.abbr,
@@ -25,5 +26,5 @@ importFrom(foreign, read.dbf)
 # importFrom(permute, permControl)
 # importFrom(indicspecies, multipatt)
 importFrom(XML, getNodeSet, xmlName, xmlParse, xmlRoot, xmlSApply, xmlToDataFrame, xmlValue)
-importFrom("utils", "download.file", "type.convert", "unzip", "write.csv")
+importFrom("utils", "download.file", "type.convert", "unzip", "read.csv2", "write.csv2")
 # import(vegan)

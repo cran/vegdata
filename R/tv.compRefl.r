@@ -92,7 +92,7 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRU
         if (check.nr) {
            print(paste(nrow(nonmatchingNumbers), "taxon names with different numbers"), quote = FALSE)
            print(nonmatchingNumbers, row.names=FALSE)
-#         write.csv(cbind(nonmatchingNumbers, refl.1[match(nonmatchingNumbers[,1], refl.1$TaxonName), c("BEGRUEND","EDITSTATUS")]), file='differentNumbers.csv')
+#         write.csv2(cbind(nonmatchingNumbers, refl.1[match(nonmatchingNumbers[,1], refl.1$TaxonName), c("BEGRUEND","EDITSTATUS")]), file='differentNumbers.csv')
            print(paste(nrow(nonmatchingNames), "taxon numbers with different names"), quote = FALSE)
            print(nonmatchingNames, row.names=FALSE)
         }
@@ -103,12 +103,12 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRU
         print(paste(diff.A, collapse = ', '))
         sink()
         cat("\n Report is written to file \"", file, " \n")
-        if (check.nr) write.csv(nonmatchingNumbers, file='differentNumbers.csv')
-        if(!missing(filter.1)) write.csv(nonmatchingNames[!nonmatchingNames[,2] %in% filter.1,], file='differentNames.csv')
-#         write.csv(diff.B[!diff.B %in% nonmatchingNames], file='noMatches_inRefl_2.csv')
-#         write.csv(diff.A[!diff.A %in% nonmatchingNames], file='noMatches_inRefl_1.csv')
-        write.csv(refl.1[refl.1[, "TaxonName"] %in% diff.B, c("TaxonNameOriginal","TaxonName")], file='noMatches_inRefl_2.csv')
-        write.csv(refl.2[refl.2[, "TaxonName"] %in% diff.A, c("TaxonNameOriginal","TaxonName")], file='noMatches_inRefl_1.csv')
+        if (check.nr) write.csv2(nonmatchingNumbers, file='differentNumbers.csv')
+        if(!missing(filter.1)) write.csv2(nonmatchingNames[!nonmatchingNames[,2] %in% filter.1,], file='differentNames.csv')
+#         write.csv2(diff.B[!diff.B %in% nonmatchingNames], file='noMatches_inRefl_2.csv')
+#         write.csv2(diff.A[!diff.A %in% nonmatchingNames], file='noMatches_inRefl_1.csv')
+        write.csv2(refl.1[refl.1[, "TaxonName"] %in% diff.B, c("TaxonNameOriginal","TaxonName")], file='noMatches_inRefl_2.csv')
+        write.csv2(refl.2[refl.2[, "TaxonName"] %in% diff.A, c("TaxonNameOriginal","TaxonName")], file='noMatches_inRefl_1.csv')
     }
     if (new) {
       names(refl.1) <- replace(names(refl.1), names(refl.1)=='TaxonName','ABBREVIAT')

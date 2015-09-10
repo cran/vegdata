@@ -9,6 +9,7 @@
 \alias{TCS.replace}
 \alias{vegetweb}
 \alias{tv.dict}
+\alias{load.taxlist}
 
 \title{Internal vegdata functions}
 

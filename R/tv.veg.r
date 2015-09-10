@@ -5,7 +5,8 @@ tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE,
   spcnames = c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), 
   obs, refl, RelScale, ...) 
 {
-## Checks
+options(warn=1)
+  ## Checks
     lc <- match.arg(lc)
     cover.transform <- match.arg(cover.transform)
     spcnames = match.arg(spcnames)
@@ -20,14 +21,19 @@ tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE,
 ## Taxa
     if(missing(refl)) refl <- tv.refl(db = db[1], tv_home = tv_home)
     cat('Taxonomic reference list: ',refl, '\n')
-    if(taxval) 
-    		obs <- taxval(obs=obs, refl = refl, ...)
+    if(taxval) {
+      obs <- taxval(obs=obs, refl = refl, ...)
+    }
+
 ## CoverCode
     if(convcode){
         cat('converting cover code ... \n')
         if(missing(RelScale)) {
         if(missing(db)) stop('\nEither database name or a vector with CoverScale per releve has to be permitted, to cope with Cover Scale information\n')
-          RelScale <- tv.site(db, tv_home, detailed = FALSE)[, c("RELEVE_NR", "COVERSCALE")]
+#        suppressMessages(
+#          suppressWarnings(
+          RelScale <- tv.site(db, tv_home, verbose = FALSE)[, c("RELEVE_NR", "COVERSCALE")]
+#        ))
           obs <- tv.coverperc(db, obs=obs, RelScale = RelScale, tv_home = tv_home, ...) 
           } else 	obs <- tv.coverperc(db=db[1], obs=obs, RelScale = RelScale, tv_home = tv_home, ...)
       } else {
@@ -60,7 +66,6 @@ tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE,
     if(spcnames %in% c('short','long')) {
       cat('replacing species numbers with ', spcnames, ' names ... \n')
       if(is.null(pseudo)) {
-        print(as.numeric(colnames(results)))
       	species <- tax(as.numeric(colnames(results)), detailed=TRUE, syn=FALSE, refl = refl, tv_home=tv_home)
 	if(spcnames=='short') colnames(results) <- species$LETTERCODE[match(colnames(results), species$TaxonUsageID)]
 	if(spcnames=='long') colnames(results) <- gsub(' ','_', species$TaxonName[match(colnames(results), species$TaxonUsageID)] )
@@ -78,6 +83,7 @@ tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE,
 	}
    }
    if (any(is.na(colnames(results)))) warning("Some taxa without names, check reference list!")
+
 ## Result
 #   results <- results[, order(names(results))]
    if(cover.transform!='no') {

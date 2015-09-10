@@ -3,7 +3,7 @@
 \title{Load site data from Turboveg Database}
 
 \usage{
-tv.site(db, tv_home, drop=TRUE, common.only = TRUE, iconv="WINDOWS-1250", verbose = TRUE, 
+tv.site(db, tv_home, drop=TRUE, common.only = TRUE, iconv="CP437", verbose = TRUE, 
 ...)
 }
 

@@ -29,7 +29,7 @@ tv.refl()
 tax('Achillea millefolium')
 
 ## -----------------------------------------------------------------------------------------------------------
-tax('Achillea millefolium', strict=TRUE, detailed=TRUE)
+tax('Achillea millefolium', strict=TRUE, verbose=TRUE)
 tax('Achylleus x millefoliae', simplify=TRUE, hybrid=TRUE)
 
 ## ----syn----------------------------------------------------------------------------------------------------
@@ -69,9 +69,6 @@ tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
 
 ## ----print.coarsen------------------------------------------------------------------------------------------
 head(tmp[,c('OriginalName','newTaxon')], 10)
-
-## ----taxonviews, eval=FALSE---------------------------------------------------------------------------------
-#  newconcept <- taxval(obs.tax, db=db, concept='korneck1996', sink=FALSE)
 
 ## ----coverperc, echo=2:4------------------------------------------------------------------------------------
 options(width=120)
@@ -115,7 +112,7 @@ comb.species(veg, sel=c('QUERROB','QUERROB.Tree'))
 ## ----site.echo, eval=TRUE-----------------------------------------------------------------------------------
 site <- tv.site('taxatest')
 
-## ----compare, eval=FALSE------------------------------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------------------------------------
 #  tv.compRefl('taxref1', 'taxref2')
 
 ## ----elbaue, results='hide'---------------------------------------------------------------------------------

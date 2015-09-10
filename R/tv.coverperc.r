@@ -37,7 +37,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
       if(is.na(p)) p <- ncol(tvscale)
       scala <- tvscale[i,]
       if(is.na(scala[1])) stop('Can not find cover scale "', i, '" in ', file.path('Turbowin','Popup', tv.dict(db),'tvscale.dbf'))
-      code <- iconv(t(scala[seq(4,(p-1),2)]), from="WINDOWS-1250", to='UTF-8')
+      code <- iconv(t(scala[seq(4,(p-1),2)]), from="CP437", to='UTF-8')
       perc <- scala[seq(5,p,2)][1,]
       d.f <- data.frame(code=code[,1], perc = as.numeric(perc))
       if(!quiet) {

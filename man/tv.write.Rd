@@ -6,7 +6,7 @@
 
 \usage{
 tv.write(x, site, db, name, cover = c("code", "perc"), overwrite = FALSE, 
-iconv="WINDOWS-1250", newTvAdmin = FALSE, ...)
+iconv="CP437", newTvAdmin = FALSE, ...)
 }
 
 \arguments{

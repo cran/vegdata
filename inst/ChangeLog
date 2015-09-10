@@ -1,3 +1,6 @@
+version 0.7.3 August 2015
+  * function taxval rewritten to allow interactive mode. Options "concept" and "uncertain" removed to simplify the code.
+
 version 0.7 June 2015
   * renamed option "verbose" in function tax to "detailed"
   * further improvements of tv.write

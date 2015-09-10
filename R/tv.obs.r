@@ -1,5 +1,5 @@
 "tv.obs" <- function(db, tv_home, ...) {
-    if(missing(tv_home)) tv_home <- tv.home()
+    if(missing(tv_home)) tv_home <- tv.home() else if(tv_home != tv.home()) warning(paste("Given Turboveg root directory:", tv_home, "differ from the global root directory given by getOption('tv_home'):", getOption('tv_home')))
     # Observations
 #    if(is.list(db)) obs <- vw.query(db, 'obs') else
     obs <- read.dbf(file.path(tv_home, 'Data', db[1],'tvabund.dbf'))

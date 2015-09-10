@@ -1,4 +1,4 @@
-tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="WINDOWS-1250", verbose = TRUE, ...) 
+tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="CP437", verbose = TRUE, ...) 
 {
 #  ow <- options('warn')
 # if(quiet) { options(warn=-1) }
@@ -31,7 +31,7 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="WINDOW
 
     ### Time
     if(any(is.na(site$DATE))) 
-      warning(sum(is.na(site$DATE)), ' releves without date. Not converted from factor to date format.') else {
+      message(sum(is.na(site$DATE)), ' releves without date. Not converted from factor to date format.') else {
     site$DATE <- gsub('/','',site$DATE)
 #      Date <- rep('no date', nrow(site))
     index <- nchar(as.character(site$DATE))==4
@@ -45,7 +45,7 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="WINDOW
     }
   ### Survey Area
   n <- sum(site$SURF_AREA == 0 | is.na(site$SURF_AREA))
-  if(n>0) warning(paste(n, ' releves without survey area'))
+  if(n>0) message(paste(n, ' releves without survey area'))
   site$SURF_AREA[site$SURF_AREA==0] <- NA
 
 ### 

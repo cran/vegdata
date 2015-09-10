@@ -1,6 +1,6 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("DoWritedbf"))
 
-tv.write <- function(x, site, db, name, cover=c('code','perc'), overwrite = FALSE, iconv="WINDOWS-1250", newTvAdmin = FALSE, ...) {
+tv.write <- function(x, site, db, name, cover=c('code','perc'), overwrite = FALSE, iconv="CP437", newTvAdmin = FALSE, ...) {
   if(missing(db)) stop('Name of original database is missing.')
   cover <- match.arg(cover)
   if('veg' %in% class(x)) {
@@ -44,7 +44,7 @@ tv.write <- function(x, site, db, name, cover=c('code','perc'), overwrite = FALS
  # TvAdmin
   TvAdmin <- read.dbf(file.path(options('tv_home'), 'Data', db[1], 'TvAdmin.dbf'))
   if(length(db) > 1) 
-    for(n in 2:length(db)) TvAdmin <- rbind(TvAdmin, read.dbf(file.path(options('tv_home'), 'Data', db[1], 'TvAdmin.dbf')))
+    for(n in 2:length(db)) TvAdmin <- rbind(TvAdmin, read.dbf(file.path(options('tv_home'), 'Data', db[n], 'TvAdmin.dbf')))
   TvAdmin <- TvAdmin[TvAdmin$RELEVE_NR %in% site$RELEVE_NR,]
   TvAdmin$MOD_USER[is.na(TvAdmin$MOD_USER)] <- Sys.getenv('USER')
 #  TvAdmin$MOD_DATE[is.na(TvAdmin$MOD_DATE)] <- format(Sys.Date(), "%D")

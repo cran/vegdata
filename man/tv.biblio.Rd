@@ -6,8 +6,7 @@
 \description{Check bibliographic references from Turboveg codes}
 
 \usage{
-tv.biblio(x='all', db, dict = tv.dict(db), quiet=FALSE, tv_home, iconv = "WINDOWS-1250",
-...)
+tv.biblio(x='all', db, dict = tv.dict(db), quiet=FALSE, tv_home, iconv = "CP437", ...)
 }
 
 \arguments{

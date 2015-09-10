@@ -1,6 +1,6 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("multipatt"))
 
-syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), mupa=NULL, dec = 0, refl, ...)
+syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), mupa = NULL, dec = 0, refl, ...)
 {
     type <- match.arg(type)
     if (missing(clust)) clust <- sample(1:2, size = nrow(veg), replace = TRUE)
@@ -49,8 +49,11 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), mupa=NULL, d
     return(out)
 }
 
+#--------------
+
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("st"))
 
+#--------------
 print.syntab <- function(x, zero.print='.', trait, limit = 1, minstat = 0, alpha = 0.05, ...) {
   clust <- x[[2]]
   x <- x$syntab
@@ -59,8 +62,8 @@ print.syntab <- function(x, zero.print='.', trait, limit = 1, minstat = 0, alpha
     mu = TRUE 
     } else {
       if(any(is.na(x))) stop('NA values in frequency table. Do you have species without occurrences in your matrix?')
-    mu = FALSE
-  }
+      mu = FALSE
+    }
   if(mu) {
     stat <- x[,'stat']; x <- x[,-which(names(x)=='stat')]
     index <- x[,'index']; x <- x[,-which(names(x)=='index')]

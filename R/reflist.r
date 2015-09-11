@@ -18,7 +18,7 @@ load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = 
 #    print(reflist.path)
     reflist <- paste(refl, ifelse(detailed,'.detailed',''), sep='')
     if(is.null(store(reflist))) { # load.species(refl=refl, detailed = detailed)
-      supportedReflists <- c('GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2', 'GermanSL 1.3', 'Czsk 0.1')
+      supportedReflists <- c('GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2', 'GermanSL 1.3')
       supportedReflists <- c(supportedReflists, sub(' ', '', supportedReflists))
       supportedReflists <- c(supportedReflists, tolower(supportedReflists))
       if(!file.exists(reflist.path)) {
@@ -32,11 +32,6 @@ load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = 
             if(m == 0) unzip(tfile, exdir= file.path(tv_home, 'Species')) else 
               unzip(file.path(path.package('vegdata'), 'tvdata','Species','TaxrefExample.zip'), exdir = file.path(tv_home, 'Species'))
            }
-           if(grepl('Czsk', refl)) {
-            version <- paste("version", substr(refl, 6, nchar(refl)), sep = "")
-            download.file(paste('http://geobot.botanik.uni-greifswald.de/download/CZSK',version, 'Czsk.zip',sep='/'), tfile)
-            unzip(tfile, exdir= file.path(tv_home, 'Species'))
-           }
           } else message('\nTaxonomic list ', refl, ' not supported for automatic download.\n')
       }
       
@@ -45,11 +40,11 @@ load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = 
       species$TaxonName <- taxname.abbr(..., x=species$TaxonName)
       if(detailed) {
         species$TaxonConcept <- taxname.abbr( ..., x=species$TaxonConcept)
-        if('VernacularName' %in% names(species)) species$VernacularName <- iconv(species$VernacularName, from='UTF8', to='')
-        if('Author' %in% names(species)) species$AUTHOR <- iconv(species$AUTHOR, from='UTF8', to='')
+        if('VernacularName' %in% names(species) & Sys.info()['sysname'] != 'SunOS') species$VernacularName <- iconv(species$VernacularName, from='UTF8', to='')
+        if('Author' %in% names(species) & Sys.info()['sysname'] != 'SunOS') species$AUTHOR <- iconv(species$AUTHOR, from='UTF8', to='')
       }  else {
-        if('VernacularName' %in% names(species)) species$VernacularName <- iconv(species$VernacularName, from='CP437', to='')
-        if('Author' %in% names(species)) species$AUTHOR <- iconv(species$AUTHOR, from='CP437', to='') # CP850
+        if('VernacularName' %in% names(species)& Sys.info()['sysname'] != 'SunOS') species$VernacularName <- iconv(species$VernacularName, from='CP437', to='')
+        if('Author' %in% names(species) & Sys.info()['sysname'] != 'SunOS') species$AUTHOR <- iconv(species$AUTHOR, from='CP437', to='') # CP850
       }
       if(refl %in% supportedReflists && detailed==FALSE) species <- species[,c('TaxonUsageID','LETTERCODE','TaxonName', 'VernacularName','SYNONYM', 'TaxonConceptID')] else {
         include <- !names(species) %in% c('SHORTNAME')

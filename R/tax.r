@@ -7,7 +7,7 @@
 
 tax.default <- function(x, refl, detailed = FALSE, syn = TRUE, concept = NULL, strict = FALSE, vernacular = FALSE, simplify=FALSE, quiet = FALSE, reflist.type = 'Turboveg', ...) {
 	tv_home <- tv.home()
-
+  if(missing(x)) stop('x is missing!')
 ###------ internal functions
 #########################################################
 # Subsetting
@@ -56,6 +56,8 @@ species <- load.taxlist(refl, reflist.type=reflist.type, detailed=detailed)
 
 ### Filter
 # if(!is.null(concept)) species <- concept.FUN(species, concept)
+
+#if(length(x) == NULL) stop('No input value to search for a taxon found.')
 if(tolower(x[1]) != 'all') {
 	if(simplify) species$originalTaxonName <- species$TaxonName
 	species <- select.taxa(x, species, strict, vernacular, simplify, ...)

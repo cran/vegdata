@@ -15,11 +15,12 @@ tv.home <- function(recheck = FALSE) {
   }
   if(is.na(tv_home)) {
    message('\nNo Turbowin installation path found. \n')
+   if(interactive()) {
    ANSWER <- readline("Should I use \n 1) the vegdata package path (recommended),  or \n 2) a temporary folder? ")
    tv_home <- switch(substr(ANSWER, 1, 1),
          "1" = file.path(path.package('vegdata'), 'tvdata'),
          tempdir()
-   )
+   ) } else tv_home <- tempdir()
    options(tv.home = tv_home)
    if(!file.exists(file.path(tv_home, 'tvdata', 'Popup', 'tvscale.dbf')))
      for(d in c('Popup', 'Data', 'Species')) {

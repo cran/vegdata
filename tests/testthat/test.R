@@ -3,6 +3,7 @@
 context("Defaults")
 
 test_that("reference list", {
+  options(tv_home=file.path(path.package('vegdata'),'tvdata'))
   expect_equal(tv.refl(), 'GermanSL 1.3')
 })
 
@@ -23,15 +24,6 @@ test_that("Taxa", {
 
 context('taxval')
 ### tv.taxval test: should work with (1) Turboveg data set taxatest, (2) with all available options and their combinations
-# 
-# messageToText <- function(expr) {
-#   con <- textConnection("messages", "w")
-#   sink(con, type="message")
-#   eval(expr)
-#   sink(NULL, type="message")
-#   close(con)
-#   messages
-# }
 
 test_that("Taxa1", {
   db <- 'taxatest'

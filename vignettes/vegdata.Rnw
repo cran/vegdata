@@ -92,14 +92,16 @@ We load the library as usual into our R environment.
 library(vegdata)
 @
 
+
 Several functions of this package use the directory structure of Turboveg. The first time such a function is called, the internal function \texttt{tv.home} tries to find your Turboveg installation path. Depending on whether you have Turboveg installed on your computer or not, it will give you a message about the Turboveg installation path or the path to the Turboveg directory structure of package vegdata.
 <<eval=TRUE>>=
-tv.home()
+h <- tv.home()
 @
+
 
 If you want to change this, declare manually by setting option "tv\_home":
 <<eval=FALSE>>=
-# options(tv_home="path_to_your_Turboveg_root_directory")
+options(tv_home="path_to_your_Turboveg_root_directory")
 @
 
 
@@ -117,15 +119,13 @@ However, whenever you use a Turboveg database name in a function, the Reference 
 
 Package vegdata contains several service functions to query the taxonomic information contained in the reference list.
 <<tax>>=
-tax('Achillea millefolium')
+tax('Brachythecium rutabulum')
 @
 
 The GermanSL is not included in vegdata to keep the R package small. Instead the reference list will be automatically downloaded into the tv\_home directory (see \texttt{tv.home()}) or a temporary folder, if it is not installed but needed. If you want to use a different list, specify \texttt{refl=<Name of your list>} according to the directory name in the Turboveg directory \emph{Species}.
 Function \texttt{tax} can use the given species name (with option strict=FALSE also name parts), or 7 letter abbreviation or the TaxonUsageID (called SPECIES\_NR in Turboveg) to look for all (partially) matching species names within the reference list.
-<<>>=
-tax('Achillea millefolium', strict=TRUE, verbose=TRUE)
-tax('Achylleus x millefoliae', simplify=TRUE, hybrid=TRUE)
-@
+
+
 Additional to the Turboveg standard fields comprehensive information for every taxon is stored in an extra file (tax.dbf) which can be used with option \textit{verbose=TRUE}. \\
 \textit{tax} will give you all matching names by default. If you set option \textit{strict=TRUE}, only the species with exact match to the given character string will be returned. \\
 \textit{syn} will give you all taxon names within the swarm of synonyms. The valid name is marked in column SYNONYM with FALSE.
@@ -152,6 +152,8 @@ Care about the taxonomic content of the datasets is crucial for every analysis. 
 db <- 'taxatest'
 @
 Defines the vegetation database name according to the name of the Turboveg database directory name
+<<path, results='hide', echo=FALSE>>=
+@
 
 <<meta, eval=FALSE>>=
 tv.metainfo(db)
@@ -248,7 +250,7 @@ The database contains 20 different names in the beginning.
 \paragraph{Synonyms} 4 of the species names are synonyms and are therefore transferred to legal taxon names, respectively numbers (see option syn='adapt'). If you want to preserve synonyms, choose option syn='conflict' or 'preserve'.
 
 \paragraph{Monotypic species within the area}
-Monotypic taxa are valid taxa which are the only child of their next higher taxonomic rank within the survey area. By default they will be converted by \texttt{taxval} to the higher rank. For instance \emph{Poa trivialis} is in Germany only represented by \emph{Poa trivialis subspecies trivialis}. Both taxa are valid, but for most analysis only one name for these identical entities must be used. By default a list of monotypic taxa within the GermanSL (whole Germany) is considered (see \texttt{tv.mono('GermanSL 1.2')}). The default is to set all monotypic species to the higher rank (because many monotypic subspecies can occur in vegetation databases). \\
+Monotypic taxa are valid taxa which are the only child of their next higher taxonomic rank within the survey area. By default they will be converted by \texttt{taxval} to the higher rank. For instance \emph{Poa trivialis} is in Germany only represented by \emph{Poa trivialis subspecies trivialis}. Both taxa are valid, but for most analysis only one name for these identical entities must be used. By default a list of monotypic taxa within the GermanSL (whole Germany) is considered (see \texttt{tv.mono('GermanSL 1.3')}). The default is to set all monotypic species to the higher rank (because many monotypic subspecies can occur in vegetation databases). \\
 If necessary, the procedure has to be repeated through the taxonomic 
 
 \paragraph{Trimming the hierarchy}
@@ -278,9 +280,8 @@ Completely independent from the questions of correct taxonomic naming of a speci
 If you want only taxa of e.g. level "species" in your analyses but no other taxonomic level, use \texttt{taxval(obs, ag='adapt', rank='SPE')}. All hierarchical levels below the species level (including the above specified monotypic subspecies) are set to species level in this case.
 
 <<coarsen, eval=TRUE, results='hide'>>=
-tmp <- taxval(obs.tax, refl='GermanSL 1.2', ag='adapt', rank='FAM', sink=FALSE)
-# tmp$oldTaxon <- tax(obs.tax$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
-tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
+tmp <- taxval(obs.tax, refl='GermanSL 1.3', ag='adapt', rank='FAM', sink=FALSE)
+tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.3')$TaxonName
 @
 <<print.coarsen>>=
 head(tmp[,c('OriginalName','newTaxon')], 10)

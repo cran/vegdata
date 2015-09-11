@@ -14,10 +14,10 @@ opts_chunk$set(comment = "", warning = FALSE, message = TRUE, echo = TRUE, size=
 library(vegdata)
 
 ## ----eval=TRUE----------------------------------------------------------------------------------------------
-tv.home()
+h <- tv.home()
 
 ## ----eval=FALSE---------------------------------------------------------------------------------------------
-#  # options(tv_home="path_to_your_Turboveg_root_directory")
+#  options(tv_home="path_to_your_Turboveg_root_directory")
 
 ## ----dblisting, eval=FALSE----------------------------------------------------------------------------------
 #  tv.db()
@@ -26,11 +26,7 @@ tv.home()
 tv.refl()
 
 ## ----tax----------------------------------------------------------------------------------------------------
-tax('Achillea millefolium')
-
-## -----------------------------------------------------------------------------------------------------------
-tax('Achillea millefolium', strict=TRUE, verbose=TRUE)
-tax('Achylleus x millefoliae', simplify=TRUE, hybrid=TRUE)
+tax('Brachythecium rutabulum')
 
 ## ----syn----------------------------------------------------------------------------------------------------
 tax('Elytrigia repens')$TaxonName
@@ -42,6 +38,8 @@ parents('ACHIMIL')
 
 ## ----db-----------------------------------------------------------------------------------------------------
 db <- 'taxatest'
+
+## ----path, results='hide', echo=FALSE-----------------------------------------------------------------------
 
 ## ----meta, eval=FALSE---------------------------------------------------------------------------------------
 #  tv.metainfo(db)
@@ -63,9 +61,8 @@ obs.taxval$TaxonName <-  species$TaxonName[match(obs.taxval$TaxonUsageID, specie
 obs.taxval[!duplicated(obs.taxval$OriginalName),c('RELEVE_NR', 'COVER_CODE', 'TaxonName', 'OriginalName')]
 
 ## ----coarsen, eval=TRUE, results='hide'---------------------------------------------------------------------
-tmp <- taxval(obs.tax, refl='GermanSL 1.2', ag='adapt', rank='FAM', sink=FALSE)
-# tmp$oldTaxon <- tax(obs.tax$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
-tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.2')$TaxonName
+tmp <- taxval(obs.tax, refl='GermanSL 1.3', ag='adapt', rank='FAM', sink=FALSE)
+tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.3')$TaxonName
 
 ## ----print.coarsen------------------------------------------------------------------------------------------
 head(tmp[,c('OriginalName','newTaxon')], 10)

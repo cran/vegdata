@@ -12,7 +12,7 @@ store <- local({
 load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = FALSE, ...) {
   reflist.type <- match.arg(reflist.type, c('Turboveg', 'EDIT'))
   if(reflist.type == 'Turboveg') {
-    tv_home <- tv.home()
+    tv_home <- tv.home(...)
     if(detailed) dbf <- 'tax.dbf' else dbf <- 'species.dbf'
     reflist.path <- file.path(tv_home, 'Species', refl, dbf)
 #    print(reflist.path)
@@ -66,9 +66,9 @@ tv.refl <- function(refl, db, tv_home) {
 #   }
   if(missing(tv_home)) tv_home <- tv.home()
   if(!missing(db)) {
-      dbattr <- file.path(tv.home(), 'Data', db, 'tvwin.set')
+      dbattr <- file.path(tv.home(), 'Data', db[1], 'tvwin.set')
       if(file.access(dbattr)==0) refl <-  sub('A\002', '', readBin(dbattr,what='character', n=3)[3]) else 
-    stop('Database attribute file tvwin.set from database "', db, '" not available. Please specify name of taxonomic reference list!') 
+    stop('Database attribute file tvwin.set from database "', db[1], '" not available. Please specify name of taxonomic reference list!') 
   } else  
     if(!missing(refl)) {
       rli <- list.dirs(path = file.path(tv_home, "Species"), full.names = TRUE, recursive = FALSE)

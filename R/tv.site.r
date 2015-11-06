@@ -1,4 +1,4 @@
-tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="CP437", verbose = TRUE, ...) 
+tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, iconv="CP437", verbose = TRUE, ...) 
 {
 #  ow <- options('warn')
 # if(quiet) { options(warn=-1) }
@@ -9,7 +9,7 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="CP437"
     message(paste("WARNING! Values less than -100,000. \n", "WARNING! tvhabita.dbf may be corrupt. \n", "WARNING! Please correct by im- / exporting e.g. with OpenOffice."))
   if(length(db)>1) for(i in 2:length(db)) {
 	site.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvhabita.dbf'))
-	if(any(site$RELEVE_NR %in% site.tmp$RELEVE_NR)) stop('Found duplicate releve numbers, aborting!')
+	if(any(site$RELEVE_NR %in% site.tmp$RELEVE_NR)) stop('Found duplicate releve numbers in ', db[i] , ' aborting!')
 	cols1 <- names(site)
 	cols2 <- names(site.tmp)
 	if (common.only){
@@ -19,8 +19,8 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="CP437"
  		All <- union(cols1, cols2)
 		miss1 <- setdiff(All, cols1)
 		miss2 <- setdiff(All, cols2)
-		site[, miss1] <- NA
-		site.tmp[, miss2] <- NA
+		site[, c(as.character(miss1))] <- NA
+		site.tmp[,c(as.character(miss2))] <- NA
 		site <- rbind(site, site.tmp)
 	} 
   }
@@ -33,13 +33,13 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="CP437"
     if(any(is.na(site$DATE))) 
       message(sum(is.na(site$DATE)), ' releves without date. Not converted from factor to date format.') else {
     site$DATE <- gsub('/','',site$DATE)
-#      Date <- rep('no date', nrow(site))
+#   Date <- rep('no date', nrow(site))
     index <- nchar(as.character(site$DATE))==4
-   fun <- function(x) paste(x,'0101',sep='')
+    fun <- function(x) paste(x,'0101',sep='')
     site$DATE[index] <- fun(site$DATE[index])
-#      Date[!index] <- as.character(site$DATE[!index])
+#   Date[!index] <- as.character(site$DATE[!index])
     index <- nchar(as.character(site$DATE))==6
-   fun <- function(x) paste(x,'01',sep='')
+    fun <- function(x) paste(x,'01',sep='')
     site$DATE[index] <- fun(site$DATE[index])
     site$DATE <- as.Date(site$DATE, '%Y%m%d')
     }
@@ -51,18 +51,16 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = TRUE, iconv="CP437"
 ### 
   fun <- function(x) all(is.na(x))
   na <- apply(site, 2, fun)
-  if (drop) {
-    if(any(na)) {
+  if (drop & any(na)) {
       if(verbose) {
         message('Some columns contain no data and are omitted.')
         print(names(site)[na], quote = FALSE)
       }
       site <- site[, !na]
-  }}
+  }
   fun.2 <- function(x) all(x == 0 | is.na(x))
   leer <- apply(site, 2, fun.2)
-  if (drop) 
-    if (any(leer)) {
+  if (drop & any(leer)) {
       if(verbose) {
         message('Some numeric columns contain only 0 values and are omitted.')
   	    print(names(site)[leer], quote = FALSE)

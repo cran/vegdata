@@ -1,3 +1,4 @@
+# db <- file.path(new_folder, dbs)
 "tv.obs" <- function(db, tv_home, ...) {
     if(missing(tv_home)) tv_home <- tv.home() else if(tv_home != tv.home()) warning(paste("Given Turboveg root directory:", tv_home, "differ from the global root directory given by getOption('tv_home'):", getOption('tv_home')))
     # Observations
@@ -15,10 +16,15 @@
       	obs.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvabund.dbf'))
         names(obs.tmp) <- TCS.replace(names(obs.tmp))
         if(any(unique(obs$RELEVE_NR) %in% unique(obs.tmp$RELEVE_NR))) stop('Overlap of releve numbers between the databases!')
-    	  if(any(!names(obs) %in%  names(obs.tmp))) {
-    	  ind.obs <- match(names(obs), names(obs.tmp), nomatch = 0)
-    	  ind.tmp <- match(names(obs.tmp), names(obs), nomatch=0)
-    	  obs <- rbind(obs[,ind.obs], obs.tmp[,ind.tmp]) 
+    	  if(any(!names(obs) %in%  names(obs.tmp) ) | any(!names(obs.tmp) %in% names(obs))) {
+  	      miss1 <- setdiff(colnames(obs), colnames(obs.tmp))
+  	      miss2 <- setdiff(colnames(obs.tmp), colnames(obs))
+  	      obs[, miss2] <- NA
+  	      obs.tmp[, miss1] <- NA
+  	      obs <- rbind(obs, obs.tmp) 
+#       	  ind.obs <- match(names(obs), names(obs.tmp), nomatch = 0)
+#       	  ind.tmp <- match(names(obs.tmp), names(obs), nomatch=0)
+#       	  obs <- rbind(obs[,ind.obs], obs.tmp[,ind.tmp]) 
         } else obs <- rbind(obs, obs.tmp)
       }
     }

@@ -3,13 +3,12 @@
 \alias{tv.refl}
 \alias{taxname.abbr}
 \alias{taxname.simplify}
-\alias{vw.con}
 \alias{first.word}
 \alias{reShape.veg}
 \alias{TCS.replace}
-\alias{vegetweb}
 \alias{tv.dict}
 \alias{load.taxlist}
+\alias{showplot}
 
 \title{Internal vegdata functions}
 

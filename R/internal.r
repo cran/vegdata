@@ -1,10 +1,10 @@
-tv.db <- function() {
-  tv_home <- tv.home()
-  wd <- getwd()
-  setwd(file.path(tv_home, 'Data'))
-  dir <- list.dirs(full.names = TRUE, recursive = TRUE)
-#  dir <- sapply(dir, function(x) substring(x, nchar(tv_home)+7), USE.NAMES = FALSE)
-  return(dir[2:length(dir)])
+tv.db <- function(path='.') {
+  valid.TVdb <- function(p) {
+    all(c('tvhabita.dbf', 'tvabund.dbf', 'remarks.dbf', 'TvAdmin.dbf', 'tvwin.set') %in% list.files(file.path(tv.home(), 'Data', path, p)))
+  }
+  dir <- list.dirs(path = file.path(tv.home(), 'Data', path), full.names = FALSE, recursive = TRUE)
+  valid.dir <- dir[sapply(dir, valid.TVdb)]
+  return(file.path(path, valid.dir))
 }
 
 "[.veg" <- function(x, s,...) {
@@ -17,7 +17,8 @@ tv.db <- function() {
 
 tv.dict <- function(db, tv_home) {
   if(missing(tv_home)) tv_home <- tv.home()
-  dbattr <- file.path(tv_home, 'Data', db, 'tvwin.set')
+  if(length(db) > 1) warning('Please check, if all databases use the same reference list and the same Turboveg dictionary, will use the one given in the first database. ')
+  dbattr <- file.path(tv_home, 'Data', db[1], 'tvwin.set')
   if(file.access(dbattr)==0) {
     allbytes <- readBin(dbattr, "raw", n = 100, size = 1, endian = "little")
     bin <- sapply(allbytes, readBin, what='character')

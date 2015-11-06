@@ -1,10 +1,12 @@
 # library(vegdata)
 # library(testthat)
 context("Defaults")
+tmp <- tempdir()
+options(tv_home = tmp)
 
 test_that("reference list", {
-  options(tv_home=file.path(path.package('vegdata'),'tvdata'))
   expect_equal(tv.refl(), 'GermanSL 1.3')
+  taxa <- load.taxlist(refl = 'GermanSL 1.3')
 })
 
 context("Taxonomy")
@@ -26,14 +28,15 @@ context('taxval')
 ### tv.taxval test: should work with (1) Turboveg data set taxatest, (2) with all available options and their combinations
 
 test_that("Taxa1", {
+  options(tv_home = file.path(path.package('vegdata'), 'tvdata'))
   db <- 'taxatest'
-  obs <- tv.obs(db)
+  obs <- tv.obs(db, tv_home = getOption('tv_home'))
   expect_equal(sort(tax(unique(obs$TaxonUsageID), syn=FALSE, quiet = TRUE)$TaxonName), c("Acer pseudoplatanus", "Achillea", "Achillea millefolium", "Achillea millefolium agg.", "Achillea millefolium subsp. sudetica", "Acoraceae", "Adonis aestivalis", "Agrostis stolonifera var. palustris", "Armeria maritima subsp. elongata", "Armeria maritima subsp. halleri", "Dactylis glomerata", "Galium mollugo", "Hieracium pilosella", "Hieracium subg. Pilosella", "Picea abies", "Quercus robur"))
 })
 # 
 test_that("Taxa2", {
   db <- 'taxatest'
-  expect_equal_to_reference(taxval(tv.obs(db), refl='GermanSL 1.3', quiet=TRUE, check.critical = FALSE), file='obs.rds')
+  expect_equal_to_reference(taxval(tv.obs(db), refl='GermanSL 1.3', check.critical = FALSE), file='obs.rds')
 #   
 #   # saveRDS(obs, file='./vegdata/tests/output/obs.csv')
 #   path_expected <- base::file.path(devtools::inst(name="vegdata"), "tests/expected/obs.rds")

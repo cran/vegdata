@@ -21,16 +21,16 @@ tv.home <- function(recheck = FALSE) {
          "1" = file.path(path.package('vegdata'), 'tvdata'),
          tempdir()
    ) } else tv_home <- tempdir()
-   options(tv.home = tv_home)
+#   options(tv_home = tv_home)
    if(!file.exists(file.path(tv_home, 'tvdata', 'Popup', 'tvscale.dbf')))
      for(d in c('Popup', 'Data', 'Species')) {
-     dir.create(file.path(tv_home, d))
+     dir.create(file.path(tv_home, d), showWarnings = FALSE)
      if(d == 'Data') {
        wd <- getwd()
        setwd(file.path(path.package('vegdata'), 'tvdata', 'Data')  )
        dbs <- list.dirs(, recursive=TRUE, full.names=FALSE)
        for(l in 2:length(dbs)) {
-         dir.create(file.path(tv_home, 'Data', dbs[l]))
+         dir.create(file.path(tv_home, 'Data', dbs[l]), showWarnings = FALSE)
        file.copy(from =  list.files(dbs[l], recursive=TRUE, full.names=TRUE, include.dirs=TRUE), to = file.path(tv_home, 'Data', dbs[l]))
        }
        setwd(wd)

@@ -3,7 +3,7 @@
 \title{Load site data from Turboveg Database}
 
 \usage{
-tv.site(db, tv_home, drop=TRUE, common.only = TRUE, iconv="CP437", verbose = TRUE, 
+tv.site(db, tv_home, drop=TRUE, common.only = FALSE, iconv="CP437", verbose = TRUE, 
 ...)
 }
 
@@ -11,7 +11,7 @@ tv.site(db, tv_home, drop=TRUE, common.only = TRUE, iconv="CP437", verbose = TRU
   \item{db}{Name of your Turboveg database. Directory name containing tvabund.dbf, tvhabita.dbf and tvwin.set.}
   \item{tv_home}{Turbowin installation path. Optional, if Turbowin is either on "C:/turbowin" or "C:/Programme/Turbowin".}
   \item{drop}{Drop variables without values.}
-  \item{common.only}{Import only header data which occur in all databases with the same name.}
+  \item{common.only}{Import only header data with the same name in all databases.}
   \item{iconv}{specify locale if necessary}
   \item{verbose}{print warnings and hints}
   \item{...}{Additional options like \code{dec} for type.convert}

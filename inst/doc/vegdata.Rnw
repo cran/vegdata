@@ -3,10 +3,12 @@
 %\VignetteDepends{vegan, labdsv, akima, googleVis}
 %\VignetteKeyword{Vegetation}
 %\VignetteEngine{knitr::knitr}
+% \SweaveSyntax{SweaveSyntaxLatex}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[sort&compress]{natbib}
+\bibliographystyle{unsrtnat}
 \usepackage[english]{babel}
 \usepackage{hyperref}
 \usepackage{graphicx} 
@@ -26,6 +28,7 @@ library(knitr)
 opts_chunk$set(
 concordance=TRUE,
 results="tex")
+options(results = 'tex') # for pqR
 @
 
 
@@ -93,7 +96,7 @@ library(vegdata)
 @
 
 
-Several functions of this package use the directory structure of Turboveg. The first time such a function is called, the internal function \texttt{tv.home} tries to find your Turboveg installation path. Depending on whether you have Turboveg installed on your computer or not, it will give you a message about the Turboveg installation path or the path to the Turboveg directory structure of package vegdata.
+Several functions of this package use the directory structure of Turboveg. The first time such a function is called, the internal function \texttt{tv.home} tries to find your Turboveg installation path. Depending on whether you have Turboveg installed on your computer or not, it will give you a message (and an invisible return) about the Turboveg installation path or the path to the Turboveg directory structure of package vegdata.
 <<eval=TRUE>>=
 h <- tv.home()
 @
@@ -156,7 +159,7 @@ Defines the vegetation database name according to the name of the Turboveg datab
 @
 
 <<meta, eval=FALSE>>=
-tv.metainfo(db)
+tv.metadata(db)
 @
 Metainformation, i.e. information about the kind of available information should always be given for every database. Since Turboveg does not ask and provide such information, write a simple text file called metainfo.txt and save it within the database folder.
 Turboveg does not provide any metadata handling. \\
@@ -164,6 +167,7 @@ Database \texttt{taxatest} is an artificial dataset to show functionalities and 
 
 Let's have a look at the Turboveg data structure.
 <<obs>>=
+getOption('tv_home')
 obs.tax <- tv.obs(db)
 # Adding species names
 species <- tax('all')
@@ -242,7 +246,7 @@ We are using the taxonomic reference list GermanSL \citep{Jansen2008} which cont
 
 <<taxval, eval=TRUE>>=
 obs.tax$OriginalName <- obs.tax$TaxonName
-obs.taxval <- taxval(obs.tax, db=db, mono='lower', maxtaxlevel='AGG', sink=FALSE)
+obs.taxval <- taxval(obs.tax, db=db, mono='lower', maxtaxlevel='AGG', interactive=FALSE)
 @
 \normalsize
 
@@ -280,7 +284,7 @@ Completely independent from the questions of correct taxonomic naming of a speci
 If you want only taxa of e.g. level "species" in your analyses but no other taxonomic level, use \texttt{taxval(obs, ag='adapt', rank='SPE')}. All hierarchical levels below the species level (including the above specified monotypic subspecies) are set to species level in this case.
 
 <<coarsen, eval=TRUE, results='hide'>>=
-tmp <- taxval(obs.tax, refl='GermanSL 1.3', ag='adapt', rank='FAM', sink=FALSE)
+tmp <- taxval(obs.tax, refl='GermanSL 1.3', ag='adapt', rank='FAM')
 tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.3')$TaxonName
 @
 <<print.coarsen>>=
@@ -343,7 +347,8 @@ names(tv.veg(db, tax=FALSE, pseudo=comb, quiet=TRUE))
 
 <<layer, results='hide', warning=FALSE>>=
 data(lc.1)
-veg <- tv.veg(db, lc = "sum", pseudo = list(lc.1, 'LAYER'), dec = 1, quiet=TRUE)
+veg <- tv.veg(db, lc = "sum", pseudo = list(lc.1, 'LAYER'), dec = 1, check.critical = FALSE)
+
 @
 <<layerdiff>>=
 veg[,1:10]
@@ -365,7 +370,6 @@ obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID,
 
 The second possibility is to use function \texttt{comb.species} on vegetation matrices.
 <<comb.spec, eval=TRUE>>=
-veg <- tv.veg('taxatest', quiet=TRUE)
 comb.species(veg, sel=c('QUERROB','QUERROB.Tree'))
 @
 will use the first name ('QUERROB') for the replacement column with the sum of the selected columns.
@@ -390,7 +394,7 @@ Use help(package='vegdata') for a complete list of available functions and data 
 
 \subsection{Combine different taxonomic reference lists}
 
-If you have to combine different taxonomic reference lists, functions \texttt{tv.compRefl} might be a starting point, comparing species numbers and/or species names of both lists.
+If you have to combine different taxonomic reference lists, function \texttt{tv.compRefl} might be a starting point, comparing species numbers and/or species names of both lists.
 <<eval=FALSE>>=
 tv.compRefl('taxref1', 'taxref2')
 @
@@ -418,10 +422,12 @@ Additionally you can use the affiliation of species to abiotic clusters with the
 
 <<syntab.mupa>>=
 require(indicspecies)
-traits <- tv.traits()
-trait <- data.frame(EIV_F = traits$OEK_F, EIV_N = traits$OEK_N)
-rownames(trait) <- traits$ABBREVIAT
 st <- syntab(elbaue, clust, mupa=TRUE)
+# Print Ellenberg indicator values for soil moisture and nutrient demand
+traits <- tv.traits()
+trait <- traits[traits$LETTERCODE %in% names(elbaue), ]
+rownames(trait) <- trait$LETTERCODE
+trait <- trait[,c('OEK_F', 'OEK_N')]
 print(st, limit=30, trait=trait)
 @
 
@@ -445,9 +451,11 @@ which is a wrapper for Kruskal's Non-metric Multidimensional Scaling \citep{Cox1
 library(vegan)
 veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE, 
      noshare = 1, expand = TRUE, trace = 2)
-mT.F <- meanTraits('OEK_F', elbaue)
-mT.N <- meanTraits('OEK_N', elbaue)
-env <- envfit(veg.nmds, data.frame(mT.F,mT.N))
+eco <- tv.traits()
+eco$OEK_F <- as.numeric(eco$OEK_F)
+F <- isc(elbaue, eco, 'OEK_F', method = 'mean')
+N <- isc(elbaue, eco, 'OEK_N', method = 'mean')
+env <- envfit(veg.nmds, data.frame(F, N))
 @
 
 To show the result in comparison with environmental measurements in a nice graphic we do some plotting magic.
@@ -478,9 +486,9 @@ nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', env = N
 \begin{center}
 <<nmdsplot, quiet=TRUE, results='hide', eval=TRUE, warning=FALSE>>=
 nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env, 
-        plottitle = 'NMDS of Elbaue floodplain vegetation')
+        plottitle = 'Elbaue floodplain dataset')
 @
-\caption{Non-metric multidimensional scaling of the elbaue vegetation data with an overlay of mean groundwater table (colors) and standard deviation of groundwater level fluctuations (lines). Arrows show direction of increasing mean Ellenberg F resp. N}
+\caption{Non-metric multidimensional scaling of the elbaue vegetation data with an overlay of mean groundwater table (colors) and standard deviation of groundwater level fluctuations (GAM lines). Arrows show direction of increasing mean Ellenberg F (soil water) resp. N (nutrient availability).}
 \end{center}
 \end{figure}
 

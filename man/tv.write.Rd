@@ -22,8 +22,8 @@ iconv="CP437", newTvAdmin = FALSE, ...)
 }
 
 \details{
-  By default Covercode is written to Turboveg. This is only meaningful, if correct CoverScales are stored in the site dataframe.
-  Database name is iportent to care for TvAdmin.dbf and remarks.dbf and configuration file tvwin.set.
+  By default Covercode is written to Turboveg. This is only meaningful, if correct CoverScales are given in the site dataframe.
+  The db database name is important to care for TvAdmin.dbf and remarks.dbf and the binary configuration file tvwin.set.
 }
 
 \value{

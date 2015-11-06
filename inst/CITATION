@@ -6,16 +6,16 @@ vers <- paste("R package version", meta$Version)
 
 citEntry(
 	entry="article",
-  	title = "Plant names in vegetation databases - a neglected source of bias", 
+  	title = "Plant names in vegetation databases -- a neglected source of bias", 
 	DOI = "10.1111/j.1654-1103.2010.01209.x", 
 	journal = "Journal of Vegetation Science", 
-	author = "Jansen Florian and Dengler J\"urgen", 
+	author = "Jansen Florian and Dengler J{\"u}rgen", 
 	year = "2010",
 	volume = "21 (6)",
 	pages = "1179-1186",
 
 	textVersion =
-	paste("Jansen F, Dengler J (2010) Plant names in vegetation databases - a neglected source of bias.
+	paste("Jansen F, Dengler J (2010) Plant names in vegetation databases -- a neglected source of bias.
 	    Journal of Vegetation Science, 21 (6), 1179-1186.")
 )
  

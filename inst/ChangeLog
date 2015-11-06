@@ -1,3 +1,7 @@
+version 0.8.5 September 2015
+  * new functions vw.survey, vw.site and vw.veg to retrieve data from http://www.vegetweb.de. That means we need two new packages jsonlite, httr to access the webservices
+  * new function isc ("indicate site conditions") for mean, median or mode of indicator values or niche levels, function meanTraits is now deprecated
+
 version 0.8 September 2015
   * function taxval rewritten to allow interactive mode. Options "concept" and "uncertain" removed to simplify the code.
   * support for GermanSL version 1.3

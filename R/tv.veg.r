@@ -34,7 +34,7 @@ options(warn=1)
 #          suppressWarnings(
           RelScale <- tv.site(db, tv_home, verbose = FALSE)[, c("RELEVE_NR", "COVERSCALE")]
 #        ))
-          obs <- tv.coverperc(db, obs=obs, RelScale = RelScale, tv_home = tv_home, ...) 
+          obs <- tv.coverperc(db[1], obs=obs, RelScale = RelScale, tv_home = tv_home, ...) 
           } else 	obs <- tv.coverperc(db=db[1], obs=obs, RelScale = RelScale, tv_home = tv_home, ...)
       } else {
       if (!any(names(obs) == values)) stop(paste(values, " could not be found.")) 

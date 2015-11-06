@@ -86,9 +86,9 @@ print.syntab <- function(x, zero.print='.', trait, limit = 1, minstat = 0, alpha
 
   if(!missing(trait)) {
     if(is.null(names(trait))) stop('Trait vector must have names of taxa according to the vegetation matrix.')
-    traitname <- as.character(substitute(trait))
-    trait <- as.data.frame(trait[match(rownames(x), rownames(trait)),])
-		x <- cbind(x, trait)
+    traitname <- names(trait) #as.character(substitute(trait))
+    trait.df <- as.data.frame(trait[match(rownames(x), rownames(trait)),])
+		x <- cbind(x, trait.df)
 #		names(x)[names(x)=='trait'] <- traitname
 	}
   } else warning('NO species exceed the chosen significance threshold.')

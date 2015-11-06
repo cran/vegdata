@@ -46,6 +46,10 @@ interactive = FALSE,
   names(fr)[1] <- 'TaxonUsageID'
   fr$TaxonUsageID <- as.numeric(fr$TaxonUsageID)
   fr$TaxonName <- species$TaxonName[match(fr$TaxonUsageID, species$TaxonUsageID)]
+  if(any(is.na(fr$TaxonName))) {
+    message('Could not find the following taxon ids in ', refl)
+    print(fr$TaxonUsageID[is.na(fr$TaxonName)])
+  }
   fr$Secundum <- species$AccordingTo[match(fr$TaxonUsageID, species$TaxonUsageID)]
   fr$Synonym <- species$SYNONYM[match(fr$TaxonUsageID, species$TaxonUsageID)]
   fr$TaxonRank <- species$TaxonRank[match(fr$TaxonUsageID, species$TaxonUsageID)]
@@ -57,17 +61,27 @@ interactive = FALSE,
 agg.conflict <- function(fr, ...) {
   if(maxtaxlevel == 'ROOT') maxtaxlevel <- taxlevels[max(match(unique(fr$TaxonRank), taxlevels))]
   # Subsuming elements into higher rank observations (if necessary) for adapt or conflict .
+  origin <- fr$NewTaxonID
+  fr$round <- 0
+  r <- 1
   repeat{
     ChildsOfOccurringTaxa <- unique(unlist(sapply(fr$NewTaxonID[which(!fr$TaxlevelTooHigh)], function(x) child(x, refl=refl, species=species, gen=4, tree=FALSE, quiet=TRUE)$TaxonUsageID)))
     OccurringChilds <- ChildsOfOccurringTaxa[ChildsOfOccurringTaxa %in% fr$NewTaxonID[which(!fr$TaxlevelTooHigh)]]
-    
     if(length(OccurringChilds) > 0) {
-      cat(length(OccurringChilds), 'conflicting child taxa found in dataset.\n')
+      cat(length(OccurringChilds), 'conflicting child taxa found in dataset.', '\n')
+#      print(sort(tax(OccurringChilds, quiet=T)$TaxonName))
       for(i in 1:length(OccurringChilds)) {
         nested.in <- parent(OccurringChilds[i], quiet = TRUE)
         nested.occ <- nested.in[match(nested.in$TaxonRank, taxlevels) <= match(maxtaxlevel, taxlevels),]
-        fr$NewTaxonID[match(OccurringChilds[i], fr$NewTaxonID)] <- nested.occ$TaxonUsageID[nrow(nested.occ)]
+        if(nrow(nested.occ) > 0) {
+#           print('Will change:')
+#           print(fr$TaxonName[fr$NewTaxonID == OccurringChilds[i] & !is.na(fr$NewTaxonID)])
+          fr$round[fr$NewTaxonID == OccurringChilds[i] & !is.na(fr$NewTaxonID)] <- r
+          fr$NewTaxonID[fr$NewTaxonID == OccurringChilds[i] & !is.na(fr$NewTaxonID)] <- nested.occ$TaxonConceptID[nrow(nested.occ)]
+        }
       }
+#      write.csv(fr, file=paste('fr', r, 'csv', sep='.'))
+      r <- r + 1
     } else break
   }
   return(fr)
@@ -76,7 +90,8 @@ agg.conflict <- function(fr, ...) {
 
 ###------- adjust synonyms
 ##############################
-synonyms <- if(any(species$SYNONYM[match(fr$NewTaxonID, species$TaxonUsageID)])) tax(fr$NewTaxonID[species$SYNONYM[match(fr$NewTaxonID, species$TaxonUsageID)] == TRUE], quiet=TRUE) else NULL
+synonyms <- if(any(species$SYNONYM[match(fr$NewTaxonID, species$TaxonUsageID)])) 
+  tax(fr$NewTaxonID[species$SYNONYM[match(fr$NewTaxonID, species$TaxonUsageID)] == TRUE], quiet=TRUE) else NULL
 if(length(synonyms) > 0) {
   cat(length(synonyms), 'Synonyms found in dataset.', if(!interactive) 'Changed to valid names.', '\n')
   fr$NewTaxonID[match(synonyms$TaxonUsageID, fr$TaxonUsageID)] <- synonyms$TaxonConceptID
@@ -86,8 +101,11 @@ if(length(synonyms) > 0) {
 ###------ restrict to maximum taxonomic level
 ##############################
 if(maxtaxlevel %in% taxlevels) {
-  fr$TaxlevelTooHigh <- species$TaxonRank[match(fr$TaxonUsageID, species$TaxonUsageID)] %in% taxlevels[taxlevels > maxtaxlevel]
-  if(sum(fr$TaxlevelTooHigh) > 0) cat(sum(fr$TaxlevelTooHigh), 'taxa higher than', maxtaxlevel,'found.\n')
+  fr$TaxlevelTooHigh <- species$TaxonRank[match(fr$NewTaxonID, species$TaxonUsageID)] %in% taxlevels[taxlevels > maxtaxlevel]
+  if(sum(fr$TaxlevelTooHigh) > 0) {
+    fr$NewTaxonID[fr$TaxlevelTooHigh] <- NA
+    cat(sum(fr$TaxlevelTooHigh), 'taxa higher than', maxtaxlevel,'found.\n')
+  }
  } else stop(paste('The given rank code', maxtaxlevel, 'is not a known rank code:', taxlevels))
 ##############################
 
@@ -114,7 +132,7 @@ if (mono %in% c("species", "lower", "higher")) {
     }
   }
   cat(sum(fr$Monotypic), "monotypic taxa found in dataset.\n")
-  if(!interactive) cat(" Will be set to ", mono, " rank", if(mono == 'species') " if possible.\n", sep='')
+  if(!interactive & sum(fr$Monotypic) > 0) cat("  Will be set to ", mono, " rank", if(mono == 'species') " if possible.\n", sep='')
 } else cat('Monotypic taxa preserved!\n')
 ##############################
 

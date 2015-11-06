@@ -6,24 +6,17 @@
 
 \usage{
 tv.traits(db, trait.db = 'ecodbase.dbf', refl, ...)
-meanTraits(trait, veg, refl, trait.db = 'ecodbase.dbf', join = 'LETTERCODE', 
-zero.is.NA = TRUE, ...)
 }
 
 \arguments{
 \item{db}{Path name to the Turboveg database directory}
 \item{trait.db}{Name of species trait DBase file, default is 'ecodbase'}
 \item{refl}{Name of the taxonomic reference list, if veg is not loaded with tv.veg}
-\item{trait}{Name of the column to use from the trait table}
-\item{veg}{vegetation matrix}
-\item{join}{Column name of the trait table corresponding to the colnames of the vegetation matrix}
-\item{zero.is.NA}{Should zero trait values handled as NA values}
 \item{\dots}{additional arguments for tv.traits}
 }
 
 \description{
 Loading Turboveg ecodbase or any other specified dBase file in this directory and do basic data evaluation. Empty columns are eliminated.
-meanTraits will calculate mean trait values like mean Ellenberg indicator values (see vignette).
 }
 
 \details{

@@ -1,16 +1,17 @@
 
 ## Export regular function names
-export(child, meanTraits, monotypic, parent, syn, syntab, tax, taxval, vegetweb, childs, parents)
+export(child, isc, meanTraits, monotypic, parent, syn, syntab, tax, taxval, vegetweb, showplot, showindiplot)
 
 ## export regular functions with dot names
 export(comb.species, reShape.veg, print.syntab, TCS.replace, taxname.abbr, taxname.simplify)
-export(tv.biblio, tv.compRefl, tv.coverperc, tv.db, tv.dict, tv.home, tv.traits, tv.metainfo, tv.obs, tv.refl, tv.site, tv.veg, tv.write)
+export(tv.biblio, tv.compRefl, tv.coverperc, tv.db, tv.dict, tv.home, tv.traits, tv.metadata, tv.obs, tv.refl, tv.site, tv.veg, tv.write, vw.site, vw.veg, vw.survey)
 
 ## Register? internal functions
 export(load.taxlist)
 
 ## Export deprecated functions
 # export(agg, spc, tv.taxval, tv.eco, sub.abbr,
+export(childs, parents)
 export(tv.mono)
 
 ## Export S3 methods
@@ -23,8 +24,10 @@ S3method(print, syntab)
 
 ## Registration of S3 methods
 importFrom(foreign, read.dbf)
-# importFrom(permute, permControl)
-# importFrom(indicspecies, multipatt)
 importFrom(XML, getNodeSet, xmlName, xmlParse, xmlRoot, xmlSApply, xmlToDataFrame, xmlValue)
 importFrom("utils", "download.file", "type.convert", "unzip", "read.csv2", "write.csv2")
+importFrom("httr", "GET", "content", "add_headers", "authenticate", "stop_for_status")
+importFrom("jsonlite", "fromJSON")
+# importFrom(permute, permControl)
+# importFrom(indicspecies, multipatt)
 # import(vegan)

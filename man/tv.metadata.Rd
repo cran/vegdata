@@ -1,14 +1,14 @@
-\name{tv.metainfo}
-\alias{tv.metainfo}
+\name{tv.metadata}
+\alias{tv.metadata}
 \title{Show metainfo of vegetation database or ecodbase}
 
 \description{
-Showing "metainfo.txt" when specified and saved in Turboveg database directory.
+Showing "metadata.txt" when specified and saved in Turboveg database directory.
 When db = 'eco' and refl specified, metainfo of species attribute table is displayed.
 }
 
 \usage{
-tv.metainfo(db, refl='GermanSL 1.2', tv_home, filename = 'metainfo.txt', ...)
+tv.metadata(db, refl='GermanSL 1.2', tv_home, filename = 'metadata.txt', ...)
 }
 
 \arguments{
@@ -20,7 +20,7 @@ tv.metainfo(db, refl='GermanSL 1.2', tv_home, filename = 'metainfo.txt', ...)
 }
 
 \details{Since Turboveg provides no formalised method to store information about database fields, 
-I suggest to save a simple text file, named for example "metainfo.txt" into the directory of your Turboveg database.}
+I suggest to save a simple text file, named for example "metadata.txt" into the directory of your Turboveg database.}
 
 \author{Florian Jansen
 \email{jansen@uni-greifswald.de}

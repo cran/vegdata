@@ -5,6 +5,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
   }
   
   if(missing(tvscale)) {
+    
     tvscale <- read.dbf(file.path(tv_home, "Popup", tv.dict(db), "tvscale.dbf"))    
   }
   tvscale <- tvscale[!is.na(tvscale$SCALE_NR),]
@@ -12,11 +13,11 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
   if (missing(RelScale)) {
       ow <- options('warn')
       options(warn = -1)
-      RelScale <- tv.site(db=db, tv_home=tv_home, quiet = TRUE)[, c("RELEVE_NR", "COVERSCALE")]
+      RelScale <- tv.site(db=db, tv_home=tv_home, verbose = quiet)[, c("RELEVE_NR", "COVERSCALE")]
       options(ow)
       }
   if (missing(obs))
-      obs <- tv.obs(db, tv_home, quiet=TRUE, as.is=TRUE)
+      obs <- tv.obs(db, tv_home, as.is=TRUE)
   obs$COVERSCALE <- RelScale$COVERSCALE[match(obs$RELEVE_NR, RelScale$RELEVE_NR)]
 #  obs$COVER_CODE[is.na(obs$COVERSCALE) | obs$COVERSCALE == '9x']
   g <- obs$COVERSCALE

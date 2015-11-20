@@ -21,7 +21,7 @@ tv.home <- function(recheck = FALSE) {
          "1" = file.path(path.package('vegdata'), 'tvdata'),
          tempdir()
    ) } else tv_home <- tempdir()
-#   options(tv_home = tv_home)
+   options(tv_home = tv_home)
    if(!file.exists(file.path(tv_home, 'tvdata', 'Popup', 'tvscale.dbf')))
      for(d in c('Popup', 'Data', 'Species')) {
      dir.create(file.path(tv_home, d), showWarnings = FALSE)

@@ -1,16 +1,16 @@
 ### Source: Leyer & Wesche 2007: Multivariate Statistik in der Oekologie, p. 221, Springer, Berlin.
 # Data set grasland (p. 5,6)
-# Original data selected from: Leyer 2002 Augrünland der Mittelelbe-Niederung. J. Cramer, Berlin, Stuttgart.
+# Original data selected from: Leyer 2002 Augruenland der Mittelelbe-Niederung. J. Cramer, Berlin, Stuttgart.
 # Data entry: Anette Stolte
 
 ### additional comments #######################################
 
 
-### Header data         ###################################
-RELEVE_NR								Releve Nr from Leyer & Wesche 2007
+### Header data         	###################################
+RELEVE_NR					Releve Nr from Leyer & Wesche 2007
 Cover abundance scale		In Leyer & Wesche 2007 as Londo-Scale, here entered as Percentage values
-COUNTRY									Germany, see Country reference
-Nr_IN_TABLE							Releve Nr in published table
+COUNTRY						Germany, see Country reference
+Nr_IN_TABLE					Releve Nr in published table
 
 ## All remaining predefined fields are unsused. ##
 
@@ -24,3 +24,5 @@ MGL:			mean groundwater level = Mittlerer Grundwasserstand [cm]; ueber zwei Jahr
 SDGL:			standard deviation of groundwater level = Standardabweichung der Wassergang-Zeitreihe [cm]; Mass fuer die Groesse der ueber zwei Jahre gemittelten Wasserstandsschwankungen; [Scale: ratio]
 InUnD:		duration of inundation period = Ueberflutungsdauer Log[Tage/Jahr]; Logarithmus der ueber zwei Jahre gemittelten Ueberflutungsdauer; [Scale: ratio]
 InUnD_50:	duration of inindation period above 50cm = Dauer von Wasserstaenden hoeher 50cm ueber Flur Log[Tage/Jahr]; Logarithmus der ueber zwei Jahre gemittelten Werte; [Scale: ratio]
+
+siehe auch: Leyer, I. 2002 Auengruenland der Mittelelbe-Niederung. Vegetationskundliche und -oekologische Untersuchungen in der rezenten Aue, Altaue und am Auenrand der Elbe. Dissertationes Botanicae 363: 1-193.

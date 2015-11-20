@@ -1,6 +1,6 @@
 
 ## Export regular function names
-export(child, isc, meanTraits, monotypic, parent, syn, syntab, tax, taxval, vegetweb, showplot, showindiplot)
+export(child, isc, meanTraits, monotypic, parent, syn, syntab, tax, taxval, showplot, showindiplot)
 
 ## export regular functions with dot names
 export(comb.species, reShape.veg, print.syntab, TCS.replace, taxname.abbr, taxname.simplify)
@@ -26,7 +26,7 @@ S3method(print, syntab)
 importFrom(foreign, read.dbf)
 importFrom(XML, getNodeSet, xmlName, xmlParse, xmlRoot, xmlSApply, xmlToDataFrame, xmlValue)
 importFrom("utils", "download.file", "type.convert", "unzip", "read.csv2", "write.csv2")
-importFrom("httr", "GET", "content", "add_headers", "authenticate", "stop_for_status")
+importFrom("httr", "GET", "content", "add_headers", "authenticate", "warn_for_status")
 importFrom("jsonlite", "fromJSON")
 # importFrom(permute, permControl)
 # importFrom(indicspecies, multipatt)

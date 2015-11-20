@@ -1,3 +1,6 @@
+version 0.8.6 November 2015
+  * fixed test incompatibility with GermanSL 1.3.1
+
 version 0.8.5 September 2015
   * new functions vw.survey, vw.site and vw.veg to retrieve data from http://www.vegetweb.de. That means we need two new packages jsonlite, httr to access the webservices
   * new function isc ("indicate site conditions") for mean, median or mode of indicator values or niche levels, function meanTraits is now deprecated

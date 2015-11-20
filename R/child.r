@@ -4,7 +4,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("gwindow", "gtree", "add
 child <- function (x, refl = tv.refl(), gen=4, tree=FALSE, quiet=FALSE, syn=FALSE, ...) {
   if(missing(refl)) refl <- tv.refl()
   species <- tax("all", detailed = TRUE, refl = refl, syn = TRUE, quiet =TRUE, ...)
-  if(length(x)>1) { warning('More than one species selected, using only the first.');  x <- x[1]}
+  if(length(x) > 1) { warning('More than one species selected, using only the first.');  x <- x[1]}
   s <- tax(x, refl = refl, strict = TRUE, quiet = TRUE, ...)
   x <- s$TaxonConceptID
 # if(is.character(x) & nchar(x) != 36) stop('x must be given as Taxon ID (GUID or integer).')

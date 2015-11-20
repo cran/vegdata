@@ -21,10 +21,10 @@ select.taxa <- function(x, species, strict, vernacular = FALSE, simplify = FALSE
       l <- species[species$LETTERCODE %in% x,]
       if(nrow(l) > 1) l <- l[!l$SYNONYM,]
     } else {
-   	if(all(sapply(x, function(x) nchar(x) == 36))) {
-   	  message('x is interpreted as 36 character representation of a GUID Taxon ID.')
-      l <- species[match(x, species$TaxonUsageID),] ## GUID Tax ID's		
-    }   																				## Taxnames
+#    	if(all(sapply(x, function(x) nchar(x) == 36))) {
+#    	  message('x is interpreted as 36 character representation of a GUID Taxon ID.')
+#       l <- species[match(x, species$TaxonUsageID),] ## GUID Tax ID's		
+#     }   																				## Taxnames
     x <- taxname.abbr(x)
 		  if(simplify) {
 		  	species$TaxonName <- taxname.simplify(species$TaxonName, genus, epithet, ...)
@@ -56,8 +56,7 @@ species <- load.taxlist(refl, reflist.type=reflist.type, detailed=detailed)
 
 ### Filter
 # if(!is.null(concept)) species <- concept.FUN(species, concept)
-
-#if(length(x) == NULL) stop('No input value to search for a taxon found.')
+if(length(x) == 0) stop('Input value to search for a taxon missing.')
 if(tolower(x[1]) != 'all') {
 	if(simplify) species$originalTaxonName <- species$TaxonName
 	species <- select.taxa(x, species, strict, vernacular, simplify, ...)

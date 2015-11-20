@@ -9,10 +9,11 @@ store <- local({
 
 
 # Load taxonomic reference list
-load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = FALSE, ...) {
+load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = FALSE, recheck = FALSE, ...) {
   reflist.type <- match.arg(reflist.type, c('Turboveg', 'EDIT'))
-  if(reflist.type == 'Turboveg') {
-    tv_home <- tv.home(...)
+  if(reflist.type == 'Turboveg') {    
+    args <- list(recheck = recheck)
+    tv_home <- do.call("tv.home", args)
     if(detailed) dbf <- 'tax.dbf' else dbf <- 'species.dbf'
     reflist.path <- file.path(tv_home, 'Species', refl, dbf)
 #    print(reflist.path)

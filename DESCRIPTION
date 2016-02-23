@@ -1,7 +1,7 @@
 Package: vegdata
-Version: 0.8.6
+Version: 0.8.7
 Encoding: UTF-8
-Date: 2015-11-06
+Date: 2016-02-22
 Title: Access Vegetation Databases and Treat Taxonomy
 Author: Florian Jansen <jansen@uni-greifswald.de>
 Maintainer: Florian Jansen <jansen@uni-greifswald.de>
@@ -14,7 +14,7 @@ VignetteBuilder: knitr
 Description: Handling of vegetation data from Turboveg (<http://www.synbiosys.alterra.nl/turboveg/>) and other sources (<http://www.vegetweb.de>). Taxonomic harmonization given appropriate taxonomic lists (e.g. the German taxonomical standard list "GermanSL", <http://www.botanik.uni-greifswald.de/GermanSL.html>).
 License: GPL (>= 2)
 URL: http://www.botanik.uni-greifswald.de/GermanSL.html
-Packaged: 2015-11-20 13:03:29 UTC; jansen
 NeedsCompilation: no
+Packaged: 2016-02-22 22:21:56 UTC; jansen
 Repository: CRAN
-Date/Publication: 2015-11-20 18:08:06
+Date/Publication: 2016-02-23 07:18:30

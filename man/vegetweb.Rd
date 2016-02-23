@@ -34,9 +34,6 @@
 vw.survey('Leyer')
 veg <- vw.veg('info@vegetweb.de', 'vegetweb', 466)
 site <- vw.site('info@vegetweb.de', 'vegetweb', 466)
-library(rgeos)
-coord <- SpatialMultiPointsDataFrame(sapply(site$geom, readWKT), data.frame(a=1:nrow(site)))
-plot(coord, axes = TRUE)
 }
 }
 

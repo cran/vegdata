@@ -8,7 +8,7 @@ When db = 'eco' and refl specified, metainfo of species attribute table is displ
 }
 
 \usage{
-tv.metadata(db, refl='GermanSL 1.2', tv_home, filename = 'metadata.txt', ...)
+tv.metadata(db, refl, tv_home, filename = 'metadata.txt', ...)
 }
 
 \arguments{

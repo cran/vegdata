@@ -11,7 +11,7 @@ store <- local({
 # Load taxonomic reference list
 load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = FALSE, recheck = FALSE, ...) {
   reflist.type <- match.arg(reflist.type, c('Turboveg', 'EDIT'))
-  if(reflist.type == 'Turboveg') {    
+  if(reflist.type == 'Turboveg') {
     args <- list(recheck = recheck)
     tv_home <- do.call("tv.home", args)
     if(detailed) dbf <- 'tax.dbf' else dbf <- 'species.dbf'
@@ -60,17 +60,19 @@ load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = 
 
 
 tv.refl <- function(refl, db, tv_home) {
-
 #   capwords <- function(s, strict = FALSE) {
 #       cap <- function(s) paste(toupper(substring(s,1,1)), {s <- substring(s,2); if(strict) toupper(s) else s}, sep = "", collapse = " " )
 #       sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))
 #   }
   if(missing(tv_home)) tv_home <- tv.home()
   if(!missing(db)) {
-      dbattr <- file.path(tv.home(), 'Data', db[1], 'tvwin.set')
-      if(file.access(dbattr)==0) refl <-  sub('A\002', '', readBin(dbattr,what='character', n=3)[3]) else 
+    if(file.access(file.path(tv_home, 'Data', db[1], 'tvwin.dbf')) == 0) {
+      refl <- read.dbf(file.path(tv_home, 'Data', db[1], 'tvwin.dbf'), as.is = TRUE)$FLORA
+    } else {
+      dbattr <- file.path(tv_home, 'Data', db[1], 'tvwin.set')
+      if(file.access(dbattr) == 0) refl <-  sub('A\002', '', readBin(dbattr,what='character', n=3)[3]) else 
     stop('Database attribute file tvwin.set from database "', db[1], '" not available. Please specify name of taxonomic reference list!') 
-  } else  
+  } } else  
     if(!missing(refl)) {
       rli <- list.dirs(path = file.path(tv_home, "Species"), full.names = TRUE, recursive = FALSE)
       rli <- sapply(rli, function(x) substring(x, nchar(tv_home) + 10), USE.NAMES = FALSE)

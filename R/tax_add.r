@@ -1,8 +1,10 @@
 
 # As dBase is an old DOS format, Umlaute  are  stored  using  a  different  code  table
 #    (namely ASCII) than most modern unices (namely ANSI).
-taxname.abbr <- function(x, hybrid=FALSE, species=FALSE, cf=FALSE, ...) {
-#  loc <- Sys.getlocale(category='LC_CTYPE')
+taxname.abbr <- function(x, hybrid = c('ignore', 'TRUE', 'preserve', 'FALSE', 'substitute'), species = FALSE, cf = FALSE, ...) {
+    hybrid <- as.character(hybrid)
+    hybrid <- match.arg(hybrid, c('ignore', 'TRUE', 'preserve', 'FALSE', 'substitute'))
+  #  loc <- Sys.getlocale(category='LC_CTYPE')
 #  Sys.setlocale("LC_ALL","C")
 #  print('Executing taxname.abbr ...')
     x <- sub('\ ag[.]', ' agg.', x, perl=TRUE, useBytes=TRUE)
@@ -29,11 +31,17 @@ taxname.abbr <- function(x, hybrid=FALSE, species=FALSE, cf=FALSE, ...) {
     x <- sub('\ nothosubsp[.]' , '\ nothossp.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ nothossp[.]' , '\ nssp.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ nothovar[.]' , '\ nvar.', x, perl=TRUE, useBytes=TRUE)
-  if(hybrid) {
+    if(hybrid %in% c('ignore', 'TRUE')) {
       x <- sub('\ x.' , '\ ', x, perl=TRUE, useBytes=TRUE)
       x <- sub('\ nssp[.]' , '\ ssp.', x, perl=TRUE, useBytes=TRUE)
       x <- sub('\ nvar[.]' , '\ var.', x, perl=TRUE, useBytes=TRUE)
     }
+    if(hybrid %in% c('preserve', 'FALSE')) {
+    }
+    if(hybrid == 'substitute') {
+      x <- sub('\ x.' , ' \u00d7', x, perl=TRUE, useBytes=TRUE)
+    }
+
     if(cf) x <- sub('^cf.\ ', '', x, ignore.case=TRUE)
 		if(species)  {
       x <- sub('\ sp[.]', ' species', x, perl=TRUE, useBytes=TRUE)
@@ -45,6 +53,7 @@ taxname.abbr <- function(x, hybrid=FALSE, species=FALSE, cf=FALSE, ...) {
 			x <- sub('\ spec[.]' , '', x, perl=TRUE, useBytes=TRUE)
 			x <- sub('\ species$' , '', x, perl=TRUE, useBytes=TRUE)
 			}
+    x <- sub("\\s+$", "", x) # trim trailing leading spaces
     #  Sys.setlocale(category='LC_CTYPE', locale=loc)
    return(x)  
 }
@@ -111,13 +120,14 @@ TCS.replace <- function(x) {
   x <- replace(x, x %in% c('SPECIES_NR', 'TAXNR', 'NAMNR', 'NAMEID', 'TAXONUSAGEID'), 'TaxonUsageID')
   x <- replace(x, x %in% c('ABBREVIAT','TAXONNAME','TAXON','TAXNAME'), 'TaxonName')
   x <- replace(x, x %in% c('VALID_NR', 'SIPNR', 'SYNNAMEID', 'TAXONCONCEPTID'), 'TaxonConceptID')
-  x <- replace(x, x %in% c('VALID_NAME', 'TAXONCONCEPT'), 'TaxonConcept')
+  x <- replace(x, x %in% c('VALID_NAME', 'VALIDNAME', 'TAXONCONCEPT'), 'TaxonConcept')
   x <- replace(x, x %in% c('AGG', 'AGGNR', 'NAMEPARENTID', 'ISCHILDTAXONOFID'), 'IsChildTaxonOfID')
   x <- replace(x, x %in% c('AGG_NAME', 'ISCHILDTAXONOF'), 'IsChildTaxonOf')
   x <- replace(x, x %in% c('SECUNDUM', 'ACCORDINGTO'), 'AccordingTo')
   x <- replace(x, x %in% c('NATIVENAME', "COMMONNAME", 'VERNACULARNAME'), 'VernacularName')
   x <- replace(x, x %in% c('CLASSIFICA', 'CLASSIFICATION'), 'Classification')
   x <- replace(x, x %in% c('RANG', 'RANK', "TAXONOMICRANK", 'TAXONRANK'), 'TaxonRank')
+  x <- replace(x, x %in% c('author', 'AUTHOR', "Author"), 'NameAuthor')
 
 ## ESveg
   x <- replace(x, x %in% c("TAXONCODE"), 'TaxonUsageID')
@@ -132,6 +142,29 @@ TCS.replace <- function(x) {
   x <- replace(x, x %in% c('TAXON'), 'TaxonName')
   x <- replace(x, x %in% c('SYNUUID'), 'TaxonUsageID')
   x <- replace(x, x %in% c('ACCTAXONID'), 'TaxonConceptID')
+  return(x)
+}
+
+
+TV.replace <- function(x) {
+  x <- toupper(x)
+  ## Turboveg & ## Florkart Germany (BfN lists)
+  x <- replace(x, x %in% c('TaxonUsageID', 'TAXNR', 'NAMNR', 'NAMEID', 'TAXONUSAGEID'), 'SPECIES_NR')
+  x <- replace(x, x %in% c('TaxonName','TAXONNAME','TAXON','TAXNAME'), 'ABBREVIAT')
+  x <- replace(x, x %in% c('TaxonConceptID', 'SIPNR', 'SYNNAMEID', 'TAXONCONCEPTID'), 'VALID_NR')
+  x <- replace(x, x %in% c('TaxonConcept', 'VALIDNAME', 'TAXONCONCEPT'), 'VALID_NAME')
+  x <- replace(x, x %in% c('IsChildTaxonOfID', 'AGGNR', 'NAMEPARENTID', 'ISCHILDTAXONOFID'), 'AGG')
+  x <- replace(x, x %in% c('IsChildTaxonOf', 'ISCHILDTAXONOF'), 'AGG_NAME')
+  x <- replace(x, x %in% c('AccordingTo', 'ACCORDINGTO'), 'SECUNDUM')
+  x <- replace(x, x %in% c('VernacularName', "COMMONNAME", 'VERNACULARNAME'), 'NATIVENAME')
+  x <- replace(x, x %in% c('Classification', 'CLASSIFICATION'), 'CLASSIFICA')
+  x <- replace(x, x %in% c('TaxonRank', 'RANK', "TAXONOMICRANK", 'TAXONRANK'), 'RANG')
+  x <- replace(x, x %in% c('NameAuthor', 'AUTHOR', "Author"), 'author')
+    
+  ## CDM
+  x <- replace(x, x %in% c('TAXON', 'TaxonName'), 'ABBREVIAT')
+  x <- replace(x, x %in% c('SYNUUID', 'TaxonUsageID'), 'SPECIES_NR')
+  x <- replace(x, x %in% c('ACCTAXONID', 'TaxonConceptID'), 'VALID_NR')
   return(x)
 }
 

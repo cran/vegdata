@@ -5,8 +5,8 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
   }
   
   if(missing(tvscale)) {
-    
-    tvscale <- read.dbf(file.path(tv_home, "Popup", tv.dict(db), "tvscale.dbf"))    
+    print(list.files(file.path(tv_home, "Popup", tv.dict(db))))
+    tvscale <- read.dbf(file.path(tv_home, "Popup", tv.dict(db), "tvscale.dbf") )
   }
   tvscale <- tvscale[!is.na(tvscale$SCALE_NR),]
   rownames(tvscale) <- tvscale[, 1]

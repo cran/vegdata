@@ -26,17 +26,26 @@ version \Sexpr{packageDescription("vegdata", field="Version")}}
 <<include=FALSE>>=
 library(knitr)
 opts_chunk$set(
-concordance=TRUE,
-results="tex")
+concordance = TRUE,
+results = "tex")
 options(results = 'tex') # for pqR
 @
 
 
-<<prep, echo=FALSE>>=
+<<prep, echo=FALSE, results='hide'>>=
 library(knitr)
 options(width=110, digits=2)
 opts_chunk$set(comment = "", warning = FALSE, message = TRUE, echo = TRUE, size="footnotesize")
 # read_chunk("some/script/I/want/to/load.R")
+tmp <- tempdir()
+suppressPackageStartupMessages(library(vegdata))
+options(tv_home = tmp)
+dir.create(file.path(tmp, 'Species'))
+dir.create(file.path(tmp, 'Popup'))
+dir.create(file.path(tmp, 'Data'))
+file.copy(from = file.path(path.package("vegdata"), 'tvdata', 'Popup'), to = tmp, recursive = TRUE)
+file.copy(from = file.path(path.package("vegdata"), 'tvdata', 'Species'), to = tmp, recursive = TRUE)
+file.copy(from = file.path(path.package("vegdata"), 'tvdata', 'Data'), to = tmp, recursive = TRUE)
 @
 %Sys.setlocale("LC_TIME", "de_DE.iso8859")
 
@@ -112,7 +121,7 @@ options(tv_home="path_to_your_Turboveg_root_directory")
 <<dblisting, eval=FALSE>>=
 tv.db()
 @
-will give you a list of possible database names (directories within the Turboveg Data directory).
+will give you a list of available Turboveg database names (directories within the Turboveg \textit{Data directory}).
 
 <<>>=
 tv.refl()
@@ -251,7 +260,7 @@ obs.taxval <- taxval(obs.tax, db=db, mono='lower', maxtaxlevel='AGG', interactiv
 \normalsize
 
 The database contains 20 different names in the beginning.
-\paragraph{Synonyms} 4 of the species names are synonyms and are therefore transferred to legal taxon names, respectively numbers (see option syn='adapt'). If you want to preserve synonyms, choose option syn='conflict' or 'preserve'.
+\paragraph{Synonyms} First the number of species names which are synonyms are given. They are transferred to accepted taxon names, respectively numbers (see option syn='adapt'). If you want to preserve synonyms, choose option syn = 'conflict' or 'preserve'.
 
 \paragraph{Monotypic species within the area}
 Monotypic taxa are valid taxa which are the only child of their next higher taxonomic rank within the survey area. By default they will be converted by \texttt{taxval} to the higher rank. For instance \emph{Poa trivialis} is in Germany only represented by \emph{Poa trivialis subspecies trivialis}. Both taxa are valid, but for most analysis only one name for these identical entities must be used. By default a list of monotypic taxa within the GermanSL (whole Germany) is considered (see \texttt{tv.mono('GermanSL 1.3')}). The default is to set all monotypic species to the higher rank (because many monotypic subspecies can occur in vegetation databases). \\
@@ -265,7 +274,7 @@ If your database contains \textit{Achillea millefolium} but also \textit{Achille
 The procedure has to be repeated until all occurring taxonomical levels are considered. \\
 Especially with aggregates and their members the coarsening to the higher level can be a sad fate. If you have 100 occurrences of \textit{Achillea millefolium} but a single one with \textit{A. mill. agg.} you might want to clean your observational dataframe beforehand or do the aggregation afterwards manually with tv.veg(db, ag='preserve') and a manual correction with function comb.species (see below).
 
-I confess that it is a strange and complete artificial example. Starting with 25 names in the beginning only 13 taxa survived the valuation. All others had to be converted.
+I confess that it is a strange and complete artificial example. Starting with 20 names in the beginning only 11 names survived the valuation. All others had to be converted to give only information about consistent taxon concepts.
 
 \footnotesize
 <<Taxon>>=
@@ -306,10 +315,10 @@ Additionally care about species-plot attribute differentiation and combination, 
 
 At least in Europe most vegetation plots have information about the performance of a species within the survey area, often given in some kind of alphanumeric code for cover percentage within the survey plot. Different code systems are combined by using the mean cover percentage per cover code class. Function \texttt{tv.coverperc} will do this job according to the definitions in \emph{Turboveg/Popup/tvscale.dbf} and the entries in the header data column \texttt{COVERSCALE}.
 
-<<coverperc, echo=2:4>>=
+<<coverperc, echo=2:4, eval=TRUE>>=
 options(width=120)
 obs <- tv.obs(db)
-obs <- tv.coverperc(db, obs)
+# obs <- tv.coverperc(db, obs)
 tail(obs)
 options(width=110)
 @
@@ -326,11 +335,11 @@ If you have more than one occurrence of the same species in a plot, e.g. because
 If you want to specify pseudo-species by other species-plot differentiation you can define a combination dataframe. Two example dataframes are included in the package (\texttt{lc.0} and \texttt{lc.1}). Option comb has to be given as a list with first element naming the column name holding the grouping variable and as second element the name of the combination dataframe. Try \\
 <<pseudo1, eval=FALSE>>=
 data(lc.0)
+obs <- tv.obs(db)
 tv.veg(db, pseudo = list(lc.0, c("LAYER")), lc = "layer")
 @
 and check the column names:
-<<lc0, echo=FALSE, warning=FALSE>>=
-data(lc.0)
+<<lc0, warning=FALSE>>=
 tmp <- tv.veg(db, tax=FALSE, pseudo = list(lc.0, "LAYER"), lc = "layer", quiet=TRUE)
 names(tmp)
 @
@@ -348,7 +357,6 @@ names(tv.veg(db, tax=FALSE, pseudo=comb, quiet=TRUE))
 <<layer, results='hide', warning=FALSE>>=
 data(lc.1)
 veg <- tv.veg(db, lc = "sum", pseudo = list(lc.1, 'LAYER'), dec = 1, check.critical = FALSE)
-
 @
 <<layerdiff>>=
 veg[,1:10]

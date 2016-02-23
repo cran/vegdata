@@ -23,11 +23,12 @@ S3method(print, syntab)
 ## export(first.word}
 
 ## Registration of S3 methods
-importFrom(foreign, read.dbf)
-importFrom(XML, getNodeSet, xmlName, xmlParse, xmlRoot, xmlSApply, xmlToDataFrame, xmlValue)
+importFrom("foreign", read.dbf)
+importFrom("utils", "read.csv")
+importFrom("XML", getNodeSet, xmlName, xmlParse, xmlRoot, xmlSApply, xmlToDataFrame, xmlValue)
 importFrom("utils", "download.file", "type.convert", "unzip", "read.csv2", "write.csv2")
 importFrom("httr", "GET", "content", "add_headers", "authenticate", "warn_for_status")
 importFrom("jsonlite", "fromJSON")
-# importFrom(permute, permControl)
-# importFrom(indicspecies, multipatt)
+# importFrom("permute", permControl)
+# importFrom("indicspecies", multipatt)
 # import(vegan)

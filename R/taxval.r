@@ -113,10 +113,10 @@ if(maxtaxlevel %in% taxlevels) {
 ###------ resolve monotypic taxa
 ##############################
 if (mono %in% c("species", "lower", "higher")) {
-  if (file.access(file.path(tv_home, 'Species', refl, paste(monolist, "dbf", sep = ".")))) {
+  if (file.access(file.path(tv_home, 'Species', refl, paste(monolist, "csv", sep = ".")))) {
     warning("You have chosen to care about monotypic taxa but the specified list of monotypic taxa is not available!") 
   } else {
-    Mono <- read.dbf(file.path(tv_home, 'Species', refl, paste(monolist, "dbf", sep = ".")))
+    Mono <- read.csv(file.path(tv_home, 'Species', refl, paste(monolist, "csv", sep = ".")), sep=';')
     r = 0
     repeat{
       r <- r + 1

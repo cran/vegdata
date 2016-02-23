@@ -40,6 +40,7 @@ Vector with the ecological classification of sites. Either mean trait values or 
         }
         
 \examples{
+\dontrun{
 db <- 'elbaue'
 veg <- tv.veg(db, cover.transform='sqrt', check.critical = FALSE)
 site <- tv.site(db, verbose = FALSE)
@@ -53,6 +54,7 @@ traits <- tv.traits(db)
 # Mean indicator values of Ellenberg F values
 mEIV_F <- isc(veg, traits, 'OEK_F', method = 'mean')
 plot(site$MGL, mEIV_F, xlab = 'Mean groundwater level')
+}
 \dontrun{
 # Mode (most frequent level) of Ellenberg F values
 library(reshape)

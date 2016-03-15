@@ -1,28 +1,35 @@
-tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, iconv="CP437", verbose = TRUE, ...) 
+tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, iconv="CP437", verbose = TRUE, replace.names, ...) 
 {
 #  ow <- options('warn')
 # if(quiet) { options(warn=-1) }
 # if (is.list(db)) site <- tv.mysql(db, "tvhabita") else {
   if (missing(tv_home)) tv_home <- tv.home()
   site <- read.dbf(file.path(tv_home, "Data", db[1], "tvhabita.dbf"), as.is=TRUE)
+  if(!missing(replace.names)) 
+    for(i in 1:nrow(replace.names)) 
+      names(site) <- sub(paste('^', replace.names[i,1], '$', sep=''), replace.names[i,2], names(site))
   if (suppressWarnings(any(site[,sapply(site, is.numeric)] < -1e+05, na.rm = TRUE))) 
     message(paste("WARNING! Values less than -100,000. \n", "WARNING! tvhabita.dbf may be corrupt. \n", "WARNING! Please correct by im- / exporting e.g. with OpenOffice."))
-  if(length(db)>1) for(i in 2:length(db)) {
-	site.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvhabita.dbf'))
-	if(any(site$RELEVE_NR %in% site.tmp$RELEVE_NR)) stop('Found duplicate releve numbers in ', db[i] , ' aborting!')
-	cols1 <- names(site)
-	cols2 <- names(site.tmp)
-	if (common.only){
-		common <- intersect(cols1, cols2)
-		site <- rbind(site[, common], site.tmp[, common])
-	} else {
- 		All <- union(cols1, cols2)
-		miss1 <- setdiff(All, cols1)
-		miss2 <- setdiff(All, cols2)
-		site[, c(as.character(miss1))] <- NA
-		site.tmp[,c(as.character(miss2))] <- NA
-		site <- rbind(site, site.tmp)
-	} 
+  if(length(db)>1) 
+    for(i in 2:length(db)) {
+	    site.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvhabita.dbf'))
+  	if(any(site$RELEVE_NR %in% site.tmp$RELEVE_NR)) stop('Found duplicate releve numbers in ', db[i] , ' aborting!')
+  	if(!missing(replace.names)) 
+  	  for(i in 1:nrow(replace.names)) 
+  	    names(site.tmp) <- sub(paste('^', replace.names[i,1], '$', sep=''), replace.names[i,2], names(site.tmp))
+  	cols1 <- names(site)
+  	cols2 <- names(site.tmp)
+  	if (common.only){
+	  	common <- intersect(cols1, cols2)
+		  site <- rbind(site[, common], site.tmp[, common])
+	  } else {
+ 		  All <- union(cols1, cols2)
+  		miss1 <- setdiff(All, cols1)
+  		miss2 <- setdiff(All, cols2)
+  		site[, c(as.character(miss1))] <- NA
+  		site.tmp[,c(as.character(miss2))] <- NA
+  		site <- rbind(site, site.tmp)
+  	} 
   }
 
 ### Conversion of factors

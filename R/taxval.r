@@ -17,7 +17,7 @@ interactive = FALSE,
   ag <- match.arg(ag)
   mono <- match.arg(mono)
   tv_home <- tv.home()
-
+  if(maxtaxlevel == 'AGG') maxtaxlevel <- 'AG1'
   if(missing(obs)) 
     if(missing(db)) stop('Please specify either an observation dataframe or the name of your Turboveg database.') else  obs <- tv.obs(db=db, tv_home)  
   cat("Original number of names:", length(unique(obs$TaxonUsageID)),'\n')
@@ -47,8 +47,9 @@ interactive = FALSE,
   fr$TaxonUsageID <- as.numeric(fr$TaxonUsageID)
   fr$TaxonName <- species$TaxonName[match(fr$TaxonUsageID, species$TaxonUsageID)]
   if(any(is.na(fr$TaxonName))) {
-    message('Could not find the following taxon ids in ', refl)
-#    print(fr$TaxonUsageID[is.na(fr$TaxonName)])
+    message('Can not find the following taxon ids in ', refl)
+    print(fr$TaxonUsageID[is.na(fr$TaxonName)])
+    stop('Wrong taxon ids.')
   }
   fr$Secundum <- species$AccordingTo[match(fr$TaxonUsageID, species$TaxonUsageID)]
   fr$Synonym <- species$SYNONYM[match(fr$TaxonUsageID, species$TaxonUsageID)]
@@ -120,6 +121,7 @@ if (mono %in% c("species", "lower", "higher")) {
     r = 0
     repeat{
       r <- r + 1
+      if(refl == 'GermanSL 1.3') names(Mono)[1] <- 'AGG_NR'
       if (mono == "lower")  tmp <- Mono$MEMBER_NR[match(fr$NewTaxonID, Mono$AGG_NR)]
       if (mono == "higher") tmp <- Mono$AGG_NR[match(fr$NewTaxonID, Mono$MEMBER_NR)]
       if (mono == 'species') {
@@ -145,11 +147,12 @@ fr <- switch(ag,
     preserve = {cat(' Aggregates preserved! \n'); fr},
     conflict = agg.conflict(fr, quiet=TRUE),
     adapt = {
-      if(refl %in% c('GermanSL 1.0', 'GermanSL 1.1')) warning(paste('The taxonomic hierarchy of', refl, 'is inaccurate, please upgrade to version >= 1.2'))
+      if(refl %in% c('GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2')) warning(paste('The taxonomic hierarchy of', refl, 'is inaccurate, please upgrade to version >= 1.3'))
 	    if(which(taxlevels==rank) > which(taxlevels==maxtaxlevel)) 
           stop('Maximum allowed taxonomic rank lower than the aggregation level!')
 #	for(i in which(!fr$TaxlevelTooHigh)) {
   for(i in 1:nrow(fr)) {
+    if(is.na(fr$NewTaxonID[i])) warning(paste('Aggregation for', fr$TaxonName, 'failed. Please contact jansen@uni-greifswald.de!'))
       p <- parents(fr$NewTaxonID[i], refl=refl, species=species, quiet=TRUE)
 	    if(rank %in% p$TaxonRank) {
 #        fr$NewTaxonID[fr$TaxonUsageID == fr$NewTaxonID[i]] <- p$TaxonUsageID[p$TaxonRank == rank]
@@ -180,7 +183,7 @@ if(interactive) {
 } # end of line 29: else to "interactive & file.exists('taxvalDecisionTable.csv')"
 ##############################
 
-cat('Number of taxa after', if(interactive) 'proposed',  'harmonisation:', length(unique(fr$NewTaxonID[!fr$TaxlevelTooHigh])),'\n')
+cat('Number of taxa after', if(interactive & !file.exists('taxvalDecisionTable.csv')) 'proposed',  'harmonisation:', length(unique(fr$NewTaxonID[!fr$TaxlevelTooHigh])),'\n')
 
 ###------ check for Critical species
 ##############################
@@ -195,7 +198,7 @@ if(check.critical) {
   auct <- auct[,  c('to_check', 'check_No', 'TaxonName','TaxonUsageID', 'AccordingTo')]
   names(auct)[3] <- "check against"
   if (any(fr$TaxonUsageID %in% auct$check_No)) {
-    cat('Warning: Potential pseudonyms in dataset, please check.')
+    cat('Warning: Potential pseudonyms in dataset, please check.\n')
     print(auct[match(fr$TaxonUsageID, auct$check_No, nomatch = FALSE), ], row.names = FALSE)
   }
   

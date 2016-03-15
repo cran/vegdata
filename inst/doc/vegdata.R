@@ -114,7 +114,7 @@ obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID,
     match(taxon.repl$old, obs.tax$TaxonUsageID), taxon.repl$new)
 
 ## ----comb.spec, eval=TRUE-----------------------------------------------------------------------------------
-comb.species(veg, sel=c('QUERROB','QUERROB.Tree'))
+comb.species(veg, sel=c('QUERR-R','QUERR-R.Tree'))
 
 ## ----site.echo, eval=TRUE-----------------------------------------------------------------------------------
 site <- tv.site('taxatest')

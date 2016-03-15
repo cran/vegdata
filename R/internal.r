@@ -1,6 +1,6 @@
 tv.db <- function(path='.') {
   valid.TVdb <- function(p) {
-    all(c('tvhabita.dbf', 'tvabund.dbf', 'remarks.dbf', 'TvAdmin.dbf', 'tvwin.set') %in% list.files(file.path(tv.home(), 'Data', path, p)))
+    all(c('tvhabita.dbf', 'tvabund.dbf', 'remarks.dbf', 'TvAdmin.dbf') %in% list.files(file.path(tv.home(), 'Data', path, p)))
   }
   dir <- list.dirs(path = file.path(tv.home(), 'Data', path), full.names = FALSE, recursive = TRUE)
   valid.dir <- dir[sapply(dir, valid.TVdb)]

@@ -1,7 +1,7 @@
 Package: vegdata
-Version: 0.8.7
+Version: 0.8.9
 Encoding: UTF-8
-Date: 2016-02-22
+Date: 2016-03-14
 Title: Access Vegetation Databases and Treat Taxonomy
 Author: Florian Jansen <jansen@uni-greifswald.de>
 Maintainer: Florian Jansen <jansen@uni-greifswald.de>
@@ -15,6 +15,6 @@ Description: Handling of vegetation data from Turboveg (<http://www.synbiosys.al
 License: GPL (>= 2)
 URL: http://www.botanik.uni-greifswald.de/GermanSL.html
 NeedsCompilation: no
-Packaged: 2016-02-22 22:21:56 UTC; jansen
+Packaged: 2016-03-14 21:28:07 UTC; jansen
 Repository: CRAN
-Date/Publication: 2016-02-23 07:18:30
+Date/Publication: 2016-03-15 00:29:28

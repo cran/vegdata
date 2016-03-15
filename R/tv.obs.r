@@ -11,7 +11,10 @@
     refl.1 <- tv.refl(db = db[1])
       for(i in 2:length(db)) {
       	refl.i <- tv.refl(db = db[i])
-      	if(refl.1 != refl.i) stop('You are using different taxonomic reference lists in your databases!')
+      	if(refl.1 != refl.i) {
+          cat(db[1], 'vs.', db[i])
+          stop('You are using different taxonomic reference lists in your databases!')
+      	}
       	obs.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvabund.dbf'))
         names(obs.tmp) <- TCS.replace(names(obs.tmp))
         if(any(unique(obs$RELEVE_NR) %in% unique(obs.tmp$RELEVE_NR))) {

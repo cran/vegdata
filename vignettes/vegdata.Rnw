@@ -378,9 +378,9 @@ obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID,
 
 The second possibility is to use function \texttt{comb.species} on vegetation matrices.
 <<comb.spec, eval=TRUE>>=
-comb.species(veg, sel=c('QUERROB','QUERROB.Tree'))
+comb.species(veg, sel=c('QUERR-R','QUERR-R.Tree'))
 @
-will use the first name ('QUERROB') for the replacement column with the sum of the selected columns.
+will use the first name ('QUERR-R') for the replacement column with the sum of the selected columns.
 
 
 \section{Site data}

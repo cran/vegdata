@@ -5,8 +5,8 @@
 \description{Write species-plot observations and site information to Turboveg database.}
 
 \usage{
-tv.write(x, site, db, name, cover = c("code", "perc"), overwrite = FALSE, 
-iconv="CP437", newTvAdmin = FALSE, ...)
+tv.write(x, site, db, name, db.abs.path, dict, cover = c("code", "perc"), 
+overwrite = FALSE, iconv="CP437", newTvAdmin = FALSE, ...)
 }
 
 \arguments{
@@ -14,6 +14,8 @@ iconv="CP437", newTvAdmin = FALSE, ...)
   \item{site}{Header data for plots.}
   \item{db}{name of original Turboveg database folder}
   \item{name}{Name of the new database.}
+  \item{db.abs.path}{absolute path to sourve database folder can be given instead of db. Then also dictionary name has to be given}
+  \item{dict}{Turboveg dictionary name}
   \item{cover}{Use of covercodes or (mean) cover percentages, see Details.}
   \item{overwrite}{Logical. Should an existing database be overwritten.}
   \item{iconv}{specify locale if necessary}

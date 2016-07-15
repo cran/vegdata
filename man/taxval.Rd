@@ -15,7 +15,7 @@ Necessary prerequisite is information about taxonomic status (synonomy) and hier
 taxval(obs, refl, db,
 ag = c('conflict', 'adapt', 'preserve'), 
 rank, mono = c('species', 'higher', 'lower', 'preserve'), monolist = "monotypic-D", 
-maxtaxlevel = 'ROOT', check.critical = TRUE, interactive = FALSE, ...)
+maxtaxlevel = 'AGG', check.critical = TRUE, interactive = FALSE, ...)
 comb.species(x, sel, newname, refl)
 }
 

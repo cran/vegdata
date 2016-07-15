@@ -1,11 +1,3 @@
-tv.db <- function(path='.') {
-  valid.TVdb <- function(p) {
-    all(c('tvhabita.dbf', 'tvabund.dbf', 'remarks.dbf', 'TvAdmin.dbf') %in% list.files(file.path(tv.home(), 'Data', path, p)))
-  }
-  dir <- list.dirs(path = file.path(tv.home(), 'Data', path), full.names = FALSE, recursive = TRUE)
-  valid.dir <- dir[sapply(dir, valid.TVdb)]
-  return(file.path(path, valid.dir))
-}
 
 "[.veg" <- function(x, s,...) {
   taxref <- attr(veg, 'taxreflist')
@@ -14,23 +6,6 @@ tv.db <- function(path='.') {
   attr(veg, 'taxreflist') <- taxref
   return(out)
 }
-
-tv.dict <- function(db, tv_home) {
-  if(missing(tv_home)) tv_home <- tv.home()
-  if(length(db) > 1) warning('Please check, if all databases use the same reference list and the same Turboveg dictionary,. The script will use the one given by the first database. ')
-  if(file.exists(file.path(tv_home, 'Data', db[1], 'tvwin.dbf'))) {
-    attrib <- read.dbf(file.path(tv_home, 'Data', db[1], 'tvwin.dbf'), as.is = TRUE)
-    if(is.na(attrib$DICTIONARY)) attrib$DICTIONARY <- ''
-    return(attrib$DICTIONARY)
-  } else {
-  dbattr <- file.path(tv_home, 'Data', db[1], 'tvwin.set')
-  if(file.access(dbattr)==0) {
-    allbytes <- readBin(dbattr, "raw", n = 100, size = 1, endian = "little")
-    bin <- sapply(allbytes, readBin, what='character')
-    return(readBin(allbytes[(which(bin == 'C')[3]+3):length(allbytes)], what=character()))
-  } else warning('tvwin.set not found')
-  }
-}  
 
 first.word <- function (x, i = 1, expr = substitute(x), add.legal=NULL) {
   words <- if(!missing(x)) as.character(x)[1] else as.character(unlist(expr))[1]
@@ -47,4 +22,25 @@ first.word <- function (x, i = 1, expr = substitute(x), add.legal=NULL) {
 # words <- 'QUERROB.Tree'
 # add.legal <- c('-',';')
 # (w <- first.word(words, i=1, add.legal = ';'))
+
+rbind.df <- function(df1, df2) {
+  cols1 <- names(df1); cols2 <- names(df2)
+  All <- union(cols1, cols2)
+  miss1 <- setdiff(All, cols1)
+  miss2 <- setdiff(All, cols2)
+  df1[, c(as.character(miss1))] <- NA
+  df2[,c(as.character(miss2))] <- NA
+  out <- rbind(df1, df2)
+  return(out)
+}
+
+cbind.df <- function(df1, df2, by) {
+  cols1 <- names(df1); cols2 <- names(df2)
+  inters <- intersect(cols1, cols2)
+  df.m <- df2[match(df1[,by], df2[,by]), ]
+  for(i in inters) {
+    df1[,i][is.na(df1[,i])] <- df.m[,i][is.na(df1[,i])] 
+  }
+  return(df1)
+}
 

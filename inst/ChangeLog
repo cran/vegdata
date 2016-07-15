@@ -1,3 +1,8 @@
+version 0.9 July 2016
+  * Vignette adapted to GermanSL 1.3.4
+  * option maxtaxlevel in function taxval now defaults to 'AGG'
+  * added server option to vegetweb functions
+
 version 0.8.7 February 2016
   * Metadata handling has been changed in Turboveg 2 from tvwin.set to tvwin.dbf
 

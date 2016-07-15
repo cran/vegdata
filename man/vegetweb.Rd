@@ -9,9 +9,9 @@
 \title{Retrieve data from vegetweb}
 
 \usage{
-  vw.survey(searchstring, ...)
-  vw.site(user, password, survey, basket, ...)
-  vw.veg(user, password, survey, basket, taxeval = TRUE, ...)
+  vw.survey(searchstring, server, ...)
+  vw.site(user, password, survey, basket, server, ...)
+  vw.veg(user, password, survey, basket, taxeval = TRUE, server, ...)
 }
 
 \arguments{
@@ -21,6 +21,7 @@
   \item{survey}{Identifier of the vegetweb project.}
   \item{basket}{Shopping basket id of your vegetweb selection.}
   \item{taxeval}{Taxonomic harmonization of occurring taxa}
+  \item{server}{server to address}
   \item{\dots}{additional arguments}
 }
 

@@ -72,7 +72,7 @@ obs.taxval$TaxonName <-  species$TaxonName[match(obs.taxval$TaxonUsageID, specie
 obs.taxval[!duplicated(obs.taxval$OriginalName),c('RELEVE_NR', 'COVER_CODE', 'TaxonName', 'OriginalName')]
 
 ## ----coarsen, eval=TRUE, results='hide'---------------------------------------------------------------------
-tmp <- taxval(obs.tax, refl='GermanSL 1.3', ag='adapt', rank='FAM')
+tmp <- taxval(obs.tax, refl='GermanSL 1.3', ag='adapt', maxtaxlevel = 'ROOT', rank='FAM')
 tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.3')$TaxonName
 
 ## ----print.coarsen------------------------------------------------------------------------------------------
@@ -114,7 +114,7 @@ obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID,
     match(taxon.repl$old, obs.tax$TaxonUsageID), taxon.repl$new)
 
 ## ----comb.spec, eval=TRUE-----------------------------------------------------------------------------------
-comb.species(veg, sel=c('QUERR-R','QUERR-R.Tree'))
+comb.species(veg, sel=c('QUERBOB','QUERBOB.Tree'))
 
 ## ----site.echo, eval=TRUE-----------------------------------------------------------------------------------
 site <- tv.site('taxatest')

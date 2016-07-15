@@ -1,8 +1,9 @@
 # db <- file.path(new_folder, dbs)
 "tv.obs" <- function(db, tv_home, ...) {
     if(missing(tv_home)) tv_home <- tv.home() else if(tv_home != tv.home()) warning(paste("Given Turboveg root directory:", tv_home, "differ from the global root directory given by getOption('tv_home'):", getOption('tv_home')))
+#    db <- tv.db(db)
     # Observations
-    obs <- read.dbf(file.path(tv_home, 'Data', db[1],'tvabund.dbf'))
+    obs <- read.dbf(file.path(tv_home, 'Data', db[1],'tvabund.dbf'), as.is = TRUE)
     names(obs) <- TCS.replace(names(obs))
     ### Combine multiple databases
     # Would be more efficient with e.g. rbindlist but I am not sure if it worth the new package dependency
@@ -20,7 +21,7 @@
         if(any(unique(obs$RELEVE_NR) %in% unique(obs.tmp$RELEVE_NR))) {
         		print(db[i])
             stop('Overlap of releve numbers between the databases!')
-        	}	
+        	}
     	  if(any(!names(obs) %in%  names(obs.tmp) ) | any(!names(obs.tmp) %in% names(obs))) {
   	      miss1 <- setdiff(colnames(obs), colnames(obs.tmp))
   	      miss2 <- setdiff(colnames(obs.tmp), colnames(obs))
@@ -30,6 +31,7 @@
         } else obs <- rbind(obs, obs.tmp)
       }
     }
+    if(any(obs$TaxonUsageID == -1)) warning('Taxon number -1 found. This is most likely due to deleted but not purged entries in tvabund.dbf. Please Reindex the Database in Turboveg.')
     class(obs) <- c('tv.obs','data.frame')
     obs
 }

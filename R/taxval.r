@@ -3,7 +3,7 @@ ag  = c('conflict', 'adapt', 'preserve'),
 rank, 
 mono = c('species','higher','lower','preserve'), 
 monolist = "monotypic-D", 
-maxtaxlevel = 'ROOT', 
+maxtaxlevel = 'AGG', 
 check.critical = TRUE, 
 interactive = FALSE,
 ...)
@@ -17,6 +17,7 @@ interactive = FALSE,
   ag <- match.arg(ag)
   mono <- match.arg(mono)
   tv_home <- tv.home()
+  # if(missing(arg('maxtaxlevel))) warning('maxtaxlevel set to', maxtaxlevel, '. Occurrence list will be truncated above this taxonomic level.' )
   if(maxtaxlevel == 'AGG') maxtaxlevel <- 'AG1'
   if(missing(obs)) 
     if(missing(db)) stop('Please specify either an observation dataframe or the name of your Turboveg database.') else  obs <- tv.obs(db=db, tv_home)  
@@ -71,7 +72,7 @@ agg.conflict <- function(fr, ...) {
     OccurringChilds <- ChildsOfOccurringTaxa[ChildsOfOccurringTaxa %in% fr$NewTaxonID[which(!fr$TaxlevelTooHigh)]]
     if(length(OccurringChilds) > 0) {
       cat(length(OccurringChilds), 'conflicting child taxa found in dataset.', '\n')
-#      print(sort(tax(OccurringChilds, quiet=T)$TaxonName))
+      if(length(OccurringChilds) < 10) print(sort(tax(OccurringChilds, quiet=T)$TaxonName))
       for(i in 1:length(OccurringChilds)) {
         nested.in <- parent(OccurringChilds[i], quiet = TRUE)
         nested.occ <- nested.in[match(nested.in$TaxonRank, taxlevels) <= match(maxtaxlevel, taxlevels),]

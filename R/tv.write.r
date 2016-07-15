@@ -1,7 +1,9 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("DoWritedbf"))
 
-tv.write <- function(x, site, db, name, cover=c('code','perc'), overwrite = FALSE, iconv="CP437", newTvAdmin = FALSE, ...) {
-  if(missing(db)) warning('Name of original database is necessary to process TvAdmin.dbf, remarks.dbf and tvwin.set')
+tv.write <- function(x, site, db, name, db.abs.path, dict, cover=c('code','perc'), overwrite = FALSE, iconv="CP437", newTvAdmin = FALSE, ...) {
+  if(missing(db.abs.path)) warning('Either db name ("db") or absolute path ("db.abs.path") to the original TV database is necessary to process TvAdmin.dbf, remarks.dbf and tvwin.set/.dbf')
+  if(!missing(db)) dict <- tv.dict(db = db, tv_home = tv.home())
+
   cover <- match.arg(cover)
   if('veg' %in% class(x)) {
     X <- reShape.veg(x, ...)
@@ -27,9 +29,10 @@ tv.write <- function(x, site, db, name, cover=c('code','perc'), overwrite = FALS
     site[is.na(site[,i]),i] <- ''
     site[,i] <- iconv(site[,i], '', iconv)
   }
-### Add obligigatory fields
-# oblig <- c('RELEVE_NR','COUNTRY','REFERENCE','TABLE_NR','NR_IN_TAB','COVERSCALE','PROJECT','AUTHOR','DATE','SYNTAXON','SURF_AREA','UTM','ALTITUDE','EXPOSITION','INCLINATIO','COV_TOTAL','COV_TREES','COV_SHRUBS','COV_HERBS','COV_MOSSES','COV_LICHEN','COV_ALGAE','COV_LITTER','COV_WATER','COV_ROCK','TREE_HIGH','TREE_LOW','SHRUB_HIGH','SHRUB_LOW','HERB_HIGH','HERB_LOW','HERB_MAX','CRYPT_HIGH','MOSS_IDENT','LICH_IDENT','REMARKS')
-oblig <- c('RELEVE_NR','COUNTRY','REFERENCE','TABLE_NR','NR_IN_TAB','COVERSCALE','DATE','SURF_AREA','UTM','ALTITUDE','EXPOSITION','INCLINATIO','COV_TOTAL')
+### Add obligigatory fields from dictionary
+dbasedic <- read.dbf(file.path(tv.home(), 'Popup', dict, 'dbasedic.dbf'), as.is=TRUE)
+oblig <- dbasedic[dbasedic$FILE_NR == 2, 'FIELD_NAME']
+# oblig <- c('RELEVE_NR','COUNTRY','REFERENCE','TABLE_NR','NR_IN_TAB','COVERSCALE','DATE','SURF_AREA','UTM','ALTITUDE','EXPOSITION','INCLINATIO','COV_TOTAL')
 for(m in oblig[!oblig %in% names(site)]) {
   site[,m] <- ''
 }
@@ -60,7 +63,7 @@ for(m in oblig[!oblig %in% names(site)]) {
 
   if(!any(db == name)) file.copy(from = file.path(options('tv_home'), 'Data', db[1], 'tvwin.set'), to=file.path(options('tv_home'),'Data', name, 'tvwin.set'), overwrite = overwrite)
  }
-  cat('Turboveg database', name, 'written to', file.path(options('tv_home'), 'Data', name),'\n')
+  cat('Turboveg database', if(!missing(db)) name else db.abs.path, 'written to', file.path(options('tv_home'), 'Data', name),'\n')
 
 if(newTvAdmin) {
   cat('If you want to create a new TvAdmin.dbf, please install a library with uuid capabilities (e.g. UUIDgenerate from package uuid, or uuid.gen from dplR):\n')

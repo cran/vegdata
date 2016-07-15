@@ -293,7 +293,7 @@ Completely independent from the questions of correct taxonomic naming of a speci
 If you want only taxa of e.g. level "species" in your analyses but no other taxonomic level, use \texttt{taxval(obs, ag='adapt', rank='SPE')}. All hierarchical levels below the species level (including the above specified monotypic subspecies) are set to species level in this case.
 
 <<coarsen, eval=TRUE, results='hide'>>=
-tmp <- taxval(obs.tax, refl='GermanSL 1.3', ag='adapt', rank='FAM')
+tmp <- taxval(obs.tax, refl='GermanSL 1.3', ag='adapt', maxtaxlevel = 'ROOT', rank='FAM')
 tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.3')$TaxonName
 @
 <<print.coarsen>>=
@@ -378,9 +378,9 @@ obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID,
 
 The second possibility is to use function \texttt{comb.species} on vegetation matrices.
 <<comb.spec, eval=TRUE>>=
-comb.species(veg, sel=c('QUERR-R','QUERR-R.Tree'))
+comb.species(veg, sel=c('QUERBOB','QUERBOB.Tree'))
 @
-will use the first name ('QUERR-R') for the replacement column with the sum of the selected columns.
+will use the first name ('QUERROB') for the replacement column with the cover sums of the selected columns.
 
 
 \section{Site data}

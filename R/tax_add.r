@@ -32,14 +32,14 @@ taxname.abbr <- function(x, hybrid = c('ignore', 'TRUE', 'preserve', 'FALSE', 's
     x <- sub('\ nothossp[.]' , '\ nssp.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ nothovar[.]' , '\ nvar.', x, perl=TRUE, useBytes=TRUE)
     if(hybrid %in% c('ignore', 'TRUE')) {
-      x <- sub('\ x.' , '\ ', x, perl=TRUE, useBytes=TRUE)
+      x <- sub('\ x ' , '\ ', x, perl=TRUE, useBytes=TRUE)
       x <- sub('\ nssp[.]' , '\ ssp.', x, perl=TRUE, useBytes=TRUE)
       x <- sub('\ nvar[.]' , '\ var.', x, perl=TRUE, useBytes=TRUE)
     }
     if(hybrid %in% c('preserve', 'FALSE')) {
     }
     if(hybrid == 'substitute') {
-      x <- sub('\ x.' , ' \u00d7', x, perl=TRUE, useBytes=TRUE)
+      x <- sub('\ x\ ' , ' \u00d7\ ', x, perl=TRUE, useBytes=TRUE)
     }
 
     if(cf) x <- sub('^cf.\ ', '', x, ignore.case=TRUE)
@@ -59,7 +59,7 @@ taxname.abbr <- function(x, hybrid = c('ignore', 'TRUE', 'preserve', 'FALSE', 's
 }
 
 
-taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, hybrid=TRUE, ...) {
+taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, hybrid=TRUE, concept='ignore', ...) {
 #    x <- 'S\U00EBlixae calcarae subsp. holdae'
     x <- gsub('\U00EB', 'e', x, perl=TRUE, useBytes=TRUE)
     x <- gsub('\U00CF', 'i', x, perl=TRUE, useBytes=TRUE)
@@ -71,6 +71,11 @@ taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, hybrid=TRUE, ...) {
     x <- gsub('th', 't', x, perl=TRUE, useBytes=TRUE)
     x <- gsub('tt', 't', x, perl=TRUE, useBytes=TRUE)
     x <- gsub('y', 'i', x, perl=TRUE, useBytes=TRUE)
+    x <- gsub('ranum', 'rianum', x, perl=TRUE, useBytes=TRUE)
+if(concept == 'ignore') {
+  x <- gsub(' s[.] str[.]', '', x, perl=TRUE, useBytes=TRUE)
+  x <- gsub(' s[.] l[.]', '', x, perl=TRUE, useBytes=TRUE)
+}
 if(epithet) {
     x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('ae\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
     x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('arum\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')

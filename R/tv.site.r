@@ -12,7 +12,7 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, iconv="CP437
     message(paste("WARNING! Values less than -100,000. \n", "WARNING! tvhabita.dbf may be corrupt. \n", "WARNING! Please correct by im- / exporting e.g. with OpenOffice."))
   if(length(db) > 1) 
     for(i in 2:length(db)) {
-	    site.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvhabita.dbf'))
+	    site.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvhabita.dbf'), as.is = TRUE)
 	    if(!any(c('SURF_AREA','AREA_MIN') %in% names(site.tmp))) stop(db[i])
   	if(any(site$RELEVE_NR %in% site.tmp$RELEVE_NR)) stop('Found duplicate releve numbers in ', db[i] , ' aborting!')
   	if(!missing(replace.names)) 

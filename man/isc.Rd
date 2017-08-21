@@ -5,15 +5,16 @@
 \title{Indicate site conditions with community weighted mean values of traits or with mode of gradient classes (sum of species amplitudes).}
 
 \usage{
-isc(veg, trait.db, ivnames, keyname = 'LETTERCODE', method = c('mean', 'mode'), 
-weight, db, ...)
+isc(veg, refl, trait.db = 'ecodbase.dbf', ivname, keyname = 'LETTERCODE', 
+method = c('mean', 'mode'), weight, db, ...)
 showindiplot(veg, trait.db, plotid, weight, keyname = 'LETTERCODE')
 }
                 
 \arguments{
 \item{veg}{Vegetation matrix with plots in rows and species in columns}
+\item{refl}{Name of Turboveg taxonomic reference list}
 \item{trait.db}{data frame with species trait values}
-\item{ivnames}{Name of the trait in trait.db to be used}
+\item{ivname}{Name of the trait in trait.db to be used}
 \item{keyname}{Name of the column in trait dataframe to join with colnames of veg table}
 \item{method}{mean (weighted value of single traits, or mode (maximum) of trait classes)}
 \item{weight}{additional weight, e.g niche breath of species}

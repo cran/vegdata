@@ -6,7 +6,7 @@
 
 \usage{
 tv.write(x, site, db, name, db.abs.path, dict, cover = c("code", "perc"), 
-overwrite = FALSE, iconv="CP437", newTvAdmin = FALSE, ...)
+overwrite = FALSE, iconv="CP437", newTvAdmin = FALSE, drop = FALSE, ...)
 }
 
 \arguments{
@@ -20,6 +20,7 @@ overwrite = FALSE, iconv="CP437", newTvAdmin = FALSE, ...)
   \item{overwrite}{Logical. Should an existing database be overwritten.}
   \item{iconv}{specify locale if necessary}
   \item{newTvAdmin}{Build new TvAdmin.dbf? If FALSE the file from original database will be used.}
+  \item{drop}{Drop all columns which are empty or have only NA values. Otherwise all fields from dbasedict.dbf will be complemented.}
   \item{\dots}{Additional arguments.}
 }
 

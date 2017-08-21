@@ -1,12 +1,11 @@
 # db <- file.path(new_folder, dbs)
 "tv.obs" <- function(db, tv_home, ...) {
     if(missing(tv_home)) tv_home <- tv.home() else if(tv_home != tv.home()) warning(paste("Given Turboveg root directory:", tv_home, "differ from the global root directory given by getOption('tv_home'):", getOption('tv_home')))
-#    db <- tv.db(db)
     # Observations
     obs <- read.dbf(file.path(tv_home, 'Data', db[1],'tvabund.dbf'), as.is = TRUE)
     names(obs) <- TCS.replace(names(obs))
     ### Combine multiple databases
-    # Would be more efficient with e.g. rbindlist but I am not sure if it worth the new package dependency
+    # Would be more efficient with e.g. rbindlist but I am not sure if it is worth the new package dependency
     if(length(db)>1) {
       cat('More than 1 database, trying to combine.\n')
     refl.1 <- tv.refl(db = db[1])
@@ -33,5 +32,5 @@
     }
     if(any(obs$TaxonUsageID == -1)) warning('Taxon number -1 found. This is most likely due to deleted but not purged entries in tvabund.dbf. Please Reindex the Database in Turboveg.')
     class(obs) <- c('tv.obs','data.frame')
-    obs
+    return(obs)
 }

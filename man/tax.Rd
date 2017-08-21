@@ -23,7 +23,7 @@ syn(x, refl = tv.refl(), quiet = FALSE, ...)
 \item{refl}{Taxonomic reference list}
 \item{detailed}{Load tax.dbf with additional taxonomic information (e.g. Secundum) instead of species.dbf}
 \item{syn}{Return also synonym names}
-\item{concept}{Name of alternatice taxon view file within the reference list director}
+\item{concept}{Name of the file with an alternative taxon view stored in the reference list directory, see details.}
 \item{strict}{Exact match or partial matching with \code{\link{grep}}}
 \item{vernacular}{Search in vernacular names instead of scientific names.}
 \item{simplify}{Will simplify species names for matching.}

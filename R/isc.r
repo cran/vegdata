@@ -1,40 +1,47 @@
 #### function indicate site conditions
-# isc(veg, trait.db, ivnames, keyname = 'LETTERCODE', method = c('mode', 'mean'), db, ...)
+# isc(veg, trait.db, ivname, keyname = 'LETTERCODE', method = c('mode', 'mean'), db, ...)
 
 isc <- function(veg,
-                trait.db, 
-                ivnames,
+                refl,
+                trait.db = 'ecodbase.dbf', 
+                ivname,
                 keyname = 'LETTERCODE',
                 method = c('mean', 'mode'),
                 weight,
                 db,
                 ...
 ) {
-  species <- tax('all', quiet = TRUE)
-  if(is.character(trait.db)) iv <- tv.traits(trait.db = trait.db, refl = 'GermanSL 1.3', ...) else iv = trait.db
-  if(missing(veg)) veg <- tv.veg(db, ...)
-  if(!all(ivnames %in% names(iv))) stop('Not all ivnames in table of indicators.')
+  species <- tax('all', quiet = TRUE, ...)
+  if(!missing('refl')) 
+    if('veg' %in% class(veg)) refl <- attr(veg, 'taxreflist') else
+      refl = tv.refl()
+  if(is.character(trait.db)) iv <- tv.traits(trait.db = trait.db, refl = refl, ...) else iv = trait.db
+  if(missing(veg)) veg <- tv.veg(db, ...) else veg <- as.data.frame(veg)
+  if(!all(ivname %in% names(iv))) stop('Not all ivname in table of indicators.')
+  method <- match.arg(method)
   if(missing(weight)) {
     iv$weight <- 1
   #  weight <- 'weight'
   } else names(iv)[names(iv) == weight] <- 'weight'
-  iv <- as.data.frame(cbind(iv[, match(ivnames, names(iv))], iv[, keyname], iv[, 'weight']))
-  names(iv) <- c(ivnames, keyname, 'weight')
+  iv <- as.data.frame(cbind(iv[, match(ivname, names(iv))], iv[, keyname], iv[, 'weight']))
+  names(iv) <- c(ivname, keyname, 'weight')
 #  iv$weight <- as.numeric(iv$weight)
-# head(iv1)
+  # head(iv1)
   #  print(names(iv))
   # workaround
-  if(length(ivnames) == 1) {
-    colnames(iv)[1] <- as.character(ivnames)
-    iv[,1] <- as.numeric(as.character(iv[,1]))
+  for(i in 1:length(ivname)) {
+    colnames(iv)[i] <- as.character(ivname[i])
+    iv[,i] <- as.integer(as.character(iv[,i]))
   }
-  # ivnames <- factor(ivnames, levels = ivnames, ordered = TRUE)
-#  print(names(iv))
-  v <- as.matrix(iv[match(names(veg), iv[, keyname]), ivnames]) #
+  # ivname <- factor(ivname, levels = ivname, ordered = TRUE)
+  if(!keyname %in% names(iv)) stop(paste(keyname, 'not in column names of trait dataframe.'))
+  if(keyname %in% c('OEK_F', 'OEK_L', 'OEK_K', 'OEK_N', 'OEK_T') & any(iv[,keyname] == 0)) warning('Detecting 0 values, please check.')
+  v <- as.matrix(iv[match(names(veg), iv[, keyname]), ivname])
   rownames(v) <- names(veg)
-  if(length(ivnames) == 1) {
-    veg <- veg[,!is.na(v)]
-    v <- as.matrix(v[!is.na(v),])
+  if(length(ivname) == 1) {
+#    print(table(is.na(v)))
+    veg <- veg[,!is.na(v)] #?
+    v <- as.matrix(v[!is.na(v),]) #?
   } else  v[is.na(v)] <- 0
   # Species * indicator Matrix of available Species
   w <- as.character(iv$weight[match(names(veg), iv[, keyname])])
@@ -47,16 +54,14 @@ isc <- function(veg,
   rS <- rowSums(io, na.rm = TRUE)
   if(any(rS == 0)) {
     cat('The following plots are without a single indicator species:\n')
-    print(rownames(veg)[rS == 0])
-  }
-  
+   }
     # Method == max
     if(method == 'mode') {
       IV <- vector('character', nrow(veg))
-      for(p in 1:nrow(io)) IV[p] <- paste(ivnames[if(all(io[p,] == 0)) 0 else which(io[p,] == max(io[p,]))], collapse='/')
-      # Code to sort automatically according to the order of columns (ivnames)
+      for(p in 1:nrow(io)) IV[p] <- paste(ivname[if(all(io[p,] == 0)) 0 else which(io[p,] == max(io[p,]))], collapse='/')
+      # Code to sort automatically according to the order of columns (ivname)
       IV[IV == ''] <- '/'
-      IV = factor(IV, levels(factor(IV))[order(ivnames[match(sapply(strsplit(levels(factor(IV)), '/'), '[[', 1), ivnames)])])
+      IV = factor(IV, levels(factor(IV))[order(ivname[match(sapply(strsplit(levels(factor(IV)), '/'), '[[', 1), ivname)])])
       levels(IV)[levels(IV) == '/'] <- ''
     }
     # Method == mean
@@ -65,7 +70,7 @@ isc <- function(veg,
       IV <- io
     }
   names(IV) <- rownames(veg)
-    return(IV)
+  return(IV)
 }
 ### end of function
 

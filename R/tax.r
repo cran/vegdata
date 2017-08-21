@@ -11,11 +11,16 @@ tax.default <- function(x, refl, detailed = FALSE, syn = TRUE, concept = NULL, s
 ###------ internal functions
 #########################################################
 # Subsetting
-select.taxa <- function(x, species, strict, vernacular = FALSE, simplify = FALSE, genus = TRUE, epithet = TRUE, ...) {
+select.taxa <- function(x, species, strict = FALSE, vernacular = FALSE, simplify = FALSE, genus = TRUE, epithet = TRUE, ...) {
   if(is.factor(x)) x <- as.character(x)
   if(is.numeric(x) | is.integer(x))
-    l <- species[match(x, species$TaxonUsageID),]  	## Tax numbers
-  if(vernacular) species$TaxonName <- species$VernacularName
+    ## Tax numbers
+    l <- species[match(x, species$TaxonUsageID),]  else
+  if(vernacular) {
+    stop()
+    if(strict)  l <- species[species$VernacularName %in% x, ] else
+      l <- species[grepl(x, species$VernacularName), ]
+    } else { 
   if(is.character(x)) {															## Selecting by string
   	if(nchar(x[1]) == 7 & x[1] == toupper(x[1]))  { ## Lettercode
       l <- species[species$LETTERCODE %in% x,]
@@ -25,7 +30,7 @@ select.taxa <- function(x, species, strict, vernacular = FALSE, simplify = FALSE
 #    	  message('x is interpreted as 36 character representation of a GUID Taxon ID.')
 #       l <- species[match(x, species$TaxonUsageID),] ## GUID Tax ID's		
 #     }   																				## Taxnames
-    x <- taxname.abbr(x)
+    x <- taxname.abbr(x, hybrid = c('substitute'))
 		  if(simplify) {
 		  	species$TaxonName <- taxname.simplify(species$TaxonName, genus, epithet, ...)
 		 		x <- taxname.simplify(x, genus, epithet, ...) 
@@ -41,7 +46,7 @@ select.taxa <- function(x, species, strict, vernacular = FALSE, simplify = FALSE
 			} else {
 				l <- species[match(x, species$TaxonName, nomatch=0),]
     }
-  } }
+  } } }
  	if(nrow(l) == 0 & !quiet) message('No species found!')
  	return(l)
 }

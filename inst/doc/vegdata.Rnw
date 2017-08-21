@@ -3,10 +3,19 @@
 %\VignetteDepends{vegan, labdsv, akima, googleVis}
 %\VignetteKeyword{Vegetation}
 %\VignetteEngine{knitr::knitr}
-% \SweaveSyntax{SweaveSyntaxLatex}
-
 \usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
+% \SweaveSyntax{SweaveSyntaxLatex}
+\usepackage{textcomp}
+\DeclareUnicodeCharacter{00D7}{\texttimes}
+%\usepackage[T1]{fontenc}
+% \usepackage[warning]{selinput}
+% \SelectInputMappings{
+%    adieresis={ä},
+%    germandbls={ß},
+%    Euro={€},
+% %   multiply={}
+%    }
+
 \usepackage[sort&compress]{natbib}
 \bibliographystyle{unsrtnat}
 \usepackage[english]{babel}
@@ -115,7 +124,7 @@ If you want to change this, declare manually by setting option "tv\_home":
 <<eval=FALSE>>=
 options(tv_home="path_to_your_Turboveg_root_directory")
 @
-
+% options(tv_home="/home/jansen/workspace/vegdata/vegdata/inst/tvdata/")
 
 \section{Service functions}
 <<dblisting, eval=FALSE>>=
@@ -142,13 +151,15 @@ Additional to the Turboveg standard fields comprehensive information for every t
 \textit{tax} will give you all matching names by default. If you set option \textit{strict=TRUE}, only the species with exact match to the given character string will be returned. \\
 \textit{syn} will give you all taxon names within the swarm of synonyms. The valid name is marked in column SYNONYM with FALSE.
 
+%\inputencoding{utf8} 
+
 <<syn>>=
 tax('Elytrigia repens')$TaxonName
 syn('Elytrigia repens')
 @
 
 The reference list contains information about the taxonomic hierarchy which can be used with \textit{childs} or \textit{parents}.
-<<childs>>=
+<<childs, eval=FALSE>>=
 childs(27, quiet=TRUE)$TaxonName
 parents('ACHIMIL')
 @
@@ -164,12 +175,11 @@ Care about the taxonomic content of the datasets is crucial for every analysis. 
 db <- 'taxatest'
 @
 Defines the vegetation database name according to the name of the Turboveg database directory name
-<<path, results='hide', echo=FALSE>>=
-@
 
 <<meta, eval=FALSE>>=
 tv.metadata(db)
 @
+
 Metainformation, i.e. information about the kind of available information should always be given for every database. Since Turboveg does not ask and provide such information, write a simple text file called metainfo.txt and save it within the database folder.
 Turboveg does not provide any metadata handling. \\
 Database \texttt{taxatest} is an artificial dataset to show functionalities and necessary steps for taxonomic harmonization.
@@ -378,7 +388,7 @@ obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID,
 
 The second possibility is to use function \texttt{comb.species} on vegetation matrices.
 <<comb.spec, eval=TRUE>>=
-comb.species(veg, sel=c('QUERBOB','QUERBOB.Tree'))
+comb.species(veg, sel=c('QUERROB','QUERROB.Tree'))
 @
 will use the first name ('QUERROB') for the replacement column with the cover sums of the selected columns.
 
@@ -400,12 +410,6 @@ It is stated in the output, if you have to check and possibly correct 0 values.
 
 Use help(package='vegdata') for a complete list of available functions and data sets in vegdata.
 
-\subsection{Combine different taxonomic reference lists}
-
-If you have to combine different taxonomic reference lists, function \texttt{tv.compRefl} might be a starting point, comparing species numbers and/or species names of both lists.
-<<eval=FALSE>>=
-tv.compRefl('taxref1', 'taxref2')
-@
 
 \subsection{Frequency tables}
 
@@ -461,8 +465,8 @@ veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE,
      noshare = 1, expand = TRUE, trace = 2)
 eco <- tv.traits()
 eco$OEK_F <- as.numeric(eco$OEK_F)
-F <- isc(elbaue, eco, 'OEK_F', method = 'mean')
-N <- isc(elbaue, eco, 'OEK_N', method = 'mean')
+F <- isc(elbaue, trait.db = eco, ivname = 'OEK_F', method = 'mean')
+N <- isc(elbaue, trait.db = eco, ivname = 'OEK_N', method = 'mean')
 env <- envfit(veg.nmds, data.frame(F, N))
 @
 
@@ -493,8 +497,7 @@ nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', env = N
 \begin{figure}
 \begin{center}
 <<nmdsplot, quiet=TRUE, results='hide', eval=TRUE, warning=FALSE>>=
-nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env, 
-        plottitle = 'Elbaue floodplain dataset')
+ nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env, plottitle = 'Elbaue floodplain dataset')
 @
 \caption{Non-metric multidimensional scaling of the elbaue vegetation data with an overlay of mean groundwater table (colors) and standard deviation of groundwater level fluctuations (GAM lines). Arrows show direction of increasing mean Ellenberg F (soil water) resp. N (nutrient availability).}
 \end{center}

@@ -15,7 +15,7 @@ first.word <- function (x, i = 1, expr = substitute(x), add.legal=NULL) {
   non.legal.chars <- (1:length(chars))[!chars %in% legal.chars]
   if (i==1 & is.na(non.legal.chars[1])) return(words)
   if(i==1) return(substring(words, 1, non.legal.chars[1] - 1)) else
-    if(i==2 & length(non.legal.chars) > 0) return(substring(words, non.legal.chars[1], nchar(words))) else return(character(0))
+    if(i==2 & length(non.legal.chars) > 0) return(substring(words, non.legal.chars[1]+1, nchar(words))) else return(character(0))
 }
 
 # words <- 'AGRTS;P'

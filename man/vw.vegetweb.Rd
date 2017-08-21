@@ -5,23 +5,28 @@
 \alias{vw.survey}
 \alias{vw.veg}
 \alias{vw.site}
+\alias{vw.basket}
 
 \title{Retrieve data from vegetweb}
 
 \usage{
   vw.survey(searchstring, server, ...)
-  vw.site(user, password, survey, basket, server, ...)
-  vw.veg(user, password, survey, basket, taxeval = TRUE, server, ...)
+  vw.basket(user, password, server, ...)
+  vw.site(user, password, id, server, ...)
+  vw.veg(user, password, id, taxeval = TRUE, server, refl = "GermanSL 1.2", 
+  ...)
 }
 
 \arguments{
   \item{user}{username}
   \item{password}{Password}
   \item{searchstring}{Part of the project title to select projects from the list of available vegetation surveys.}
-  \item{survey}{Identifier of the vegetweb project.}
+  \item{id}{Identifier of the vegetweb project or data basket. Can be a survey id (see \code{vw.survey}), 
+  or a data basket uuid (see \code{vw.basket} or part of the survey title (if it results in a single project)}
   \item{basket}{Shopping basket id of your vegetweb selection.}
   \item{taxeval}{Taxonomic harmonization of occurring taxa}
   \item{server}{server to address}
+  \item{refl}{name of taxonomic reference list}
   \item{\dots}{additional arguments}
 }
 
@@ -33,8 +38,9 @@
 \examples{
 \dontrun{
 vw.survey('Leyer')
-veg <- vw.veg('info@vegetweb.de', 'vegetweb', 466)
-site <- vw.site('info@vegetweb.de', 'vegetweb', 466)
+server <- 'botanik3.botanik.uni-greifswald.de'
+veg <- vw.veg('info@vegetweb.de', 'vegetweb', 466, server = server)
+site <- vw.site('info@vegetweb.de', 'vegetweb', 466, server = server)
 }
 }
 

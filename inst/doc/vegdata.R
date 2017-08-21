@@ -42,14 +42,12 @@ tax('Brachythecium rutabulum')
 tax('Elytrigia repens')$TaxonName
 syn('Elytrigia repens')
 
-## ----childs-------------------------------------------------------------------------------------------------
-childs(27, quiet=TRUE)$TaxonName
-parents('ACHIMIL')
+## ----childs, eval=FALSE-------------------------------------------------------------------------------------
+#  childs(27, quiet=TRUE)$TaxonName
+#  parents('ACHIMIL')
 
 ## ----db-----------------------------------------------------------------------------------------------------
 db <- 'taxatest'
-
-## ----path, results='hide', echo=FALSE-----------------------------------------------------------------------
 
 ## ----meta, eval=FALSE---------------------------------------------------------------------------------------
 #  tv.metadata(db)
@@ -114,13 +112,10 @@ obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID,
     match(taxon.repl$old, obs.tax$TaxonUsageID), taxon.repl$new)
 
 ## ----comb.spec, eval=TRUE-----------------------------------------------------------------------------------
-comb.species(veg, sel=c('QUERBOB','QUERBOB.Tree'))
+comb.species(veg, sel=c('QUERROB','QUERROB.Tree'))
 
 ## ----site.echo, eval=TRUE-----------------------------------------------------------------------------------
 site <- tv.site('taxatest')
-
-## ----eval=FALSE---------------------------------------------------------------------------------------------
-#  tv.compRefl('taxref1', 'taxref2')
 
 ## ----elbaue, results='hide'---------------------------------------------------------------------------------
 elbaue <- tv.veg('elbaue')
@@ -151,8 +146,8 @@ veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE,
      noshare = 1, expand = TRUE, trace = 2)
 eco <- tv.traits()
 eco$OEK_F <- as.numeric(eco$OEK_F)
-F <- isc(elbaue, eco, 'OEK_F', method = 'mean')
-N <- isc(elbaue, eco, 'OEK_N', method = 'mean')
+F <- isc(elbaue, trait.db = eco, ivname = 'OEK_F', method = 'mean')
+N <- isc(elbaue, trait.db = eco, ivname = 'OEK_N', method = 'mean')
 env <- envfit(veg.nmds, data.frame(F, N))
 
 ## ----nmdsplotfun, quiet=TRUE, results='hide'----------------------------------------------------------------
@@ -177,6 +172,5 @@ nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', env = N
 }
 
 ## ----nmdsplot, quiet=TRUE, results='hide', eval=TRUE, warning=FALSE-----------------------------------------
-nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env, 
-        plottitle = 'Elbaue floodplain dataset')
+ nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env, plottitle = 'Elbaue floodplain dataset')
 

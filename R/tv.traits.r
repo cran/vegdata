@@ -1,10 +1,11 @@
 tv.eco <- function (...) stop('This function is deprecated, use tv.traits instead.')
-meanTraits <- function (...) stop('This function is deprecated, use ics with method "mean" instead.')
+meanTraits <- function (...) stop('This function is deprecated, use isc with method "mean" instead.')
 
 tv.traits <- function (db, trait.db = 'ecodbase.dbf', refl, ...) {
     tv_home <- tv.home()
     if(missing(refl))  refl <- if(missing(db)) tv.refl() else tv.refl(db = db)
     ecodb <- read.dbf(file.path(tv_home, 'Species', refl, trait.db), as.is = TRUE)
+    names(ecodb) <- TCS.replace(names(ecodb))
     empty <- function(x) all(is.na(x) | x == 0)
     na <- apply(ecodb, 2, empty)
     if(any(na)) {

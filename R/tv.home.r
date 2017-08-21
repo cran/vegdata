@@ -119,7 +119,8 @@ tv.biblio <- function(x='all', db, dict = tv.dict(db), quiet=FALSE, tv_home, ico
   if(dict == 'default') dict <- ''
   bibliopath <- file.path(tv_home, 'Popup', dict, 'tvrefenc.dbf')
   biblio <- read.dbf(bibliopath, as.is=TRUE)
-  for(i in c('AUTHOR','TITLE','PUBLISHED')) biblio[,i] <- iconv(biblio[,i], iconv, "")  
+  for(i in c('AUTHOR','TITLE','PUBLISHED', 'ADDRESS')) 
+    if(i %in% names(biblio)) biblio[,i] <- iconv(biblio[,i], iconv, "")  
   if(x[1] != 'all') {
     x <- as.numeric(unique(x))
     biblio <- biblio[match(x, as.numeric(biblio$REFERENCE)),]

@@ -2,7 +2,6 @@ monotypic <- function(refl, nr.member = 1, reflist.type = c('Turboveg', 'EDIT'),
  reflist.type <- match.arg(reflist.type)	
  if(reflist.type=='Turboveg' & missing(tv_home)) tv_home <- tv.home()
  taxa <- load.taxlist(refl = refl, reflist.type=reflist.type , detailed = TRUE, ...)
- names(taxa) <- TCS.replace(names(taxa))
  AG <- table(taxa$IsChildTaxonOfID)
  AG <- names(AG[AG == nr.member])
  if(reflist.type == 'Turboveg') AG <- as.numeric(AG)

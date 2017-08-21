@@ -9,8 +9,9 @@ store <- local({
 
 
 # Load taxonomic reference list
-load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = FALSE, recheck = FALSE, ...) {
+load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = FALSE, recheck = FALSE, hybrid, ...) {
   reflist.type <- match.arg(reflist.type, c('Turboveg', 'EDIT'))
+  if(missing(hybrid)) hybrid = 'substitute'
   if(reflist.type == 'Turboveg') {
     args <- list(recheck = recheck)
     tv_home <- do.call("tv.home", args)
@@ -19,7 +20,7 @@ load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = 
 #    print(reflist.path)
     reflist <- paste(refl, ifelse(detailed,'.detailed',''), sep='')
     if(is.null(store(reflist))) { # load.species(refl=refl, detailed = detailed)
-      supportedReflists <- c('GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2', 'GermanSL 1.3')
+      supportedReflists <- c('GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2', 'GermanSL 1.3', 'GermanSL 1.4')
       supportedReflists <- c(supportedReflists, sub(' ', '', supportedReflists))
       supportedReflists <- c(supportedReflists, tolower(supportedReflists))
       if(!file.exists(reflist.path)) {
@@ -29,7 +30,7 @@ load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = 
           tfile <- tempfile()
            if(grepl('GermanSL', refl)) {
             version <- paste("version", substr(refl, 10, nchar(refl)), sep = "")
-            m <- try(download.file(paste('http://geobot.botanik.uni-greifswald.de/download/GermanSL',version,'GermanSL.zip',sep='/'), tfile), silent=TRUE)
+            m <- try(download.file(paste('https://germansl.infinitenature.org/GermanSL/latest/GermanSL.zip',sep='/'), tfile), silent=TRUE)
             if(m == 0) unzip(tfile, exdir= file.path(tv_home, 'Species')) else 
               unzip(file.path(path.package('vegdata'), 'tvdata','Species','TaxrefExample.zip'), exdir = file.path(tv_home, 'Species'))
            }
@@ -38,9 +39,9 @@ load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = 
       
       if(file.exists(reflist.path)) species <- read.dbf(reflist.path, as.is=TRUE) else stop(paste('Reference list file', reflist.path, 'does not exist.'))
       names(species) <- TCS.replace(names(species))
-      species$TaxonName <- taxname.abbr(..., x=species$TaxonName)
+      species$TaxonName <- taxname.abbr(..., x = species$TaxonName, hybrid = hybrid)
       if(detailed) {
-        species$TaxonConcept <- taxname.abbr( ..., x=species$TaxonConcept)
+        species$TaxonConcept <- taxname.abbr( ..., x=species$TaxonConcept, hybrid = hybrid)
         if('VernacularName' %in% names(species) & Sys.info()['sysname'] != 'SunOS') species$VernacularName <- iconv(species$VernacularName, from='UTF8', to='')
         if('Author' %in% names(species) & Sys.info()['sysname'] != 'SunOS') species$AUTHOR <- iconv(species$AUTHOR, from='UTF8', to='')
       }  else {

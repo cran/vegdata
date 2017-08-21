@@ -27,15 +27,10 @@ You can use the final output line to make a summary statistic for attributes wit
 data.frame of ecological traits, see \code{metainfo(refl, eco=TRUE)}.
 }
 
+\seealso{ \code{\link{isc}}}
+
 \author{Florian Jansen
 \email{jansen@uni-greifswald.de}
         }
         
-\examples{
-\dontrun{
-veg <- tv.veg('elbaue', cover.transform='pa')
-# mEIV <- meanTraits('OEK_F', veg, 'ecodbase.dbf')
-site <- tv.site('elbaue')
-# plot(site$MGL, mEIV)
-}}
 \keyword{misc}

@@ -37,7 +37,7 @@ comb.species(x, sel, newname, refl)
 }
 
 \details{
-Working with vegetation datasets, especially from different sources needs taxonomic valuation. The function tries to automate this process. Therefore the German taxonomic reference list (GermanSL, \url{http://geobot.botanik.uni-greifswald.de/reflist/} ) contains additional taxon attributes (tax.dbf) and monotypic taxa of Germany (monotypic.dbf). Without an appropriate species list (see \code{\link{tax}}) the function will not work.
+Working with vegetation datasets, especially from different sources needs taxonomic valuation. The function tries to automate this process. Therefore the German taxonomic reference list (GermanSL, \url{http://germansl.infinitenature.org} ) contains additional taxon attributes (tax.dbf) and monotypic taxa of Germany (monotypic.dbf). Without an appropriate species list (see \code{\link{tax}}) the function will not work.
 
 Possible values for adapting the taxonomic hierarchy within the dataset (child/parent taxa) are: \code{preserve}: Leave everything untouched. \code{conflict}: Dissolve only in case of conflicts, e.g. if a subspecies occurrs also at the species level within the same dataset. In this case the subspecies will be aggregated to the higher level. \code{adapt}: Dissolve all nested taxa to e.g. species level for option ag. For this option also option \code{rank}, specifying the rank to which the taxa shall be adapted, must be given.
   

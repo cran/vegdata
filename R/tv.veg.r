@@ -11,7 +11,7 @@ options(warn=1)
     cover.transform <- match.arg(cover.transform)
     spcnames = match.arg(spcnames)
     if(missing(tv_home)) tv_home <- tv.home()
-    if(missing(obs)) obs <- tv.obs(db, tv_home)
+    if(missing(obs)) obs <- tv.obs(db, tv_home) else obs <- TCS.replace(obs)
 #     if(suppressWarnings(any(obs < -1e+05, na.rm = TRUE))) 
 #       cat("\n WARNING! Values less than -100,000. \n WARNING! tvabund.dbf may be corrupt. \n WARNING! Please correct by reexporting e.g. with OpenOffice.")
     lc.1 <- data.frame(LAYER=0:9, COMB=c(0,rep('Tree',3),rep('Shrub',2),rep(0,4)))
@@ -30,13 +30,10 @@ options(warn=1)
         cat('converting cover code ... \n')
         if(missing(RelScale)) {
         if(missing(db)) stop('\nEither database name or a vector with CoverScale per releve has to be permitted, to cope with Cover Scale information\n')
-#        suppressMessages(
-#          suppressWarnings(
-          RelScale <- tv.site(db, tv_home, verbose = FALSE)[, c("RELEVE_NR", "COVERSCALE")]
-#        ))
-          obs <- tv.coverperc(db[1], obs=obs, RelScale = RelScale, tv_home = tv_home, ...) 
-          } else 	obs <- tv.coverperc(db=db[1], obs=obs, RelScale = RelScale, tv_home = tv_home, ...)
-      } else {
+          RelScale <- tv.site(db[1], tv_home, verbose = FALSE)[, c("RELEVE_NR", "COVERSCALE")]
+        }
+     	  obs <- tv.coverperc(db=db[1], obs=obs, RelScale = RelScale, tv_home = tv_home, ...)
+    } else {
       if (!any(names(obs) == values)) stop(paste(values, " could not be found.")) 
           obs[,values] <- type.convert(as.character(obs[,values]))
           if(is.factor(obs[,values])) { lc='first'

@@ -1,5 +1,5 @@
-tv.home <- function(recheck = FALSE) {
-  if(is.null(getOption('tv_home')) | recheck) {
+tv.home <- function(check = FALSE) {
+  if(is.null(getOption('tv_home')) | check) {
     if(.Platform$OS.type == "unix") 
      if('Turbowin' %in% list.dirs(path=paste(Sys.getenv('HOME'),'/.wine/drive_c', sep=''), full.names=FALSE, recursive = FALSE))
           tv_home <- file.path(Sys.getenv('HOME'),'.wine/drive_c/Turbowin') else
@@ -20,7 +20,7 @@ tv.home <- function(recheck = FALSE) {
    tv_home <- switch(substr(ANSWER, 1, 1),
          "1" = file.path(path.package('vegdata'), 'tvdata'),
          tempdir()
-   ) } else tv_home <- tempdir()
+   ) } else tv_home <- file.path(path.package('vegdata'), 'tvdata') #tempdir()
    options(tv_home = tv_home)
    if(!file.exists(file.path(tv_home, 'tvdata', 'Popup', 'tvscale.dbf')))
      for(d in c('Popup', 'Data', 'Species')) {
@@ -32,7 +32,7 @@ tv.home <- function(recheck = FALSE) {
        for(l in 2:length(dbs)) {
          dir.create(file.path(tv_home, 'Data', dbs[l]), showWarnings = FALSE)
        file.copy(from =  list.files(dbs[l], recursive=TRUE, full.names=TRUE, include.dirs=TRUE), to = file.path(tv_home, 'Data', dbs[l]))
-       }
+       } 
        setwd(wd)
      } else
      file.copy(from =  list.files(file.path(path.package('vegdata'), 'tvdata', d), recursive=TRUE, full.names=TRUE, include.dirs=TRUE), to = file.path(tv_home, d))

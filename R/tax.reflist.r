@@ -9,11 +9,11 @@ store <- local({
 
 
 # Load taxonomic reference list
-load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = FALSE, recheck = FALSE, hybrid, ...) {
+load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = FALSE, check = FALSE, hybrid, ...) {
   reflist.type <- match.arg(reflist.type, c('Turboveg', 'EDIT'))
   if(missing(hybrid)) hybrid = 'substitute'
   if(reflist.type == 'Turboveg') {
-    args <- list(recheck = recheck)
+    args <- list(check = check)
     tv_home <- do.call("tv.home", args)
     if(detailed) dbf <- 'tax.dbf' else dbf <- 'species.dbf'
     reflist.path <- file.path(tv_home, 'Species', refl, dbf)
@@ -26,11 +26,11 @@ load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = 
       if(!file.exists(reflist.path)) {
         message(paste('Taxonomic reference list file', reflist.path, 'does not exist.'))
         if(refl %in% supportedReflists) {
-          message('\nTaxonomic list (',dbf, ') of reflist (version) ', refl, ' not available.\n\n')
+          message('\nTaxonomic list (',dbf, ') of reflist', refl, ' not available.\n\n')
           tfile <- tempfile()
            if(grepl('GermanSL', refl)) {
-            version <- paste("version", substr(refl, 10, nchar(refl)), sep = "")
-            m <- try(download.file(paste('https://germansl.infinitenature.org/GermanSL/latest/GermanSL.zip',sep='/'), tfile), silent=TRUE)
+            version <- substr(refl, 10, nchar(refl))
+            m <- try(download.file(paste('https://germansl.infinitenature.org/GermanSL', version, 'GermanSL.zip',sep='/'), tfile), silent=TRUE)
             if(m == 0) unzip(tfile, exdir= file.path(tv_home, 'Species')) else 
               unzip(file.path(path.package('vegdata'), 'tvdata','Species','TaxrefExample.zip'), exdir = file.path(tv_home, 'Species'))
            }

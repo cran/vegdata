@@ -62,7 +62,7 @@ layer \tab comb \cr
 \seealso{\link{tv.veg}
 }
 \author{Florian Jansen
-\email{jansen@uni-greifswald.de}
+\email{florian.jansen@uni-rostock.de}
 }
 
 \keyword{data}

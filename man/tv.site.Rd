@@ -34,7 +34,7 @@ data.frame of site variables.
 }
 
 \author{Florian Jansen
-\email{jansen@uni-greifswald.de}
+\email{florian.jansen@uni-rostock.de}
         }
 
 \keyword{misc, survey}

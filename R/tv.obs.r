@@ -1,6 +1,6 @@
 # db <- file.path(new_folder, dbs)
 "tv.obs" <- function(db, tv_home, ...) {
-    if(missing(tv_home)) tv_home <- tv.home() else if(tv_home != tv.home()) warning(paste("Given Turboveg root directory:", tv_home, "differ from the global root directory given by getOption('tv_home'):", getOption('tv_home')))
+    if(missing(tv_home)) tv_home <- tv.home() else if(tv_home != tv.home()) warning(paste("Given Turboveg root directory:", tv_home, "differs from the global root directory given by getOption('tv_home'):", getOption('tv_home')))
     # Observations
     obs <- read.dbf(file.path(tv_home, 'Data', db[1],'tvabund.dbf'), as.is = TRUE)
     names(obs) <- TCS.replace(names(obs))

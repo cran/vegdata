@@ -126,7 +126,7 @@ TCS.replace <- function(x) {
 ## Turboveg & ## Florkart Germany (BfN lists)
   x <- replace(x, toupper(x) %in% c('SPECIES_NR', 'TAXNR', 'NAMNR', 'NAMEID', 'TAXONUSAGEID'), 'TaxonUsageID')
   x <- replace(x, toupper(x) %in% c('ABBREVIAT','TAXONNAME','TAXON','TAXNAME'), 'TaxonName')
-  x <- replace(x, toupper(x) %in% c('VALID_NR', 'SIPNR', 'SYNNAMEID', 'TAXONCONCEPTID'), 'TaxonConceptID')
+  x <- replace(x, toupper(x) %in% c('VALID_NR', 'SIPNR', 'NAMNR_GUELT', 'SYNNAMEID', 'TAXONCONCEPTID'), 'TaxonConceptID')
   x <- replace(x, toupper(x) %in% c('VALID_NAME', 'VALIDNAME', 'TAXONCONCEPT'), 'TaxonConcept')
   x <- replace(x, toupper(x) %in% c('AGG', 'AGGNR', 'NAMEPARENTID', 'ISCHILDTAXONOFID'), 'IsChildTaxonOfID')
   x <- replace(x, toupper(x) %in% c('AGG_NAME', 'AGGNAME', 'ISCHILDTAXONOF'), 'IsChildTaxonOf')
@@ -154,22 +154,28 @@ TCS.replace <- function(x) {
   x <- replace(x, toupper(x) %in% c('RANKABBREV'), 'TaxonRank')
   x <- replace(x, toupper(x) %in% c('PARENTKEY'), 'IsChildTaxonOfID')
   x <- replace(x, toupper(x) %in% c('AUTHORSTRING'), 'NameAuthor')
+
+## Veg-X
+  x <- replace(x, toupper(x) %in% c('PLOTNAME'), 'RELEVE_NR')
+  x <- replace(x, toupper(x) %in% c('ORGANISMIDENTITYNAME'), 'TaxonUsageID')
+  x <- replace(x, toupper(x) %in% c('STRATUMNAME'), 'LAYER')
+  x <- replace(x, toupper(x) %in% c('AGG_1_VALUE'), 'COVER_CODE')
   
   return(x)
 }
 
 
 TV.replace <- function(x) {
-  ## Turboveg & ## Florkart Germany (BfN lists)
+  ## Florkart Germany (BfN lists) and others
   x <- replace(x, toupper(x) %in% c('TAXONUSAGEID', 'TAXNR', 'NAMNR', 'NAMEID'), 'SPECIES_NR')
   x <- replace(x, toupper(x) %in% c('TAXONNAME','TAXON','TAXNAME'), 'ABBREVIAT')
-  x <- replace(x, toupper(x) %in% c('TAXONCONCEPTID', 'SIPNR', 'SYNNAMEID'), 'VALID_NR')
+  x <- replace(x, toupper(x) %in% c('TAXONCONCEPTID', 'SIPNR', 'SYNNAMEID','NAMNR_GUELT'), 'VALID_NR')
   x <- replace(x, toupper(x) %in% c('VALIDNAME', 'TAXONCONCEPT'), 'VALID_NAME')
   x <- replace(x, toupper(x) %in% c('AGGNR', 'NAMEPARENTID', 'ISCHILDTAXONOFID'), 'AGG')
   x <- replace(x, toupper(x) %in% c('ISCHILDTAXONOF'), 'AGG_NAME')
   x <- replace(x, toupper(x) %in% c('ACCORDINGTO'), 'SECUNDUM')
-  x <- replace(x, toupper(x) %in% c("COMMONNAME", 'VERNACULARNAME'), 'NATIVENAME')
-  x <- replace(x, toupper(x) %in% c('CLASSIFICATION'), 'CLASSIFICA')
+  x <- replace(x, toupper(x) %in% c("CommonName", 'VernacularName'), 'NATIVENAME')
+  x <- replace(x, toupper(x) %in% c('Classification'), 'CLASSIFICA')
   x <- replace(x, toupper(x) %in% c('RANK', 'TAXONOMICRANK', 'TAXONRANK'), 'RANG')
   x <- replace(x, toupper(x) %in% c('NAMEAUTHOR', 'AUTHOR'), 'AUTHOR')
     
@@ -178,6 +184,13 @@ TV.replace <- function(x) {
   x <- replace(x, toupper(x) %in% c('ACCTAXONID'), 'VALID_NR')
   x <- replace(x, toupper(x) %in% c('AGGNAME'), 'PARNAME')
   x <- replace(x, toupper(x) %in% c('PARENTKEY'), 'PARENT')
+
+  ## Veg-X
+  x <- replace(x, toupper(x) %in% c('PLOTNAME'), 'RELEVE_NR')
+  x <- replace(x, toupper(x) %in% c('ORGANISMIDENTITYNAME'), 'SPECIES_NR')
+  x <- replace(x, toupper(x) %in% c('STRATUMNAME'), 'LAYER')
+  x <- replace(x, toupper(x) %in% c('AGG_1_VALUE'), 'COVER_CODE')
+
   return(x)
 }
 

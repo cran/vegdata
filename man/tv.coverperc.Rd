@@ -28,7 +28,7 @@ tv.coverperc(db, obs, RelScale, tv_home, tvscale, quiet = FALSE,  ...)
 }
 
 \author{Florian Jansen
-\email{jansen@uni-greifswald.de}
+\email{florian.jansen@uni-rostock.de}
         }
 
 \keyword{misc}

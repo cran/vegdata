@@ -23,6 +23,6 @@ tv.biblio(x='all', db, dict = tv.dict(db), quiet=FALSE, tv_home, iconv = "CP437"
 
 \seealso{\code{\link{tv.site}}}
 
-\author{Florian Jansen \email{jansen@uni-greifswald.de} }
+\author{Florian Jansen \email{florian.jansen@uni-rostock.de} }
 
 \keyword{misc, survey}

@@ -37,11 +37,10 @@ Vector with the ecological classification of sites. Either mean trait values or 
 }
 
 \author{Florian Jansen
-\email{jansen@uni-greifswald.de}
+\email{florian.jansen@uni-rostock.de}
         }
         
 \examples{
-\dontrun{
 db <- 'elbaue'
 veg <- tv.veg(db, cover.transform='sqrt', check.critical = FALSE)
 site <- tv.site(db, verbose = FALSE)
@@ -53,16 +52,15 @@ site <- site[site$SDGL < 60,]
 traits <- tv.traits(db)
 
 # Mean indicator values of Ellenberg F values
-mEIV_F <- isc(veg, traits, 'OEK_F', method = 'mean')
+mEIV_F <- isc(veg, trait.db = traits, ivname = 'OEK_F', method = 'mean')
 plot(site$MGL, mEIV_F, xlab = 'Mean groundwater level')
-}
 \dontrun{
 # Mode (most frequent level) of Ellenberg F values
 library(reshape)
 traitmat <- cast(traits, LETTERCODE ~ OEK_F)
 traitmat <- traitmat[,-14]
-ilevel <- isc(veg, traitmat, ivnames= as.character(1:12), method = 'mode')
-boxplot(site$MGL ~ ilevel)
+ilevel <- isc(veg, trait.db = traitmat, ivname = as.character(1:11), method = 'mode')
+boxplot(site$MGL ~ ordered(ilevel, levels = levels(ilevel)[c(2,4,3,5,6:10,1)]))
 }
 }
 \keyword{misc}

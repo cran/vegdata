@@ -26,7 +26,7 @@ For more details see \code{vignette('vegdata')}.
 \author{
 Florian Jansen
 
-Maintainer: Florian Jansen <jansen@uni-greifswald.de>
+Maintainer: Florian Jansen <florian.jansen@uni-rostock.de>
 }
 
 \references{

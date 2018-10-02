@@ -1,5 +1,4 @@
 tv.eco <- function (...) stop('This function is deprecated, use tv.traits instead.')
-meanTraits <- function (...) stop('This function is deprecated, use isc with method "mean" instead.')
 
 tv.traits <- function (db, trait.db = 'ecodbase.dbf', refl, ...) {
     tv_home <- tv.home()
@@ -28,25 +27,3 @@ tv.traits <- function (db, trait.db = 'ecodbase.dbf', refl, ...) {
 }
 
 
-# meanTraits <- function(trait, veg, refl, trait.db = 'ecodbase.dbf', join = 'LETTERCODE', zero.is.NA = TRUE, ...) {
-#   cat('Maximum performance value:', max(veg, na.rm=TRUE),'\n')
-#   if(missing(refl)) refl <- attr(veg, 'taxreflist')
-#   if(is.null(refl)) refl <- tv.refl()
-#   if(missing(trait.db)) {
-#     trait.db <- 'ecodbase.dbf'
-#     cat('Using trait database:', trait.db, '\n') 
-#     }
-#   eco <- tv.traits(trait.db = trait.db, refl=refl, quiet=TRUE)
-#   if(!trait %in% names(eco)) stop(paste('This trait name does not occur in column names of', trait.db))
-#   IV <- as.numeric(eco[,trait][match(names(veg), eco[,join])])
-#   names(IV) <- names(veg)
-#   if(zero.is.NA) IV[IV == 0] <- NA
-#   ind <- !is.na(IV)
-#   veg <- veg[,ind]; IV <- IV[ind]
-#   out <- rowSums(t((t(veg) * IV)) / rowSums(veg))
-#   return(out)
-# }
-# 
-# 
-# 
-# 

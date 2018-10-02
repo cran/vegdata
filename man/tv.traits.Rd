@@ -30,7 +30,7 @@ data.frame of ecological traits, see \code{metainfo(refl, eco=TRUE)}.
 \seealso{ \code{\link{isc}}}
 
 \author{Florian Jansen
-\email{jansen@uni-greifswald.de}
+\email{florian.jansen@uni-rostock.de}
         }
         
 \keyword{misc}

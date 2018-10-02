@@ -1,14 +1,14 @@
 Package: vegdata
-Version: 0.9.1
+Version: 0.9.3
 Encoding: UTF-8
-Date: 2017-08-21
+Date: 2018-10-01
 Title: Access Vegetation Databases and Treat Taxonomy
 Author: Florian Jansen <florian.jansen@uni-rostock.de>
 Maintainer: Florian Jansen <florian.jansen@uni-rostock.de>
 Depends: R (>= 2.0.0), foreign
-Imports: XML, utils, jsonlite, httr
+Imports: XML, utils
 Suggests: vegan, labdsv, akima, gWidgets, googleVis, indicspecies,
-        knitr, testthat, RSQLite
+        uuid, knitr, testthat, RSQLite
 LazyData: Yes
 VignetteBuilder: knitr
 Description: Handling of vegetation data from different sources (
@@ -18,7 +18,8 @@ Description: Handling of vegetation data from different sources (
     e.g. the German taxonomic standard list "GermanSL", <http://germansl.infinitenature.org>).
 License: GPL (>= 2)
 URL: http://germansl.infinitenature.org
+RoxygenNote: 6.1.0
 NeedsCompilation: no
-Packaged: 2017-08-21 08:43:06 UTC; jansen
+Packaged: 2018-10-02 20:11:55 UTC; jansen
 Repository: CRAN
-Date/Publication: 2017-08-21 10:00:34 UTC
+Date/Publication: 2018-10-02 20:40:03 UTC

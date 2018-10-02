@@ -13,7 +13,7 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, iconv="CP437
   if(length(db) > 1) 
     for(i in 2:length(db)) {
 	    site.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvhabita.dbf'), as.is = TRUE)
-	    if(!any(c('SURF_AREA','AREA_MIN') %in% names(site.tmp))) stop(db[i])
+	    if(!any(c('SURF_AREA','AREA_MIN') %in% names(site.tmp))) stop(db[i]) # plot area must be present
   	if(any(site$RELEVE_NR %in% site.tmp$RELEVE_NR)) stop('Found duplicate releve numbers in ', db[i] , ' aborting!')
   	if(!missing(replace.names)) 
   	  for(r in 1:nrow(replace.names))
@@ -29,9 +29,6 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, iconv="CP437
   		miss2 <- setdiff(All, cols2)
   		site[, c(as.character(miss1))] <- NA
   		site.tmp[,c(as.character(miss2))] <- NA
-#  		print(db[i])
-#  		print(names(site)[!names(site) %in% names(site.tmp)])
-# print(paste("rbind'ing db:", db[i]))
   		site <- rbind(site, site.tmp)
   	}
   }
@@ -93,6 +90,7 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, iconv="CP437
 #       paste("summary(site[,c('", paste(names(site)[null], collapse = "','"), "')]) \n", sep = "")
       }
   site <- site[order(site$RELEVE_NR),]
+  if(file.access(file.path(tv_home, 'Data', db, 'tvwin.dbf')) == 0) attr(site, 'taxreflist') <- read.dbf(file.path(tv_home, 'Data', db, 'tvwin.dbf'), as.is = TRUE)$FLORA
 #  warning(ow)
   return(site)
 }

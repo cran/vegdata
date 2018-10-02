@@ -61,7 +61,7 @@ Jansen, F. and Dengler, J. (2010) Plant names in vegetation databases - a neglec
 }
 
 \author{Florian Jansen
-  \email{jansen@uni-greifswald.de}
+  \email{florian.jansen@uni-rostock.de}
  }
 
 \examples{

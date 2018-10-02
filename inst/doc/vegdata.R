@@ -1,14 +1,7 @@
-## ----include=FALSE-------------------------------------------------------
+## ----prep, echo=FALSE, results='hide'------------------------------------
 library(knitr)
-opts_chunk$set(
-concordance = TRUE,
-results = "tex")
-options(results = 'tex') # for pqR
-
-## ----prep, echo=FALSE, results='hide'-----------------------------------------------------------------------
-library(knitr)
-options(width=110, digits=2)
-opts_chunk$set(comment = "", warning = FALSE, message = TRUE, echo = TRUE, size="footnotesize")
+options(stringsAsFactors=FALSE)
+opts_chunk$set(concordance = TRUE, comment = "", warning = FALSE, message = TRUE, echo = TRUE, results = 'tex', size="footnotesize")
 # read_chunk("some/script/I/want/to/load.R")
 tmp <- tempdir()
 suppressPackageStartupMessages(library(vegdata))
@@ -20,39 +13,39 @@ file.copy(from = file.path(path.package("vegdata"), 'tvdata', 'Popup'), to = tmp
 file.copy(from = file.path(path.package("vegdata"), 'tvdata', 'Species'), to = tmp, recursive = TRUE)
 file.copy(from = file.path(path.package("vegdata"), 'tvdata', 'Data'), to = tmp, recursive = TRUE)
 
-## ----load, results='hide'-----------------------------------------------------------------------------------
+## ----load, results='hide'------------------------------------------------
 library(vegdata)
 
-## ----eval=TRUE----------------------------------------------------------------------------------------------
+## ----eval=TRUE-----------------------------------------------------------
 h <- tv.home()
 
-## ----eval=FALSE---------------------------------------------------------------------------------------------
+## ----eval=FALSE----------------------------------------------------------
 #  options(tv_home="path_to_your_Turboveg_root_directory")
 
-## ----dblisting, eval=FALSE----------------------------------------------------------------------------------
+## ----dblisting, eval=FALSE-----------------------------------------------
 #  tv.db()
 
-## -----------------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------
 tv.refl()
 
-## ----tax----------------------------------------------------------------------------------------------------
+## ----tax-----------------------------------------------------------------
 tax('Brachythecium rutabulum')
 
-## ----syn----------------------------------------------------------------------------------------------------
+## ----syn-----------------------------------------------------------------
 tax('Elytrigia repens')$TaxonName
 syn('Elytrigia repens')
 
-## ----childs, eval=FALSE-------------------------------------------------------------------------------------
+## ----childs, eval=FALSE--------------------------------------------------
 #  childs(27, quiet=TRUE)$TaxonName
 #  parents('ACHIMIL')
 
-## ----db-----------------------------------------------------------------------------------------------------
+## ----db------------------------------------------------------------------
 db <- 'taxatest'
 
-## ----meta, eval=FALSE---------------------------------------------------------------------------------------
+## ----meta, eval=FALSE----------------------------------------------------
 #  tv.metadata(db)
 
-## ----obs----------------------------------------------------------------------------------------------------
+## ----obs-----------------------------------------------------------------
 getOption('tv_home')
 obs.tax <- tv.obs(db)
 # Adding species names
@@ -60,20 +53,20 @@ species <- tax('all')
 obs.tax$TaxonName <-  species$TaxonName[match(obs.tax$TaxonUsageID, species$TaxonUsageID)]
 head(obs.tax[,c('RELEVE_NR','TaxonUsageID','COVER_CODE','LAYER','TaxonName')])
 
-## ----taxval, eval=TRUE--------------------------------------------------------------------------------------
+## ----taxval, eval=TRUE---------------------------------------------------
 obs.tax$OriginalName <- obs.tax$TaxonName
 obs.taxval <- taxval(obs.tax, db=db, mono='lower', maxtaxlevel='AGG', interactive=FALSE)
 
-## ----Taxon--------------------------------------------------------------------------------------------------
+## ----Taxon---------------------------------------------------------------
 obs.taxval$OriginalName <- obs.taxval$TaxonName
 obs.taxval$TaxonName <-  species$TaxonName[match(obs.taxval$TaxonUsageID, species$TaxonUsageID)]
 obs.taxval[!duplicated(obs.taxval$OriginalName),c('RELEVE_NR', 'COVER_CODE', 'TaxonName', 'OriginalName')]
 
-## ----coarsen, eval=TRUE, results='hide'---------------------------------------------------------------------
+## ----coarsen, eval=TRUE, results='hide'----------------------------------
 tmp <- taxval(obs.tax, refl='GermanSL 1.3', ag='adapt', maxtaxlevel = 'ROOT', rank='FAM')
 tmp$newTaxon <- tax(tmp$TaxonUsageID, refl='GermanSL 1.3')$TaxonName
 
-## ----print.coarsen------------------------------------------------------------------------------------------
+## ----print.coarsen-------------------------------------------------------
 head(tmp[,c('OriginalName','newTaxon')], 10)
 
 ## ----coverperc, echo=2:4, eval=TRUE-------------------------------------------------------------------------
@@ -111,11 +104,11 @@ taxon.repl <- data.frame(old=c(27), new=c(31))
 obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID, 
     match(taxon.repl$old, obs.tax$TaxonUsageID), taxon.repl$new)
 
-## ----comb.spec, eval=TRUE-----------------------------------------------------------------------------------
-comb.species(veg, sel=c('QUERROB','QUERROB.Tree'))
+## ----comb.spec, eval=FALSE----------------------------------------------------------------------------------
+#  comb.species(veg, sel=c('QUERROB','QUERROB.Tree'))
 
 ## ----site.echo, eval=TRUE-----------------------------------------------------------------------------------
-site <- tv.site('taxatest')
+site <- tv.site(db)
 
 ## ----elbaue, results='hide'---------------------------------------------------------------------------------
 elbaue <- tv.veg('elbaue')
@@ -131,7 +124,9 @@ levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
 
 ## ----syntab.mupa--------------------------------------------------------------------------------------------
 require(indicspecies)
-st <- syntab(elbaue, clust, mupa=TRUE)
+mu <- multipatt(elbaue, clust)
+veg <- elbaue; dec=0
+st <- syntab(elbaue, clust, 'rel', mupa=mu)
 # Print Ellenberg indicator values for soil moisture and nutrient demand
 traits <- tv.traits()
 trait <- traits[traits$LETTERCODE %in% names(elbaue), ]

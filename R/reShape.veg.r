@@ -5,23 +5,27 @@ if(is.null(attr(veg, 'taxreflist')) & missing(refl)) stop('Set option refl becau
   veg <- as.matrix(veg)
   perf <- as.vector(veg)
   spec <- dimnames(veg)[[2]][col(veg)]
-
-  spcnames <- sapply(spec, function(x) strsplit(as.character(x), '.', fixed=TRUE))
-  layer <- factor(unlist(lapply(spcnames, function(x) x[2])))
-  levels(layer) <- c(levels(layer),'0')
-  layer <- as.integer(layer)
-  layer[is.na(layer)] <- 0
-
-  df <- data.frame(RELEVE_NR=plots, LETTERCODE=spec, COVER_PERC=perf, LAYER=layer)
-  spc <- unlist(lapply(spcnames, function(x) x[1]))
-  df$TaxonUsageID <- integer(nrow(df))
-  taxa <- tax(spc, syn=FALSE)
-  df$TaxonUsageID <- taxa$TaxonUsageID[match(spc, taxa$LETTERCODE)]
-
-  # o <- df[order(df[,1], df[,2]),]
-  # df <- df[o,]
-  class(df)<- c('tv.obs', 'data.frame')
-  if(!is.null(attr(veg, 'taxreflist'))) attr(df, 'taxreflist') <- attr(veg, 'taxreflist')
-  if(crop) df <- df[df$COVER_PERC!=0,]
+  spcnames <- sapply(spec, function(x) strsplit(as.character(x), ".", fixed = TRUE))
+  layer <- as.integer(lapply(spcnames, function(x) x[2]))
+  code <- unlist(lapply(spcnames, function(x) x[1]))
+  code <- type.convert(code)
+  if(is.character(code)) {
+    if(all(sapply(code, nchar) == 7)) {
+      TaxonUsageID <- integer(length(code))
+      taxa <- tax(code, syn = FALSE)
+      TaxonUsageID <- taxa$TaxonUsageID[match(code, taxa$LETTERCODE)]
+    } else {
+      TaxonUsageID <- integer(length(code))
+      taxa <- tax(code, syn = FALSE)
+      TaxonUsageID <- taxa$TaxonUsageID[match(code, taxa$TaxonName)]
+    }
+  } else TaxonUsageID <- as.integer(code)
+  df <- data.frame(RELEVE_NR = plots, SPECIES_NR = TaxonUsageID, 
+                   COVER_CODE = as.character(perf), LAYER = layer, stringsAsFactors = FALSE)
+  df <- df[order(df$RELEVE_NR, df$SPECIES_NR), ]
+  df <- df[df$COVER_CODE != 0 & !is.na(df$COVER_CODE), ]
+  class(df) <- c("tv.obs", "data.frame")
+  if (!is.null(attr(veg, "taxreflist"))) 
+    attr(df, "taxreflist") <- attr(veg, "taxreflist")
   return(df)
 }

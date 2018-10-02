@@ -32,7 +32,7 @@ syntab(veg, clust, type = c('rel','abs','mean.cover'), mupa=NULL, dec=0, refl, .
 \item{...}{additional arguments}
 }
 
-\author{Florian Jansen \email{jansen@uni-greifswald.de} }
+\author{Florian Jansen \email{florian.jansen@uni-rostock.de} }
 
 \examples{
 \dontrun{

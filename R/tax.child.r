@@ -81,7 +81,7 @@ childs <- function(...) child(...)
 
 ## Parents of a taxon
 parent <- function (x, refl = tv.refl(), rank, quiet = FALSE, ...) {
-  taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','SGE','SSE','SER','SEC','AGG','GAT','FAM','ORD','UKL','KLA','UAB','ABT','AG2','ROOT'), ordered=TRUE)
+  taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','AGG','SGE','SGR','SSE','SER','SEC','AG1','GAT','AG2','FAM','ORD','UKL','KLA','UAB','ABT','AG3','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','AGG', 'SGE','SGR','SSE','SER','SEC','AG1','GAT','AG2','FAM','ORD','UKL','KLA','UAB','ABT','AG3','ROOT'), ordered=TRUE)
   species <- tax("all", detailed = TRUE, refl = refl, syn = TRUE, quiet =TRUE, ...)
   if(length(x)>1) {
   	warning('More than one match, using only first.')
@@ -95,18 +95,19 @@ parent <- function (x, refl = tv.refl(), rank, quiet = FALSE, ...) {
   p$GENERATION <- 1
   
   lo <- function(y, p) {
-    if(nrow(p)==0) cat(y$TaxonName, 'has no parents.\n') 
+    if(nrow(p) == 0) { if(!quiet) cat(y$TaxonName, 'has no parents.\n') }
     else {
       p2 <- p
       t <- 1
-      repeat {
-        t <- t+1
-        p2 <- species[match(p2$IsChildTaxonOfID,species$TaxonUsageID),]
-				if(is.na(p2$TaxonName)) break
-        p2$GENERATION <- t
-        p <- rbind(p, p2)
-        if(p2$TaxonUsageID == 0 ) break
-      }}
+        repeat {
+          t <- t+1
+          p2 <- species[match(p2$IsChildTaxonOfID,species$TaxonUsageID),]
+  				if(is.na(p2$TaxonName)) break
+          p2$GENERATION <- t
+          p <- rbind(p, p2)
+          if(p2$TaxonUsageID == 0 ) break
+        }
+      }
     return(p)
   }
   
@@ -123,8 +124,8 @@ parent <- function (x, refl = tv.refl(), rank, quiet = FALSE, ...) {
 #      if(nrow(p) == 0) p <- c(TaxonName='Incertae_sedis')
       #    tv <- oblig.taxlevels[(which(oblig.taxlevels == y$TaxonRank)+1):length(oblig.taxlevels)]
       #    if(!all(tv %in% p$TaxonRank)) 
-      cat('Parent level', rank, ' of', y$TaxonName, '(', y$TaxonUsageID, '):\n')
-  if(nrow(P)==0) cat('"Incertae sedis" = uncertain placement within this level.\n') 
+      if(!quiet)  cat('Parent level', rank, ' of', y$TaxonName, '(', y$TaxonUsageID, '):\n')
+      if(nrow(P) == 0) cat('"Incertae sedis" = uncertain placement within this level.\n') 
 #      else
 #         print(p[,c('TaxonUsageID','TaxonName','AccordingTo','TaxonRank','GENERATION')], row.names=FALSE)
     }

@@ -27,7 +27,7 @@ Dataframe of monotypic taxa.
 }
 
 \author{Florian Jansen
-\email{jansen@uni-greifswald.de}
+\email{florian.jansen@uni-rostock.de}
         }
 
 \keyword{misc}

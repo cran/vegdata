@@ -9,6 +9,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
     tvscale <- read.dbf(file.path(tv_home, "Popup", tv.dict(db), "tvscale.dbf") )
   }
   tvscale <- tvscale[!is.na(tvscale$SCALE_NR),]
+  tvscale <- tvscale[,names(tvscale) != 'PUB']
   rownames(tvscale) <- tvscale[, 1]
   if (missing(RelScale)) {
       ow <- options('warn')
@@ -20,17 +21,18 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
       obs <- tv.obs(db, tv_home, as.is=TRUE)
   obs$COVERSCALE <- RelScale$COVERSCALE[match(obs$RELEVE_NR, RelScale$RELEVE_NR)]
 #  obs$COVER_CODE[is.na(obs$COVERSCALE) | obs$COVERSCALE == '9x']
-  g <- obs$COVERSCALE
-  if(any(is.na(g)))  {
-    print(unique(obs[is.na(g),'COVER_CODE']))
-    stop('These releves miss a cover scale value in the header data.')
+  if(any(is.na(obs$COVERSCALE)))  {
+    print(unique(obs[is.na(obs$COVERSCALE),'COVER_CODE']))
+    print(unique(obs[is.na(obs$COVERSCALE),'RELEVE_NR']))
+    stop('The above releve numbers have no cover scale value in the header data or cover code is missing in proposed scale.')
     }
   #### Split ###
-  obs <- split(obs, g, drop = FALSE)
+  obs <- split(obs, obs$COVERSCALE, drop = FALSE)
   for (i in names(obs)) {
     if (i == "00") {
     	obs[[i]]$COVER_CODE <- replace(as.character(obs[[i]]$COVER_CODE), obs[[i]]$COVER_CODE == '9X', '100')
-    	if(any(is.na(as.numeric(obs[[i]]$COVER_CODE)))) stop('Not all percentage cover values in your databse are numeric, please check in Turboveg.')
+    	if(any(is.na(as.numeric(obs[[i]]$COVER_CODE)))) 
+    	  stop('Not all percentage cover values in your databse are numeric, please check in Turboveg.')
       obs[[i]] <- data.frame(obs[[i]], COVER_PERC = as.numeric(as.character(obs[[i]][, "COVER_CODE"])))
     }
     else {
@@ -50,7 +52,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
       obs[[i]]["COVER_PERC"] <- d.f$perc[match(obs[[i]][,"COVER_CODE"], d.f$code)]
   }
   }
-  obs <- unsplit(obs, g)
+  obs <- unsplit(obs, 'COVERSCALE')
   if(any(is.na(obs$COVER_PERC))) {
       print(obs[is.na(obs$COVER_PERC),'COVER_CODE'])
       stop("Invalid cover codes, please check tvabund.dbf and tvscale.dbf!")

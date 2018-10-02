@@ -32,19 +32,12 @@ version \Sexpr{packageDescription("vegdata", field="Version")}}
 
 \begin{document}
 
-<<include=FALSE>>=
-library(knitr)
-opts_chunk$set(
-concordance = TRUE,
-results = "tex")
-options(results = 'tex') # for pqR
-@
 
 
 <<prep, echo=FALSE, results='hide'>>=
 library(knitr)
-options(width=110, digits=2)
-opts_chunk$set(comment = "", warning = FALSE, message = TRUE, echo = TRUE, size="footnotesize")
+options(stringsAsFactors=FALSE)
+opts_chunk$set(concordance = TRUE, comment = "", warning = FALSE, message = TRUE, echo = TRUE, results = 'tex', size="footnotesize")
 # read_chunk("some/script/I/want/to/load.R")
 tmp <- tempdir()
 suppressPackageStartupMessages(library(vegdata))
@@ -77,18 +70,20 @@ vignette('vegdata')
     Turboveg uses dBase database format for storage. The package tries to deal with the limitations of that format but it is essential, that you use "Database -> Reindex" in Turboveg every time you delete something in your Turboveg database. Otherwise it will not be deleted immediately in the dBase file, instead it is only marked for deletion, i.e. it is still there when you access this file with R and will not be recognized as deleted until you reindex your Turboveg database.
 
 \section{Provided functionality}
-  \subsection{Database access}
-    At the moment vegdata provides direct access to two different vegetation database formats:
-\begin{description}
- \item[Turboveg] is a desktop program, written in VisualBasic. It provides basic functions to enter, import, maintain and export vegetation data. From the 2 000 000 vegetation plots registered in \url{http://www.GIVD.info} approximately 1.5 million are stored in Turboveg databases format.
-\item[VegetWeb] is the German national vegetation database. VegetWeb is developed as a MySQL-Server database at the Federal Agency for Nature Conservation (BfN) and can used via a PHP framework at \url{http://www.floraweb.de/vegetation/vegetweb/RechercheView.php}.
- \end{description}
 
  \subsection{Taxonomic harmonisation}
     One of the most important steps in using vegetation data (from different sources) for statistical analysis is to take care about the taxonomic content of the names existing in the database. That is, to make sure, that exactly one (correct and valid) name defines one biological entity. Most researchers remember to convert synonyms to valid names but in many cases the care about e.g. monotypic subspecies or ambiguous taxonomic levels is lacking \citep{Jansen2010}.
     The package offers the function \texttt{taxval} with different options for the adjustment of synonyms, monotypic taxa, taxonomic levels, members of aggregates and undetermined species.
 
-  \subsection{Cover standardization}
+\subsection{Database access}
+    vegdata (will) provide direct access to different vegetation database formats:
+\begin{description}
+ \item[Turboveg] is a desktop program, written in VisualBasic. It provides basic functions to enter, import, maintain and export vegetation data. From the 2 000 000 vegetation plots registered in \url{http://www.GIVD.info} approximately 1.5 million are stored in Turboveg databases format.
+\item[vegetweb] is the German national vegetation database. vegetweb is accessible at \url{https://www.vegetweb.de}. Data can be selected, open access data can be downloaded directly, other data after clearance from the owners.
+\item VegX is an international exchange standard. An R package with a S4 implementation of the standard is in development
+ \end{description}
+
+\subsection{Cover standardization}
     Turboveg provides different abundance codes and all kinds of user defined cover codes can easily be added. For vegetation analysis a unique species performance platform is needed which will in most cases be the percentage cover of the observed plot area. Therefore, for every abundance code class the mean cover percentage is defined in Turboveg.
     Since different scales can occur in a database and the storage format of the code table in Turboveg is somewhat strange, the function \texttt{tv.coverperc} provides automatic conversion for convenience.
 
@@ -237,6 +232,7 @@ This condensed format shows only presences of species observations. Every specie
 
 \item Preparation for analyses
 \begin{itemize}
+  \item standardize taxon name parts (rank abbreviations, genus sex, y versus i etc.)
   \item convert synonyms
   \item summarize monotypic taxa
   \item clean up nested taxa
@@ -387,7 +383,7 @@ obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID,
 @
 
 The second possibility is to use function \texttt{comb.species} on vegetation matrices.
-<<comb.spec, eval=TRUE>>=
+<<comb.spec, eval=FALSE>>=
 comb.species(veg, sel=c('QUERROB','QUERROB.Tree'))
 @
 will use the first name ('QUERROB') for the replacement column with the cover sums of the selected columns.
@@ -398,7 +394,7 @@ will use the first name ('QUERROB') for the replacement column with the cover su
 \texttt{tv.site} will load the site (header) data and does some basic corrections caused by Turboveg dBase format.
 
 <<site.echo, eval=TRUE>>=
-site <- tv.site('taxatest')
+site <- tv.site(db)
 @
 
 The function is quite straightforward. After loading the file \emph{tvhabita.dbf} from the specified database folder, warnings are given for plots without specified relev\'{e} area or date and fields are checked if they are empty (a lot of predefined header fields in Turboveg are often unused) or contain probably mistakable 0 values in numerical fields, due to dBase deficiencies (dBase can not handle NA = not available values reliably).
@@ -434,7 +430,9 @@ Additionally you can use the affiliation of species to abiotic clusters with the
 
 <<syntab.mupa>>=
 require(indicspecies)
-st <- syntab(elbaue, clust, mupa=TRUE)
+mu <- multipatt(elbaue, clust)
+veg <- elbaue; dec=0
+st <- syntab(elbaue, clust, 'rel', mupa=mu)
 # Print Ellenberg indicator values for soil moisture and nutrient demand
 traits <- tv.traits()
 trait <- traits[traits$LETTERCODE %in% names(elbaue), ]

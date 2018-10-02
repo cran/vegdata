@@ -24,29 +24,25 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), mupa = NULL,
     }
     if(type=='abs') 
       temp <- lapply(sp.veg, function(x) colSums(x > 0))
-
-    st <- as.data.frame(temp)
+    st <- t(as.data.frame(temp))
     st[is.na(st)] <- 0
-    names(st) <- levels(clust)
-
+    colnames(st) <- levels(clust)
+    
     if(!is.null(mupa) | class(mupa)=='multipatt' & ncl < 1) {
       if(class(mupa)!='multipatt') {
-        if (requireNamespace("indicspecies", quietly = TRUE)) {
+          requireNamespace("indicspecies", quietly = TRUE)
           mu <- indicspecies::multipatt(veg, clust, ...)
-        } else {
-          stop("Package indicspecies needed (function multipatt)")
-        }} else mu <- mupa
+        }  else mu <- mupa
+    }
       # st <- st[rownames(st) %in% rownames(sig),]     
       # o <- order(mu$sign[,'index'])
-      df <- mu$sign
-      df[, 1:ncl] <- st # mu$sign[,1:ncl] * st
-      colnames(df)[1:ncl] <- levels(clust)
-      st <- df
-    }
-      
+    df <- mu$sign
+    df[, 1:ncl] <- st # mu$sign[,1:ncl] * st
+    colnames(df)[1:ncl] <- levels(clust)
+    st <- df
     out <- list(syntab=st, clust=clust)
     class(out) <- c('syntab', 'list')
-    return(out)
+   invisible(out)
 }
 
 #--------------

@@ -1,6 +1,6 @@
-#### function indicate site conditions
-# isc(veg, trait.db, ivname, keyname = 'LETTERCODE', method = c('mode', 'mean'), db, ...)
-
+#### community weighted trait means
+# isc(veg, trait.db, ivname, keyname = 'LETTERCODE', species <- tax('all', refl = refl, quiet = TRUE, 'mean'), db, ...)
+# isc(veg.perc, trait.db = eco, ivname = 'OEK_F', keyname = 'TaxonName', method = 'mean')
 isc <- function(veg,
                 refl,
                 trait.db = 'ecodbase.dbf', 
@@ -11,12 +11,13 @@ isc <- function(veg,
                 db,
                 ...
 ) {
-  species <- tax('all', quiet = TRUE, ...)
+  if(missing(refl) & missing(veg) & missing(db)) stop('Either refl, db, or a class "veg" object have to be provided.')
   if(!missing('refl')) 
     if('veg' %in% class(veg)) refl <- attr(veg, 'taxreflist') else
       refl = tv.refl()
+  species <- tax('all', refl = refl, quiet = TRUE, ...)
   if(is.character(trait.db)) iv <- tv.traits(trait.db = trait.db, refl = refl, ...) else iv = trait.db
-  if(missing(veg)) veg <- tv.veg(db, ...) else veg <- as.data.frame(veg)
+  if(missing(veg)) veg <- tv.veg(db, ...) else if(!'data.frame' %in% class(veg)) veg <- as.data.frame(veg)
   if(!all(ivname %in% names(iv))) stop('Not all ivname in table of indicators.')
   method <- match.arg(method)
   if(missing(weight)) {
@@ -25,17 +26,14 @@ isc <- function(veg,
   } else names(iv)[names(iv) == weight] <- 'weight'
   iv <- as.data.frame(cbind(iv[, match(ivname, names(iv))], iv[, keyname], iv[, 'weight']))
   names(iv) <- c(ivname, keyname, 'weight')
-#  iv$weight <- as.numeric(iv$weight)
-  # head(iv1)
-  #  print(names(iv))
   # workaround
   for(i in 1:length(ivname)) {
     colnames(iv)[i] <- as.character(ivname[i])
     iv[,i] <- as.integer(as.character(iv[,i]))
   }
-  # ivname <- factor(ivname, levels = ivname, ordered = TRUE)
   if(!keyname %in% names(iv)) stop(paste(keyname, 'not in column names of trait dataframe.'))
-  if(keyname %in% c('OEK_F', 'OEK_L', 'OEK_K', 'OEK_N', 'OEK_T') & any(iv[,keyname] == 0)) warning('Detecting 0 values, please check.')
+  if(ivname %in% c('OEK_F', 'OEK_L', 'OEK_K', 'OEK_N', 'OEK_T') & any(iv[,ivname] == 0 && !is.na(iv[,ivname]))) warning('Detecting 0 values, please check.')
+  if(all(is.na(match(names(veg), iv[, keyname])))) stop('Taxon names in trait table and names in vegetation matrix do not match, please check.') else
   v <- as.matrix(iv[match(names(veg), iv[, keyname]), ivname])
   rownames(v) <- names(veg)
   if(length(ivname) == 1) {
@@ -48,28 +46,27 @@ isc <- function(veg,
   w[is.na(w)] <- "1"
   w <- as.numeric(w)
   veg <- t(t(veg) * w)
-  io <- matrix(0, nrow = nrow(veg), ncol = ncol(v)) # Plots * sum of WS indicators for WS
-  io <- apply(v, 2, function(x) rowSums(as.matrix(veg/apply(veg, 1, sum)) %*% x, na.rm=TRUE) )
-  # io <- apply(v, 2, function(x) rowSums(as.matrix(veg) %*% x, na.rm=TRUE) )
-  rS <- rowSums(io, na.rm = TRUE)
-  if(any(rS == 0)) {
-    cat('The following plots are without a single indicator species:\n')
-   }
-    # Method == max
-    if(method == 'mode') {
-      IV <- vector('character', nrow(veg))
-      for(p in 1:nrow(io)) IV[p] <- paste(ivname[if(all(io[p,] == 0)) 0 else which(io[p,] == max(io[p,]))], collapse='/')
-      # Code to sort automatically according to the order of columns (ivname)
-      IV[IV == ''] <- '/'
-      IV = factor(IV, levels(factor(IV))[order(ivname[match(sapply(strsplit(levels(factor(IV)), '/'), '[[', 1), ivname)])])
-      levels(IV)[levels(IV) == '/'] <- ''
+  # Method == mean
+  if(method == 'mean') {
+    io <- matrix(0, nrow = nrow(veg), ncol = ncol(v)) # Plots * sum of WS indicators for WS
+    io <- apply(v, 2, function(x) rowSums(as.matrix(veg/apply(veg, 1, sum)) %*% x, na.rm=TRUE) )
+    # io <- apply(v, 2, function(x) rowSums(as.matrix(veg) %*% x, na.rm=TRUE) )
+    rS <- rowSums(io, na.rm = TRUE)
+    IV <- io
+    names(IV) <- rownames(veg)
+  }
+  # Method == max
+  if(method == 'mode') {
+    funMode <- function(x) {
+        tab <- table(v[rownames(v) %in% dimnames(veg)[[2]][x > 0],])
+        return(names(tab[which.max(tab)]))
     }
-    # Method == mean
-    if(method == 'mean') {
-      # nis <- apply(veg, 1, function(x) sum((x * v) > 0))
-      IV <- io
-    }
-  names(IV) <- rownames(veg)
+  IV <- apply(veg, 1, funMode)
+  }
+  if(any(IV == 0) & ivname != 'OEK_S') {
+    cat('The following plots might be without a single indicator species:\n')
+    print(names(IV)[IV == 0])
+  }
   return(IV)
 }
 ### end of function
@@ -93,3 +90,23 @@ showindiplot <- function(veg, trait.db, plotid, weight, keyname = 'LETTERCODE') 
 # showindiplot(veg, wsingo, which(ingo == '5+/4+/3+'))
 
 
+meanTraits <- function (...) stop('This function is deprecated, use isc with method "mean" instead.')
+# meanTraits <- function(trait, veg, refl, trait.db = 'ecodbase.dbf', join = 'LETTERCODE', zero.is.NA = TRUE, ...) {
+#   cat('Maximum performance value:', max(veg, na.rm=TRUE),'\n')
+#   if(missing(refl)) refl <- attr(veg, 'taxreflist')
+#   if(is.null(refl)) refl <- tv.refl()
+#   if(missing(trait.db)) {
+#     trait.db <- 'ecodbase.dbf'
+#     cat('Using trait database:', trait.db, '\n') 
+#     }
+#   eco <- tv.traits(trait.db = trait.db, refl=refl, quiet=TRUE)
+#   if(!trait %in% names(eco)) stop(paste('This trait name does not occur in column names of', trait.db))
+#   IV <- as.numeric(eco[,trait][match(names(veg), eco[,join])])
+#   names(IV) <- names(veg)
+#   if(zero.is.NA) IV[IV == 0] <- NA
+#   ind <- !is.na(IV)
+#   veg <- veg[,ind]; IV <- IV[ind]
+#   out <- rowSums(t((t(veg) * IV)) / rowSums(veg))
+#   return(out)
+# }
+# 

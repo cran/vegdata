@@ -31,10 +31,11 @@ select.taxa <- function(x, species, strict = FALSE, vernacular = FALSE, simplify
 #       l <- species[match(x, species$TaxonUsageID),] ## GUID Tax ID's		
 #     }   																				## Taxnames
     x <- taxname.abbr(x, hybrid = c('substitute'))
-		  if(simplify) {
-		  	species$TaxonName <- taxname.simplify(species$TaxonName, genus, epithet, ...)
-		 		x <- taxname.simplify(x, genus, epithet, ...) 
-		  }
+	if(simplify) {
+#  		if('simplified' %in% names(species)) species$TaxonName <- species$simplified else {
+#		  	species$TaxonName <- taxname.simplify(species$TaxonName, genus, epithet, ...)
+ 		x <- taxname.simplify(x, genus, epithet, ...) 
+  	}
 #    	l <- species[match(-1, species$TaxonUsageID),]
 #    for(i in 1:length(x)) {
 #    	if(!strict) l <- rbind(l, species[grep(x[i], species$TaxonName, useBytes=TRUE), ]) else
@@ -51,17 +52,18 @@ select.taxa <- function(x, species, strict = FALSE, vernacular = FALSE, simplify
  	return(l)
 }
 ###--- end of tax internal functions ---###
-
-#### beginning to execute function tax()
-if(missing(refl)) refl <- tv.refl(tv_home=tv_home)
-if(!quiet) cat('Reference list used:', refl, '\n')	
-species <- load.taxlist(refl, reflist.type=reflist.type, detailed=detailed)
-
 # refl='GermanSL 1.2'; detailed=FALSE; vernacular=FALSE;simplify=FALSE; strict=FALSE
-
-### Filter
 # if(!is.null(concept)) species <- concept.FUN(species, concept)
-if(length(x) == 0) stop('Input value to search for a taxon missing.')
+  
+#### beginning to execute function tax()
+if(missing(refl)) {
+  refl <- tv.refl(tv_home=tv_home)
+  if(!quiet) message('Reference list used:', refl)	
+}
+species <- load.taxlist(refl, reflist.type=reflist.type, detailed=detailed)
+### Filter
+if(length(x) == 0 | is.na(x[1])) stop('Input taxon value is missing.')
+
 if(tolower(x[1]) != 'all') {
 	if(simplify) species$originalTaxonName <- species$TaxonName
 	species <- select.taxa(x, species, strict, vernacular, simplify, ...)

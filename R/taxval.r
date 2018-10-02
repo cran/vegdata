@@ -16,11 +16,14 @@ interactive = FALSE,
 #   depr.syn()
   ag <- match.arg(ag)
   mono <- match.arg(mono)
+  if(missing(obs)) 
+    if(missing(db)) 
+      stop('Please specify either an observation dataframe or the name of your Turboveg database.') 
+  else  obs <- tv.obs(db=db, tv_home)  
+  ##
   tv_home <- tv.home()
   # if(missing(arg('maxtaxlevel))) warning('maxtaxlevel set to', maxtaxlevel, '. Occurrence list will be truncated above this taxonomic level.' )
   if(maxtaxlevel == 'AGG') maxtaxlevel <- 'AG1'
-  if(missing(obs)) 
-    if(missing(db)) stop('Please specify either an observation dataframe or the name of your Turboveg database.') else  obs <- tv.obs(db=db, tv_home)  
   cat("Original number of names:", length(unique(obs$TaxonUsageID)),'\n')
   if(missing(refl)) if(missing(db)) stop('If you do not give a taxonomic reference list name, you have to specify at least a name of a Turboveg database.') else 
      refl <- tv.refl(db = db[1], tv_home=tv_home)
@@ -40,6 +43,10 @@ interactive = FALSE,
     ag <- 'adapt'
   }
 ##############################
+###--- check TaxonID's
+if(any(!obs$TaxonUsageID %in% species$TaxonUsageID)) 
+  stop(paste("The following Taxon ID's do not exist in reference list:", paste(obs$TaxonUsageID[which(!obs$TaxonUsageID %in% species$TaxonUsageID)])))
+##########################
 
 ###------- Decision table
 ##############################
@@ -57,8 +64,7 @@ interactive = FALSE,
   fr$TaxonRank <- species$TaxonRank[match(fr$TaxonUsageID, species$TaxonUsageID)]
   fr$NewTaxonID <- fr$TaxonUsageID
 ##############################
-
-###------- define functions   
+### ------ define functions  # 
 ##############################
 agg.conflict <- function(fr, ...) {
   if(maxtaxlevel == 'ROOT') maxtaxlevel <- taxlevels[max(match(unique(fr$TaxonRank), taxlevels))]
@@ -72,9 +78,9 @@ agg.conflict <- function(fr, ...) {
     OccurringChilds <- ChildsOfOccurringTaxa[ChildsOfOccurringTaxa %in% fr$NewTaxonID[which(!fr$TaxlevelTooHigh)]]
     if(length(OccurringChilds) > 0) {
       cat(length(OccurringChilds), 'conflicting child taxa found in dataset.', '\n')
-      if(length(OccurringChilds) < 10) print(sort(tax(OccurringChilds, quiet=T)$TaxonName))
+      if(length(OccurringChilds) < 10) print(sort(tax(OccurringChilds, quiet=T, refl = refl)$TaxonName))
       for(i in 1:length(OccurringChilds)) {
-        nested.in <- parent(OccurringChilds[i], quiet = TRUE)
+        nested.in <- parent(OccurringChilds[i], refl = refl, quiet = TRUE)
         nested.occ <- nested.in[match(nested.in$TaxonRank, taxlevels) <= match(maxtaxlevel, taxlevels),]
         if(nrow(nested.occ) > 0) {
 #           print('Will change:')
@@ -89,14 +95,14 @@ agg.conflict <- function(fr, ...) {
   }
   return(fr)
 }
-##########################
-
-###------- adjust synonyms
 ##############################
-synonyms <- if(any(species$SYNONYM[match(fr$NewTaxonID, species$TaxonUsageID)])) 
+### ------ adjust synonyms   #
+##############################
+
+synonyms <- if(any(species$SYNONYM[match(fr$NewTaxonID, species$TaxonUsageID)]))
   tax(fr$NewTaxonID[species$SYNONYM[match(fr$NewTaxonID, species$TaxonUsageID)] == TRUE], refl = refl, quiet = TRUE) else NULL
 if(length(synonyms) > 0) {
-  cat(paste(length(synonyms), 'Synonyms found in dataset.', if(!interactive) 'Changed to valid names.', '\n'))
+  cat(paste(nrow(synonyms), 'Synonyms found in dataset.', if(!interactive) 'Changed to valid names.', '\n'))
   fr$NewTaxonID[match(synonyms$TaxonUsageID, fr$TaxonUsageID)] <- synonyms$TaxonConceptID
 }
 ##############################
@@ -106,8 +112,9 @@ if(length(synonyms) > 0) {
 if(maxtaxlevel %in% taxlevels) {
   fr$TaxlevelTooHigh <- species$TaxonRank[match(fr$NewTaxonID, species$TaxonUsageID)] %in% taxlevels[taxlevels > maxtaxlevel]
   if(sum(fr$TaxlevelTooHigh) > 0) {
-    fr$NewTaxonID[fr$TaxlevelTooHigh] <- NA
     cat(sum(fr$TaxlevelTooHigh), 'taxa higher than', maxtaxlevel,'found. Deleted!\n')
+    fr$NewTaxonID[fr$TaxlevelTooHigh] <- NA
+    obs <- obs[!obs$TaxonUsageID %in% fr$TaxonUsageID[is.na(fr$NewTaxonID)], ]
   }
  } else stop(paste('The given rank code', maxtaxlevel, 'is not a known rank identifier:', paste(taxlevels, collapse=', ')))
 ##############################
@@ -155,14 +162,16 @@ fr <- switch(ag,
           stop('Maximum allowed taxonomic rank lower than the aggregation level!')
 #	for(i in which(!fr$TaxlevelTooHigh)) {
   for(i in 1:nrow(fr)) {
-    if(is.na(fr$NewTaxonID[i])) warning(paste('Aggregation for', fr$TaxonName, 'failed. Please contact jansen@uni-greifswald.de!'))
+    if(!is.na(fr$NewTaxonID[i])) {
+#    if(is.na(fr$NewTaxonID[i])) 
+#      stop(paste('Aggregation for', fr$TaxonName[i], 'failed. \nPlease contact the author of the taxonomic reference list!'))
       p <- parents(fr$NewTaxonID[i], refl=refl, species=species, quiet=TRUE)
 	    if(rank %in% p$TaxonRank) {
 #        fr$NewTaxonID[fr$TaxonUsageID == fr$NewTaxonID[i]] <- p$TaxonUsageID[p$TaxonRank == rank]
         fr$NewTaxonID[i] <- p$TaxonUsageID[p$TaxonRank == rank]
         fr$adaptHierarchy[i] <- TRUE
 	    }
-	}
+	}}
 #	fr <- agg.conflict(fr, quiet=TRUE)
   cat('For', sum(fr$adaptHierarchy[!fr$Synonym]), 'taxa the taxonomic hierarchy will be adapted.\n')
   fr
@@ -174,7 +183,7 @@ fr <- switch(ag,
 ###--- apply results
 ##############################
 if(interactive) {
-  fr$NewTaxonName <- tax(fr$NewTaxonID, quiet=TRUE)$TaxonName
+  fr$NewTaxonName <- tax(fr$NewTaxonID, refl = refl, quiet=TRUE)$TaxonName
 #  fr$FreqNew <- table(fr$TaxonUsageID[fr$TaxonUsageID %in% fr$NewTaxonID])
   fr$willBeAdapted <- ifelse(fr$TaxonUsageID != fr$NewTaxonID | fr$TaxlevelTooHigh, 1, 0)
   message('Interactive mode: Nothing changed. Please check and adapt column "NewTaxonID" in "taxvalDecisionTable.csv" and rerun with interactive = TRUE.')
@@ -183,7 +192,7 @@ if(interactive) {
   obs <- obs[!obs$TaxonUsageID %in% fr$TaxonUsageID[fr$TaxlevelTooHigh],]
   obs$TaxonUsageID <- fr$NewTaxonID[match(obs$TaxonUsageID, fr$TaxonUsageID)]
 }
-} # end of line 29: else to "interactive & file.exists('taxvalDecisionTable.csv')"
+} # end of line 33: else to "interactive & file.exists('taxvalDecisionTable.csv')"
 ##############################
 
 cat('Number of taxa after', if(interactive & !file.exists('taxvalDecisionTable.csv')) 'proposed',  'harmonisation:', length(unique(fr$NewTaxonID[!fr$TaxlevelTooHigh])),'\n')
@@ -191,6 +200,8 @@ cat('Number of taxa after', if(interactive & !file.exists('taxvalDecisionTable.c
 ###------ check for Critical species
 ##############################
 if(check.critical) {
+  if(!'AccordingTo' %in% names(species)) species$AccordingTo <- '' 
+  if(!'IsChildTaxonOf' %in% names(species)) species$IsChildTaxonOf <- species$TaxonName[match(species$IsChildTaxonOfID, species$TaxonUsageID)]
   fr <- as.data.frame(table(obs$TaxonUsageID), stringsAsFactors = FALSE, responseName = 'Count')
   names(fr)[1] <- 'TaxonUsageID'
   # Pseudonyms

@@ -10,7 +10,7 @@ It is a wrapper for \code{tv.obs}, \code{taxval}, \code{tv.coverperc}.}
 \usage{
 tv.veg(db, taxval=TRUE,tv_home,convcode=TRUE,lc = c("layer","mean","max","sum","first"), 
 pseudo, values='COVER_PERC', spcnames=c('short','long','numbers'), dec = 0, 
-cover.transform = c('no', 'pa', 'sqrt'), obs, refl, RelScale, ...)
+cover.transform = c('no', 'pa', 'sqrt'), obs, site, refl, RelScale, ...)
 }
 
 \arguments{
@@ -25,6 +25,7 @@ cover.transform = c('no', 'pa', 'sqrt'), obs, refl, RelScale, ...)
 \item{dec}{Number of decimals for cover values in the resulting vegetation matrix.}
 \item{cover.transform}{If you want to transform the abundancce values within your samples you can choose 'pa' for presence-absnece or 'squareroot' for the \code{dec} rounded square root.}
 \item{obs}{Observations, optional}
+\item{site}{plot header data, see \code{\link{tv.site}}}
 \item{refl}{Taxonomic reference list, optional}
 \item{RelScale}{Vector with Cover Scale code per Releve.}
 \item{...}{additional arguments for included functions}
@@ -60,7 +61,7 @@ pseudo=list(lc.0,'LAYER'), genus = 'delete')
 }
 
 \author{Florian Jansen
-\email{jansen@uni-greifswald.de}
+\email{florian.jansen@uni-rostock.de}
         }
 
 

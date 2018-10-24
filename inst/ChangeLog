@@ -1,3 +1,7 @@
+version 0.9.4 and 5 Oktober 2018
+  * default directory for GermanSl download changed to concur with CRAN rules
+  * problems with CRAN package checks
+
 version 0.9.3 Oktober 2018
   * bug fixes
   * improved taxval

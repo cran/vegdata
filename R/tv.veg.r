@@ -103,6 +103,7 @@ options(warn=1)
       if(cover.transform == 'pa') results <- as.data.frame(ifelse(results > 0, 1,0))
       if(cover.transform == 'sqrt') results <- as.data.frame(round(sqrt(results),dec))
    }
+  results <- results[, colSums(results)> 0]
   class(results) <- c("veg", "data.frame")
   attr(results, 'taxreflist') <- refl
   return(results)

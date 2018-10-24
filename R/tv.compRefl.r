@@ -1,7 +1,8 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("write.dbf"))
 
 tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRUE, verbose = FALSE, Sink = TRUE, filter.1, filter.2, new = FALSE, file="compRefl.txt", ...)  {
-  if (missing(tv_home)) tv_home <- tv.home()
+  if (missing(tv_home)) 
+        tv_home <- tv.home()
     refl.a <- if(is.character(refl1)) read.dbf(file.path(tv_home, "Species", refl1, "species.dbf")) else refl1
     refl.b <- if(is.character(refl2)) read.dbf(file.path(tv_home, "Species", refl2, "species.dbf")) else refl2
     names(refl.a) <- TCS.replace(names(refl.a))
@@ -16,17 +17,19 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRU
     refl.a[, "TaxonName"] <- taxname.simplify(refl.a[, "TaxonName"])
     refl.b[, "TaxonName"] <- taxname.simplify(refl.b[, "TaxonName"])  	
   }
+  for(i in c('BEGRUEND', 'EDITSTATUS')) if(!i %in% names(refl.a)) refl.a[,i] <- ''
+  for(i in c('BEGRUEND', 'EDITSTATUS')) if(!i %in% names(refl.b)) refl.b[,i] <- ''
   diff.A <- sort(as.character(refl.b[!refl.b[, "TaxonName"] %in% refl.a[, "TaxonName"], "TaxonName"]))
   diff.B <- sort(as.character(refl.a[!refl.a[, "TaxonName"] %in% refl.b[, "TaxonName"], "TaxonName"]))
-    if (check.nr) {
+  if (check.nr) {
       merged.df <- merge(refl.a, refl.b, by = "TaxonName", all.x = FALSE)
       selectedcolumns <- if('EDITSTATUS' %in% names(merged.df)) c("TaxonName", "TaxonUsageID.x", "TaxonUsageID.y", 'BEGRUEND', 'EDITSTATUS') else c("TaxonName", "TaxonUsageID.x", "TaxonUsageID.y")
       nonmatchingNumbers <- merged.df[as.character(merged.df$TaxonUsageID.x) != as.character(merged.df$TaxonUsageID.y), selectedcolumns]
       nonmatchingNumbers <- nonmatchingNumbers[!is.na(nonmatchingNumbers[, 1]), ]
       #   nonmatchingNumbers <-  if('EDITSTATUS' %in% names(merged.df)) nonmatchingNumbers[order(nonmatchingNumbers$EDITSTATUS, nonmatchingNumbers[, 2]), ] else nonmatchingNumbers[order(nonmatchingNumbers[, 2]), ]
-      print(nrow(nonmatchingNumbers), 'lines with non-matching numbers.')
+      cat(nrow(nonmatchingNumbers), 'lines with non-matching numbers.')
       tab <- table(nonmatchingNumbers$TaxonName)
-      print(paste('But', sum(tab == 2), 'duplicated names after simplification.'))
+      print(paste('But', sum(tab == 2), 'duplicated names (ambiguous TaxonNames or equal after simplification).'))
       nonmatchingNumbers$TaxonName[which(nonmatchingNumbers$TaxonName %in% names(tab[tab == 1]))]
     }
       merged.df <- merge(refl.a, refl.b, by = 'TaxonUsageID', all.x = FALSE)
@@ -116,19 +119,8 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRU
         write.csv2(refl.b[refl.b[, "TaxonName"] %in% diff.A, c("TaxonNameOriginal","TaxonName")], file='noMatches_inRefl_1.csv')
     }
     if (new) {
-      names(refl.a) <- replace(names(refl.a), names(refl.a)=='TaxonName','ABBREVIAT')
-      names(refl.a) <- replace(names(refl.a), names(refl.a)=='TaxonUsageID','SPECIES_NR')
-      names(refl.a) <- replace(names(refl.a), names(refl.a)=='TaxonConcept','VALID_NAME')
-      names(refl.a) <- replace(names(refl.a), names(refl.a)=='TaxonConceptID','VALID_NR')
-      names(refl.a) <- replace(names(refl.a), names(refl.a)=='IsChildTaxonOf','AGG_NAME')
-      names(refl.a) <- replace(names(refl.a), names(refl.a)=='VernacularName','NATIVENAME')
-
-      names(refl.b) <- replace(names(refl.b), names(refl.b)=='TaxonName','ABBREVIAT')
-      names(refl.b) <- replace(names(refl.b), names(refl.b)=='TaxonUsageID','SPECIES_NR')
-      names(refl.b) <- replace(names(refl.b), names(refl.b)=='TaxonConcept','VALID_NAME')
-      names(refl.b) <- replace(names(refl.b), names(refl.b)=='TaxonConceptID','VALID_NR')
-      names(refl.b) <- replace(names(refl.b), names(refl.b)=='IsChildTaxonOf','AGG_NAME')
-      names(refl.b) <- replace(names(refl.b), names(refl.b)=='VernacularName','NATIVENAME')
+      names(refl.a) <- TV.replace(names(refl.a))
+      names(refl.b) <- TV.replace(names(refl.b))
       
       inter <- intersect(names(refl.a),names(refl.b))
       comb <- rbind(refl.a[,inter], refl.b[refl.b$TaxonName %in% diff.A, inter])
@@ -136,5 +128,6 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRU
       cat("\n New names in refl2 added to refl1. Reference list \"combrefl\" saved in TURBOVEG species directory. Please check for critical species names before use. \n")
       dir.create(file.path(tv_home, "/Species/combrefl"), showWarnings = TRUE)
       write.dbf(comb, file.path(tv_home, "/Species/combrefl/species.dbf"))
+      invisible(comb)
     }
 }

@@ -23,7 +23,8 @@ cover.transform = c('no', 'pa', 'sqrt'), obs, site, refl, RelScale, ...)
 \item{values}{Name of the variable which should be used for the vegetations matrix.}
 \item{spcnames}{Should species numbers be replaced by shortletters or real names?}
 \item{dec}{Number of decimals for cover values in the resulting vegetation matrix.}
-\item{cover.transform}{If you want to transform the abundancce values within your samples you can choose 'pa' for presence-absnece or 'squareroot' for the \code{dec} rounded square root.}
+\item{cover.transform}{If you want to transform the abundancce values within your samples 
+you can choose 'pa' for presence-absence or 'sqrt' for the \code{dec} rounded square root.}
 \item{obs}{Observations, optional}
 \item{site}{plot header data, see \code{\link{tv.site}}}
 \item{refl}{Taxonomic reference list, optional}
@@ -32,7 +33,7 @@ cover.transform = c('no', 'pa', 'sqrt'), obs, site, refl, RelScale, ...)
 }
 
 \details{
-\code{layer} means, the different layers are combined assuming there independence (a species occuring in two layers with a cover of 50\% will result in a overall cover of 75\%. \code{sum} will sum up cover values of all layers
+\code{layer} means, the different layers are combined assuming there independence (a species occurring in two layers with a cover of 50\% will result in a overall cover of 75\%. \code{sum} will sum up cover values of all layers
 
 With option \code{pseudo} you can decide, which layers should be combined. Give a list with a combination data.frame  (see \code{\link{lc}} and second the name of the column for combination. The default is \code{pseudo = list(lc.1, c('LAYER'))}, where lc.1 is a data.frame \code{data(lc.1)}, which will combine all tree layers, all shrub layers and all layers below shrubs. An alternative would be data(lc.all), combining all layers. With option pseudo=NULL there will be no layer aggregation.
   }

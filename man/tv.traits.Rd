@@ -10,7 +10,7 @@ tv.traits(db, trait.db = 'ecodbase.dbf', refl, ...)
 
 \arguments{
 \item{db}{Path name to the Turboveg database directory}
-\item{trait.db}{Name of species trait DBase file, default is 'ecodbase'}
+\item{trait.db}{Name of species trait dBase file, default is 'ecodbase'}
 \item{refl}{Name of the taxonomic reference list, if veg is not loaded with tv.veg}
 \item{\dots}{additional arguments for tv.traits}
 }

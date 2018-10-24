@@ -1,7 +1,7 @@
 \name{monotypic}
 \alias{monotypic}
 \alias{tv.mono}
-\title{Creates a list of (regional) monotypic taxa from the given taxonomic checkist}
+\title{Creates a list of (regional) monotypic taxa from the given taxonomic checklist}
 
 \usage{
 monotypic(refl, nr.member = 1, reflist.type = c('Turboveg', 'EDIT'), write = FALSE, 

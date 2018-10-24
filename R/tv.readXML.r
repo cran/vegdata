@@ -1,7 +1,5 @@
-#' Reads a Turboveg XML file and writes a Turboveg dbase database
-#'
-#' @param file the filename of an XML file using Turboveg format (Turboveg version xx)
-#'
+# Reads a Turboveg XML file and writes a Turboveg dbase database
+
 tv.readXML <- function(file) {
   veg = xmlRoot(xmlTreeParse(file, useInternalNodes = T))
   if(xmlAttrs(veg)[['Dictionary']] == 'default') 
@@ -25,8 +23,6 @@ tv.readXML <- function(file) {
     site <- as.data.frame.list(out)
     # site <- data.frame(matrix(unlist(out), nrow=length(out), byrow=T), stringsAsFactors = FALSE)
     names(site) <- toupper(names(site))
-#    if(any(site$RELEVE_NR %in% site.tmp$RELEVE_NR)) warning('Found duplicate Turboveg RELEVE_NR!')
-    # user defined header data
     doc <- getNodeSet(veg, '//Plots/Plot/header_data')[[1]]
     udf <- as.data.frame(t(sapply(xmlChildren(doc), function(x) xmlAttrs(x)['value'])), stringsAsFactors = FALSE)
     names(udf) <- sapply(xmlChildren(doc), function(x) xmlAttrs(x)['name'])
@@ -48,23 +44,10 @@ tv.readXML <- function(file) {
     # tvwin
     tvwin <- data.frame(FLORA = xmlAttrs(veg)[['SpeciesList']], MINALLOW = 1, MAXALLOW = 999999, MINACTUAL = min(as.integer(site$RELEVE_NR)), MAXACTUAL = max(as.integer(site$RELEVE_NR)), MAP = 'EUROPE', DICTIONARY = xmlAttrs(veg)[['Dictionary']], META = '')
     #########################
-    # read plant observations
-    # .readPlotObs <- function(x) xmlAttrs(x[['species_data']][['species']][['standard_record']])
-    # out <- xmlApply(veg[["Plots"]], .readPlotObs)
-    # names(out) <- 1:length(out)
-    # obs <- as.data.frame.list(out)
-    # names(obs) <- c('TaxonUsageID', 'COVER_CODE', 'LAYER')
-    # .children <- function(x){
-    #   xname <- xmlName(x)
-    #   xattrs <- c('nr', 'cover', 'layer') # xmlAttrs(x)
-    #   c(sapply(xmlChildren(x), xmlAttrs), name = xname, xattrs)
-    # }
-    # x <- getNodeSet(veg, '//Plots/Plot/species_data')[[6]]
     obs <- data.frame(RELEVE_NR=NULL,SPECIES_NR=NULL,COVER=NULL,LAYER=NULL)
     for(i in 1:nrow(site)) { # i=6
       releve_nr <- xmlAttrs(getNodeSet(veg, '//Plots/Plot')[[i]])[['releve_nr']]
       doc <- getNodeSet(veg, '//Plots/Plot/species_data')[[i]]
-#      tmp <- xpathSApply(doc, "*/species", .children)
       tmp <- xpathSApply(doc, "species", function(x) xmlAttrs(x[['standard_record']]))
       o <- as.data.frame(t(tmp), stringsAsFactors = FALSE)
       names(o)[1:3] <- c('SPECIES_NR', 'COVER', 'LAYER')
@@ -75,7 +58,6 @@ tv.readXML <- function(file) {
     obs$TaxonUsageID <- as.integer(obs$TaxonUsageID)
     class(obs) <- c('tv.obs', 'data.frame')
     return(list(tvwin=tvwin, tvadmin=tvadmin, site=site, obs=obs))
-# tv.write(obs, site, name = dbname, tvadmin = tvadmin, dict = xmlAttrs(veg)[['Dictionary']], refl= xmlAttrs(veg)[['SpeciesList']], overwrite = TRUE)
 }
 
-
+# tv.write(obs, site, name = dbname, tvadmin = tvadmin, dict = xmlAttrs(veg)[['Dictionary']], refl= xmlAttrs(veg)[['SpeciesList']], overwrite = TRUE)

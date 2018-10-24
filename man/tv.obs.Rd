@@ -15,7 +15,7 @@ tv.obs(db, tv_home, ...)
 \item{\dots}{additional arguments}
 }
 
-\value{Data.frame of species occurences in Turboveg format, that is every occurrence is a row with relev\'{e} number, species number, layer, cover code and optional additional species-plot information.}
+\value{Data.frame of species occurrences in Turboveg format, that is every occurrence is a row with relev\'{e} number, species number, layer, cover code and optional additional species-plot information.}
 
 \seealso{\code{\link{tv.veg}}}
 

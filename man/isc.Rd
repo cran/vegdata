@@ -25,7 +25,8 @@ showindiplot(veg, trait.db, plotid, weight, keyname = 'LETTERCODE')
 
 
 \description{
-Calculates community weightes mean trait values, like mean Ellenberg indicator values. Alternatively (method = 'mode') environmental conditions can be calculated according to th econcept of sums of amplitudes of species along ecological gradients.
+Calculates community weighted mean trait values, like mean Ellenberg indicator values. 
+Alternatively (method = 'mode') environmental conditions can be calculated according to the concept of sums of amplitudes of species along ecological gradients.
 }
 
 \details{
@@ -41,6 +42,7 @@ Vector with the ecological classification of sites. Either mean trait values or 
         }
         
 \examples{
+\dontrun{
 db <- 'elbaue'
 veg <- tv.veg(db, cover.transform='sqrt', check.critical = FALSE)
 site <- tv.site(db, verbose = FALSE)
@@ -54,7 +56,7 @@ traits <- tv.traits(db)
 # Mean indicator values of Ellenberg F values
 mEIV_F <- isc(veg, trait.db = traits, ivname = 'OEK_F', method = 'mean')
 plot(site$MGL, mEIV_F, xlab = 'Mean groundwater level')
-\dontrun{
+
 # Mode (most frequent level) of Ellenberg F values
 library(reshape)
 traitmat <- cast(traits, LETTERCODE ~ OEK_F)
@@ -63,4 +65,5 @@ ilevel <- isc(veg, trait.db = traitmat, ivname = as.character(1:11), method = 'm
 boxplot(site$MGL ~ ordered(ilevel, levels = levels(ilevel)[c(2,4,3,5,6:10,1)]))
 }
 }
+
 \keyword{misc}

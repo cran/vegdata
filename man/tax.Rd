@@ -29,9 +29,9 @@ syn(x, refl = tv.refl(), quiet = FALSE, ...)
 \item{simplify}{Will simplify species names for matching.}
 \item{gen}{Number of child generations to return}
 \item{quiet}{Hide screen messages}
-\item{reflist.type}{Type of taxonomic reference list to use. Until now only Turboveg lsits are suppported in the official package.}
+\item{reflist.type}{Type of taxonomic reference list to use. Until now only Turboveg lists are supported in the official package.}
 \item{tree}{Opens a gWidgets window with interactive taxonomic tree view. Requires package gWidgets}
-\item{rank}{Taxonomical level of parentship to find}
+\item{rank}{Taxonomical level of taxa to find}
 \item{...}{additional attributes}
 }
 
@@ -41,7 +41,7 @@ Input is either species number (integer), shortletter (7 characters) or full (ex
 
 \details{
 \dfn{concept}: GermanSL is a list with a single taxon view according to the standard lists of the different taxon groups (e.g Wisskirchen and Haeupler for higher plants, see). 
-Nevertheless a hugh number of synonyms is included which allows in many cases the transformation into different concepts. 
+Nevertheless a huge number of synonyms is included which allows in many cases the transformation into different concepts. 
 For illustration the concept of \emph{Armeria maritima} from Korneck 1996 is included, which accepts e.g. \emph{Armeria maritima ssp. bottendorfensis}.
 \dfn{simplify}: Before string comparison with reference list names it will eliminate diacritic marks, double consonants, "th", "y" and others. If genus=TRUE critical, i.e. non stable endings of genus names will be ignored, epithet = TRUE will eliminate specific endings for the last epithet.
 }

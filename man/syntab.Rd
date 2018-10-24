@@ -8,7 +8,7 @@
 Calculate and display relative or absolute frequency tables with or without use of function multipatt from package indicspecies}
 
 \seealso{
-package indicspecies from M. Cac\'{e}res with function multipatt for indicator species analysis along multiple cluster combinations
+Package indicspecies with function \link[indicspecies]{multipatt} for indicator species analysis along multiple cluster combinations
 }
 
 \usage{
@@ -19,7 +19,7 @@ syntab(veg, clust, type = c('rel','abs','mean.cover'), mupa=NULL, dec=0, refl, .
 \arguments{
 \item{veg}{Vegetation dataframe}
 \item{clust}{Vector with cluster information with length equal to number of rows of veg}
-\item{type}{Relative or absolute frequency, mean species response values or strength of association (see function multipatt in package indicspecis).}
+\item{type}{Relative or absolute frequency, mean species response values or strength of association.}
 \item{mupa}{Either logical for (not) using multipatt from package indispecies to detect significance of cluster association strength or supply output from previous use of multipatt.}
 \item{x}{Object from function syntab}
 \item{zero.print}{Replacement for zero values.}

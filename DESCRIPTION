@@ -1,5 +1,5 @@
 Package: vegdata
-Version: 0.9.3
+Version: 0.9.5
 Encoding: UTF-8
 Date: 2018-10-01
 Title: Access Vegetation Databases and Treat Taxonomy
@@ -20,6 +20,6 @@ License: GPL (>= 2)
 URL: http://germansl.infinitenature.org
 RoxygenNote: 6.1.0
 NeedsCompilation: no
-Packaged: 2018-10-02 20:11:55 UTC; jansen
+Packaged: 2018-10-24 09:42:08 UTC; jansen
 Repository: CRAN
-Date/Publication: 2018-10-02 20:40:03 UTC
+Date/Publication: 2018-10-24 10:30:03 UTC

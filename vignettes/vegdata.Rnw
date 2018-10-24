@@ -6,7 +6,7 @@
 \usepackage[utf8]{inputenc}
 % \SweaveSyntax{SweaveSyntaxLatex}
 \usepackage{textcomp}
-\DeclareUnicodeCharacter{00D7}{\texttimes}
+% \DeclareUnicodeCharacter{00D7}{\texttimes}
 %\usepackage[T1]{fontenc}
 % \usepackage[warning]{selinput}
 % \SelectInputMappings{
@@ -15,7 +15,6 @@
 %    Euro={€},
 % %   multiply={}
 %    }
-
 \usepackage[sort&compress]{natbib}
 \bibliographystyle{unsrtnat}
 \usepackage[english]{babel}
@@ -31,8 +30,6 @@
 version \Sexpr{packageDescription("vegdata", field="Version")}}
 
 \begin{document}
-
-
 
 <<prep, echo=FALSE, results='hide'>>=
 library(knitr)
@@ -65,7 +62,7 @@ vignette('vegdata')
 \end{abstract}
 
 \section{Preliminary notes}
-    Some \texttt{vegdata} functions expect an installation, or more precisely the main directory structure, of the vegetation database program Turboveg for Windows (see \url{'http://www.synbiosys.alterra.nl/turboveg/'} and \cite{Hennekens2001}. If the package can not find a Turboveg installation it will use the directory within the package installation path. If you want to use function \texttt{taxval} for taxonomic harmonization you will need to have GermanSL or an equally structured reference list. If you do not specify any, the most recent version of GermanSL will be used and if it can not be found within the specified path, it will be downloaded from \url{http://geobot.botanik.uni-greifswald.de/reflist}.
+    Some \texttt{vegdata} functions expect an installation, or more precisely the main directory structure, of the vegetation database program Turboveg for Windows (see \url{'http://www.synbiosys.alterra.nl/turboveg/'} and \cite{Hennekens2001}. If the package can not find a Turboveg installation it will use the directory within the package installation path. If you want to use function \texttt{taxval} for taxonomic harmonization you will need to have GermanSL or an equally structured reference list. If you do not specify any, the most recent version of GermanSL will be used and if it can not be found within the specified path, it will be downloaded from \url{https://germansl.infinitenature.org/GermanSL/latest/GermanSL.zip}.
 
     Turboveg uses dBase database format for storage. The package tries to deal with the limitations of that format but it is essential, that you use "Database -> Reindex" in Turboveg every time you delete something in your Turboveg database. Otherwise it will not be deleted immediately in the dBase file, instead it is only marked for deletion, i.e. it is still there when you access this file with R and will not be recognized as deleted until you reindex your Turboveg database.
 
@@ -111,7 +108,7 @@ library(vegdata)
 
 Several functions of this package use the directory structure of Turboveg. The first time such a function is called, the internal function \texttt{tv.home} tries to find your Turboveg installation path. Depending on whether you have Turboveg installed on your computer or not, it will give you a message (and an invisible return) about the Turboveg installation path or the path to the Turboveg directory structure of package vegdata.
 <<eval=TRUE>>=
-h <- tv.home()
+tv_home <- tv.home()
 @
 
 
@@ -122,7 +119,7 @@ options(tv_home="path_to_your_Turboveg_root_directory")
 % options(tv_home="/home/jansen/workspace/vegdata/vegdata/inst/tvdata/")
 
 \section{Service functions}
-<<dblisting, eval=FALSE>>=
+<<dblisting>>=
 tv.db()
 @
 will give you a list of available Turboveg database names (directories within the Turboveg \textit{Data directory}).
@@ -130,10 +127,12 @@ will give you a list of available Turboveg database names (directories within th
 <<>>=
 tv.refl()
 @
+
 GermanSL is the default Taxonomic reference list in package \texttt{vegdata}.
 However, whenever you use a Turboveg database name in a function, the Reference list will be read from the database configuration file "tvwin.set" if possible.
 
 Package vegdata contains several service functions to query the taxonomic information contained in the reference list.
+
 <<tax>>=
 tax('Brachythecium rutabulum')
 @
@@ -344,7 +343,9 @@ data(lc.0)
 obs <- tv.obs(db)
 tv.veg(db, pseudo = list(lc.0, c("LAYER")), lc = "layer")
 @
+
 and check the column names:
+
 <<lc0, warning=FALSE>>=
 tmp <- tv.veg(db, tax=FALSE, pseudo = list(lc.0, "LAYER"), lc = "layer", quiet=TRUE)
 names(tmp)
@@ -363,8 +364,6 @@ names(tv.veg(db, tax=FALSE, pseudo=comb, quiet=TRUE))
 <<layer, results='hide', warning=FALSE>>=
 data(lc.1)
 veg <- tv.veg(db, lc = "sum", pseudo = list(lc.1, 'LAYER'), dec = 1, check.critical = FALSE)
-@
-<<layerdiff>>=
 veg[,1:10]
 @
 
@@ -372,20 +371,25 @@ veg[,1:10]
 \subsection{Combine species manually}
 
 Beside semi-automatic taxon harmonization with function \texttt{taxval} there are two possibilities to change Taxonomy manually. If you decide to interpret a certain species name in your database different than stored in the standard view of the taxonomic reference you can replace species numbers within the observational dataframe and run \texttt{taxval} later on.
+
 <<>>=
 obs.tax$TaxonUsageID[obs.tax$TaxonUsageID == 27] <- 31
 @
+
 will replace all occurrences of \emph{Achillea millefolium agg.} with \emph{Achillea millefolium} which might be adequate for your survey and will prevent a too coarse taxon grouping. For a longer list of replacements you can use a dataframe.
+
 <<replace>>=
 taxon.repl <- data.frame(old=c(27), new=c(31))
 obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID, 
-    match(taxon.repl$old, obs.tax$TaxonUsageID), taxon.repl$new)
+                                match(taxon.repl$old, obs.tax$TaxonUsageID), taxon.repl$new)
 @
-
+  
 The second possibility is to use function \texttt{comb.species} on vegetation matrices.
+
 <<comb.spec, eval=FALSE>>=
 comb.species(veg, sel=c('QUERROB','QUERROB.Tree'))
 @
+
 will use the first name ('QUERROB') for the replacement column with the cover sums of the selected columns.
 
 
@@ -396,16 +400,15 @@ will use the first name ('QUERROB') for the replacement column with the cover su
 <<site.echo, eval=TRUE>>=
 site <- tv.site(db)
 @
-
+  
 The function is quite straightforward. After loading the file \emph{tvhabita.dbf} from the specified database folder, warnings are given for plots without specified relev\'{e} area or date and fields are checked if they are empty (a lot of predefined header fields in Turboveg are often unused) or contain probably mistakable 0 values in numerical fields, due to dBase deficiencies (dBase can not handle NA = not available values reliably).
 It is stated in the output, if you have to check and possibly correct 0 values.
 
 
- 
+
 \section{Additional functions}
 
 Use help(package='vegdata') for a complete list of available functions and data sets in vegdata.
-
 
 \subsection{Frequency tables}
 
@@ -427,6 +430,8 @@ levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
 
 We can e.g. look at the relative frequency of all species with more than 40\% at least in one column, according to the height of the groundwater table (low or high) and the amplitude of the groundwater table fluctuations (high or low deviations from the mean).
 Additionally you can use the affiliation of species to abiotic clusters with the help of package \texttt{indicspecies}, which calculates species indicator values for one or several cluster \citep{DeCaceres2010} to order the syntaxonical table. Together with Ellenberg indicator values with will get a comprehensive view into our data.
+
+
 
 <<syntab.mupa>>=
 require(indicspecies)
@@ -452,22 +457,21 @@ The package \emph{vegdata} serves mostly as a helper for the analysis of vegetat
 
 With the functions shown above we are now ready to do some example analyses in the wide area of vegetation analyses.
 
-We can do, for instance, a
-``Nonmetric Multidimensional Scaling with Stable Solution from Random Starts Axis Scaling and Species Scores''
+We can do, for instance, a ``Nonmetric Multidimensional Scaling with Stable Solution from Random Starts Axis Scaling and Species Scores''
 which is a wrapper for Kruskal's Non-metric Multidimensional Scaling \citep{Cox19942001} from Jari Oksanen \citep{Oksanen2008}.
 
 <<nmds, quiet=TRUE, results='hide', eval=TRUE>>=
 ## Data analyses
 library(vegan)
 veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE, 
-     noshare = 1, expand = TRUE, trace = 2)
+                    noshare = 1, expand = TRUE, trace = 2)
 eco <- tv.traits()
 eco$OEK_F <- as.numeric(eco$OEK_F)
 F <- isc(elbaue, trait.db = eco, ivname = 'OEK_F', method = 'mean')
 N <- isc(elbaue, trait.db = eco, ivname = 'OEK_N', method = 'mean')
 env <- envfit(veg.nmds, data.frame(F, N))
 @
-
+  
 To show the result in comparison with environmental measurements in a nice graphic we do some plotting magic.
 
 <<nmdsplotfun, quiet=TRUE, results='hide'>>=
@@ -475,33 +479,34 @@ library(labdsv)
 library(akima)
 color = function(x)rev(topo.colors(x))
 nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', env = NULL, ...) {
- lplot <- nrow(ordi$points);  lspc <- nrow(ordi$species)
- filled.contour(interp(ordi$points[, 1], ordi$points[, 2], site[, var1]), 
-                ylim = c(-1, 1.1), xlim = c(-1.4, 1.4),
-   color.palette = color, xlab = var1, ylab = var2, main = plottitle,
-    key.title = title(main = var1, cex.main = 0.8, line = 1, xpd = NA),
-    plot.axes = { axis(1);  axis(2)
-      points(ordi$points[, 1], ordi$points[, 2], xlab = "", ylab = "", cex= .5, col = 2, pch = '+')
-      points(ordi$species[, 1], ordi$species[, 2], xlab = "", ylab = "", cex=.2, pch = 19)
-      ordisurf(ordi, site[, var2], col = 'black', choices = c(1, 2), add = TRUE)
-      orditorp(ordi, display = disp, pch = " ")
-      legend("topright", paste("GAM of ", var2), col = 'black', lty = 1)
-      if(!is.null(env)) plot(env, col='red')
-   }
-  ,...)
+lplot <- nrow(ordi$points);  lspc <- nrow(ordi$species)
+filled.contour(interp(ordi$points[, 1], ordi$points[, 2], site[, var1]), 
+           ylim = c(-1, 1.1), xlim = c(-1.4, 1.4),
+           color.palette = color, xlab = var1, ylab = var2, main = plottitle,
+           key.title = title(main = var1, cex.main = 0.8, line = 1, xpd = NA),
+           plot.axes = { axis(1);  axis(2)
+             points(ordi$points[, 1], ordi$points[, 2], xlab = "", ylab = "", cex= .5, col = 2, pch = '+')
+             points(ordi$species[, 1], ordi$species[, 2], xlab = "", ylab = "", cex=.2, pch = 19)
+             ordisurf(ordi, site[, var2], col = 'black', choices = c(1, 2), add = TRUE)
+             orditorp(ordi, display = disp, pch = " ")
+             legend("topright", paste("GAM of ", var2), col = 'black', lty = 1)
+             if(!is.null(env)) plot(env, col='red')
+           }
+           ,...)
 }
 @
-
+  
 \begin{figure}
 \begin{center}
 <<nmdsplot, quiet=TRUE, results='hide', eval=TRUE, warning=FALSE>>=
- nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env, plottitle = 'Elbaue floodplain dataset')
+nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env, plottitle = 'Elbaue floodplain dataset')
 @
 \caption{Non-metric multidimensional scaling of the elbaue vegetation data with an overlay of mean groundwater table (colors) and standard deviation of groundwater level fluctuations (GAM lines). Arrows show direction of increasing mean Ellenberg F (soil water) resp. N (nutrient availability).}
 \end{center}
 \end{figure}
 
 The first axis of our NMDS plot show the influence of mean groundwater level on the patterns of the dataset. \emph{Glyceria maxima} is marking the wet side of the gradient, whereas \emph{Cnidium dubium} \emph{Agrostis capillaris} or \emph{Galium verum agg,} occur only at low mean groundwater level. The second axis can be assigned to the fluctuation of water levels measured as standard deviation of mean groundwater level. Species indicating high water fluctuation are \emph{Agrostis stolonifera} or \emph{Alopecurus geniculatus} whereas \emph{Carex vesicaria} occurs only in more balanced situations.
+
 
 \bibliography{lib}
 

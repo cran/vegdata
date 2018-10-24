@@ -6,9 +6,11 @@
 \alias{first.word}
 \alias{reShape.veg}
 \alias{TCS.replace}
+\alias{TV.replace}
 \alias{tv.dict}
 \alias{load.taxlist}
 \alias{showplot}
+\alias{as.data.frame.list}
 
 \title{Internal vegdata functions}
 

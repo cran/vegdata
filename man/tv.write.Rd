@@ -13,7 +13,8 @@ drop = FALSE, obl = TRUE, overwrite = FALSE, iconv="CP437", ...)
   \item{x}{Either observations data.frame with RELEVE_NR, TaxonUsageID and COVER_CODE columns or vegetation matrix of class "veg".}
   \item{site}{Header data for plots.}
   \item{name}{Name of the new database.}
-  \item{tvadmin}{Dataframe with plot uuid's and Turboveg columns from TvAdmin.dbf. A new file with new unique identifiers will be created if omutted.}
+  \item{tvadmin}{Dataframe with plot UUID's and Turboveg columns from TvAdmin.dbf. 
+  A new file with new unique identifiers will be created if omitted.}
   \item{remarks}{Remarks in Turboveg format if the comments for individual plots exceed 254 characters. See remarks.dbf in Turboveg databases. An empty file will be created if omitted.}
   \item{dict}{Turboveg dictionary name}
   \item{cover}{Use of covercodes or (mean) cover percentages, see Details.}
@@ -30,11 +31,15 @@ drop = FALSE, obl = TRUE, overwrite = FALSE, iconv="CP437", ...)
 }
 
 \value{
-  Five files will be created in tv_home/Data/<name> directory. tvabund.dbf with occurence information n long format, tvhabita.dbf with plot information, remarks.dbf with comments longer then 255 characters, TvAdmin.dbf with plot UUID's and tvwin.dbf with information about taxaonomic reference list, and dictionary used.
+  Five files will be created in tv_home/Data/<name> directory. 
+  tvabund.dbf with occurrence information n long format, 
+  tvhabita.dbf with plot information, remarks.dbf with comments longer then 255 characters, 
+  TvAdmin.dbf with plot UUID's and tvwin.dbf with information about taxonomic reference list, 
+  and dictionary used.
 }
 
 \seealso{\code{\link{tv.veg}}}
 
-\author{Florian Jansen \email{florian.jansen@uni-rostock.de}      }
+\author{Florian Jansen \email{florian.jansen@uni-rostock.de}}
 
 \keyword{misc, survey}

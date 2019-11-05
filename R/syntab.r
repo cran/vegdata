@@ -1,6 +1,6 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("multipatt"))
 
-syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), mupa = NULL, dec = 0, refl, ...)
+syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), mupa, dec = 0, refl, ...)
 {
     type <- match.arg(type)
     if (missing(clust)) clust <- sample(1:2, size = nrow(veg), replace = TRUE)
@@ -28,15 +28,15 @@ syntab <- function (veg, clust, type = c('rel','abs','mean.cover'), mupa = NULL,
     st[is.na(st)] <- 0
     colnames(st) <- levels(clust)
     
-    if(!is.null(mupa) | class(mupa)=='multipatt' & ncl < 1) {
+    if(!missing(mupa) | class(mupa) == 'multipatt' & ncl < 1) {
       if(class(mupa)!='multipatt') {
           requireNamespace("indicspecies", quietly = TRUE)
           mu <- indicspecies::multipatt(veg, clust, ...)
         }  else mu <- mupa
-    }
       # st <- st[rownames(st) %in% rownames(sig),]     
       # o <- order(mu$sign[,'index'])
     df <- mu$sign
+    }
     df[, 1:ncl] <- st # mu$sign[,1:ncl] * st
     colnames(df)[1:ncl] <- levels(clust)
     st <- df

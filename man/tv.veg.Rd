@@ -61,9 +61,8 @@ pseudo=list(lc.0,'LAYER'), genus = 'delete')
 }
 }
 
-\author{Florian Jansen
-\email{florian.jansen@uni-rostock.de}
-        }
+\author{Florian Jansen \email{florian.jansen@uni-rostock.de} }
 
 
-\keyword{misc,manip,survey}
+\keyword{misc}
+\keyword{manip}

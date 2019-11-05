@@ -1,6 +1,6 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("DoWritedbf"))
 
-tv.write <- function(x, site, name, tvadmin, remarks, dict = '', cover=c('code','perc'), drop = FALSE, obl = TRUE, overwrite = FALSE, iconv="CP437", ...) {
+tv.write <- function(x, site, name, tvadmin, remarks, dict = '', cover=c('code','perc'), drop = FALSE, obl = TRUE, overwrite = FALSE,  ...) {
   cover <- match.arg(cover)
   if('veg' %in% class(x)) {
     X <- reShape.veg(x, ...)
@@ -28,7 +28,7 @@ tv.write <- function(x, site, name, tvadmin, remarks, dict = '', cover=c('code',
   }
   for(i in names(site)) if(is.character(site[,i])) {
     site[is.na(site[,i]),i] <- ''
-    site[,i] <- iconv(site[,i], '', iconv)
+    site[,i] <- iconv(site[,i], '', getOption('tv.iconv'))
   }
   
   if(obl) {
@@ -45,11 +45,11 @@ tv.write <- function(x, site, name, tvadmin, remarks, dict = '', cover=c('code',
       stop('Database ', name, ' already exists. Nothing will be exported.')
   
   site$DATE <- gsub('-','', site$DATE)
-  
+
   ### Write Turboveg database
   dir.create(file.path(options('tv_home'), 'Data', name), showWarnings = if(overwrite) FALSE else TRUE)
-  write.dbf(site, file.path(options('tv_home'), 'Data', name, 'tvhabita.dbf'))
-  write.dbf(X, file.path(options('tv_home'), 'Data', name, 'tvabund.dbf'))
+  write.dbf(site, max_nchar = 250, file.path(options('tv_home'), 'Data', name, 'tvhabita.dbf'))
+  write.dbf(X, max_nchar = 250, file.path(options('tv_home'), 'Data', name, 'tvabund.dbf'))
   # write TvAdmin
   if(missing(tvadmin)) {
         tvadmin <- data.frame(RELEVE_NR=site$RELEVE_NR, SOURCE_DB='R',  GUID=replicate(nrow(site), paste('{', uuid::UUIDgenerate(), '}', sep='')), CREAT_USER=Sys.getenv('USER'), CREAT_DATE=Sys.Date(), MOD_USER=Sys.getenv('USER'),	MOD_DATE=Sys.Date(), NDFF_QUAL=as.integer(0))
@@ -60,17 +60,17 @@ tv.write <- function(x, site, name, tvadmin, remarks, dict = '', cover=c('code',
   TvAdmin <- TvAdmin[TvAdmin$RELEVE_NR %in% site$RELEVE_NR,]
   TvAdmin$MOD_USER[is.na(TvAdmin$MOD_USER)] <- Sys.getenv('USER')
   TvAdmin$MOD_DATE[is.na(TvAdmin$MOD_DATE)] <- format(Sys.Date())
-  write.dbf(TvAdmin, file.path(options('tv_home'), 'Data', name, 'TvAdmin.dbf'))
-  
+  write.dbf(TvAdmin, max_nchar = 250, file.path(options('tv_home'), 'Data', name, 'TvAdmin.dbf'))
+
   # write remarks
   if(missing(remarks)) remarks <- data.frame(RELEVE_NR=numeric(), REMARKS=character()) else
   if(nrow(remarks) > 0) remarks <- remarks[remarks$RELEVE_NR %in% site$RELEVE_NR,]
-  op <- options('warn')
-  options(warn=-1)
-  suppressWarnings(write.dbf(remarks, max_nchar = 250, file.path(options('tv_home'), 'Data', name, 'remarks.dbf')))
-  options(op)
 
+  suppressWarnings(
+    write.dbf(remarks, max_nchar = 250, file.path(options('tv_home'), 'Data', name, 'remarks.dbf'))
+    )
+  options(warn=-1)
   # write tvwin.dbf
-  write.dbf(data.frame(FLORA=refl, MINALLOW=0, MAXALLOW=0, MINACTUAL= min(site$RELEVE_NR),	MAXACTUAL=max(site$RELEVE_NR), MAP='', DICTIONARY=dict, META=''), file = file.path(options('tv_home'),'Data', name, 'tvwin.dbf'))
+  write.dbf(data.frame(FLORA=refl, MINALLOW=0, MAXALLOW=0, MINACTUAL= min(site$RELEVE_NR),	MAXACTUAL=max(site$RELEVE_NR), MAP='', DICTIONARY=dict, META=''), max_nchar = 250, file = file.path(options('tv_home'),'Data', name, 'tvwin.dbf'))
   cat('Turboveg database', name, 'written to', file.path(options('tv_home'), 'Data', name),'\n')
 }

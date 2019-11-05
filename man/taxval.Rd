@@ -75,4 +75,5 @@ veg <- comb.species(veg, c('ARMEM-E','ARMEM-H'))
 }
 }
 
-\keyword{misc,manip}
+\keyword{misc}
+\keyword{manip}

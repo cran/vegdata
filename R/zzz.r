@@ -1,7 +1,8 @@
 .onAttach <- function(lib, pkg)  {
     packageStartupMessage("This is vegdata ",
-    utils::packageDescription("vegdata", field="Version"),
+    utils::packageDescription("vegdata", field="Version"), paste(' - build: '),
+    utils::packageDate('vegdata'),
     appendLF = TRUE)
-#    packageStartupMessage("created:", file.info('/home/jansen/R/x86_64-pc-linux-gnu-library/3.1/vegdata/Meta/package.rds')$ctime
-#)
+    options(tv.iconv = 'ISO-8859-15')
+    # As dBase is an old DOS format, characters have been stored in Turboveg using the dbase specific CP437 code table. This has been changed and Turboveg seems to use a country specific code page now. Please change getOptions('tv.iconv') if you run into problems.
 }

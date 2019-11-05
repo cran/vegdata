@@ -1,3 +1,10 @@
+verdsion 0.9.7 November 2019
+  * default GermanSL version changed to 1.4
+  * tv.readXML changed from XML to xml2 for faster access of huge Turboveg XML files
+
+version 0.9.6 March 2019
+  * better encoding support
+
 version 0.9.4 and 5 Oktober 2018
   * default directory for GermanSl download changed to concur with CRAN rules
   * problems with CRAN package checks

@@ -6,7 +6,7 @@
 
 \usage{
 tv.write(x, site, name, tvadmin, remarks, dict = "", cover = c("code", "perc"), 
-drop = FALSE, obl = TRUE, overwrite = FALSE, iconv="CP437", ...)
+drop = FALSE, obl = TRUE, overwrite = FALSE, ...)
 }
 
 \arguments{
@@ -21,7 +21,6 @@ drop = FALSE, obl = TRUE, overwrite = FALSE, iconv="CP437", ...)
   \item{drop}{Drop columns which are empty or contain only NA values.}
   \item{obl}{Add obligatory fields defined in the TV dictionary but not present in the site data table.}
   \item{overwrite}{Logical. Should an existing database be overwritten.}
-  \item{iconv}{specify locale if necessary}
   \item{\dots}{Additional arguments.}
 }
 
@@ -42,4 +41,4 @@ drop = FALSE, obl = TRUE, overwrite = FALSE, iconv="CP437", ...)
 
 \author{Florian Jansen \email{florian.jansen@uni-rostock.de}}
 
-\keyword{misc, survey}
+\keyword{misc}

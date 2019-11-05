@@ -12,9 +12,8 @@ isc <- function(veg,
                 ...
 ) {
   if(missing(refl) & missing(veg) & missing(db)) stop('Either refl, db, or a class "veg" object have to be provided.')
-  if(!missing('refl')) 
-    if('veg' %in% class(veg)) refl <- attr(veg, 'taxreflist') else
-      refl = tv.refl()
+  if(!missing('veg')) 
+    if('veg' %in% class(veg)) refl <- attr(veg, 'taxreflist')
   species <- tax('all', refl = refl, quiet = TRUE, ...)
   if(is.character(trait.db)) iv <- tv.traits(trait.db = trait.db, refl = refl, ...) else iv = trait.db
   if(missing(veg)) veg <- tv.veg(db, ...) else if(!'data.frame' %in% class(veg)) veg <- as.data.frame(veg)
@@ -32,10 +31,10 @@ isc <- function(veg,
     iv[,i] <- as.integer(as.character(iv[,i]))
   }
   if(!keyname %in% names(iv)) stop(paste(keyname, 'not in column names of trait dataframe.'))
-  if(ivname %in% c('OEK_F', 'OEK_L', 'OEK_K', 'OEK_N', 'OEK_T') & any(iv[,ivname] == 0 && !is.na(iv[,ivname]))) warning('Detecting 0 values, please check.')
-  if(all(is.na(match(names(veg), iv[, keyname])))) stop('Taxon names in trait table and names in vegetation matrix do not match, please check.') else
-  v <- as.matrix(iv[match(names(veg), iv[, keyname]), ivname])
-  rownames(v) <- names(veg)
+  if(ivname %in% c('OEK_F', 'OEK_L', 'OEK_K', 'OEK_N', 'OEK_T') & any(iv[,ivname] == 0 & !is.na(iv[,ivname]))) print('Warning: Detecting 0 values, please check if these are really menat to be zeros.')
+  if(all(is.na(match(colnames(veg), iv[, keyname])))) stop('Taxon names in trait table and names in vegetation matrix do not match, please check.') else
+  v <- as.matrix(iv[match(colnames(veg), iv[, keyname]), ivname])
+  rownames(v) <- colnames(veg)
   if(length(ivname) == 1) {
 #    print(table(is.na(v)))
     veg <- veg[,!is.na(v)] #?
@@ -64,7 +63,7 @@ isc <- function(veg,
   IV <- apply(veg, 1, funMode)
   }
   if(any(IV == 0) & ivname != 'OEK_S') {
-    cat('The following plots might be without a single indicator species:\n')
+    cat('The following plots seem to be without a single indicator species:\n')
     print(names(IV)[IV == 0])
   }
   return(IV)
@@ -76,7 +75,7 @@ showplot <- function(veg, plotids)  for(i in 1:length(plotids)) print(veg[plotid
 
 showindiplot <- function(veg, trait.db, plotid, weight, keyname = 'LETTERCODE') {
   if(length(plotid) > 1) {
-    warning('more than one plot selected. using only the first.')
+    print('warning: more than one plot selected. using only the first.')
     plotid <- plotid[1]
   }
   if(missing(weight)) { trait.db$weight <- 1 } else names(trait.db)[names(trait.db) == weight] <- 'weight'

@@ -5,11 +5,11 @@
 
 \docType{package}
 \title{
- Functions to access data from vegetation databases and evaluate taxon names (with GermanSL).
+ Functions to access data from vegetation databases and evaluate taxon names.
 }
 \description{
-This package provides a set of functions to load data from (at present Turboveg and VegetWeb) databases. 
-It is also possible to semi-automatically check and adapt scientific plant names (with appropriate reference lists) and to produce a syntaxonomic (rel/abs) frequency table.
+This package provides a set of functions to load data from vegetation databases (at present Turboveg and vegetweb.de). 
+Taxa can be (semi-)automatically be checked and adapted depending the scientific question. For this a hierachical taxonomic reference list is needed.
 }
 
 \details{
@@ -36,5 +36,4 @@ Journal of vegetation science, 21(6), 1179-1186. \url{http://dx.doi.org/10.1111/
 Jansen, Florian and Dengler, Juergen (2008) GermanSL - eine universelle taxonomische Referenzliste fuer Vegetationsdatenbanken, Tuexenia, 28, 239-253.
 }
 
-\keyword{ package }
-
+\keyword{package}

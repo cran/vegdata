@@ -13,15 +13,15 @@ first.word <- function (x, i = 1, expr = substitute(x), add.legal=NULL) {
   chars <- substring(words, 1:nchar(words, keepNA = FALSE), 1:nchar(words, keepNA = FALSE))
   legal.chars <- c(letters, LETTERS, '\u00fc','\u00e4','\u00f6','\u00df','\u00d7', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", add.legal)
   non.legal.chars <- (1:length(chars))[!chars %in% legal.chars]
+  # length(non.legal.chars) > 0
   if (i==1 & is.na(non.legal.chars[1])) return(words)
-  if(i==1) return(substring(words, 1, non.legal.chars[1] - 1)) else
-    if(i==2 & length(non.legal.chars) > 0) return(substring(words, non.legal.chars[1]+1, nchar(words, keepNA = FALSE))) else return(character(0))
+  if (i==1 & !is.na(non.legal.chars[1])) return(substring(words, 1, non.legal.chars[1] - 1))
+  if (i==2 & is.na(non.legal.chars[2])) return(substring(words, non.legal.chars[1], nchar(words, keepNA = FALSE)))
+  if (i==2 & !is.na(non.legal.chars[2])) return(substring(words, non.legal.chars[1]+1, non.legal.chars[2]-1)) else return(character(0))
 }
 
-# words <- 'AGRTS;P'
-# words <- 'QUERROB.Tree'
-# add.legal <- c('-',';')
-# (w <- first.word(words, i=1, add.legal = ';'))
+# x <-  c('Tortula acaulon (With.) R. H.Zander var. acaulon', 'Phascum cuspidatum Hedw. v. cuspidatum', 'Tortula acaulon var. papillosa (Lindb.) R. H. Zander', 'Phascum cuspidatum subsp. papillosum (Lindb.) J. Guerra & Ros', 'Tortula SP.')
+
 
 rbind.df <- function(df1, df2) {
   cols1 <- names(df1); cols2 <- names(df2)
@@ -95,3 +95,14 @@ as.data.frame.list <- function(x, row.names=NULL, optional=FALSE, ...) {
   return(df)
 }
 
+decode <- function(x, search, replace, default = NULL) {
+  if(is.factor(x)) x <- as.character(x)
+  # build a nested ifelse function by recursion
+  decode.fun <- function(search, replace, default = NULL)
+    if (length(search) == 0L) {function(x) if (is.null(default)) x else rep(default, length(x)) 
+    } else {
+      function(x) ifelse(x == search[1L], replace[1L],
+                         decode.fun(tail(search,  -1L), tail(replace, -1L), default)(x))
+    }
+  return(decode.fun(search, replace, default)(x))
+}

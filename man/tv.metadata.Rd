@@ -22,8 +22,5 @@ tv.metadata(db, refl, tv_home, filename = 'metadata.txt', ...)
 \details{Since Turboveg provides no formalised method to store information about database fields, 
 I suggest to save a simple text file, named for example "metadata.txt" into the directory of your Turboveg database.}
 
-\author{Florian Jansen
-\email{florian.jansen@uni-rostock.de}
-        }
+\author{Florian Jansen \email{florian.jansen@uni-rostock.de} }
 
-\keyword{misc}

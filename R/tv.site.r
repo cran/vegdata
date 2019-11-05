@@ -1,8 +1,5 @@
-tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, iconv="CP437", verbose = TRUE, replace.names, ...) 
+tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, verbose = TRUE, replace.names, ...) 
 {
-#  ow <- options('warn')
-# if(quiet) { options(warn=-1) }
-# if (is.list(db)) site <- tv.mysql(db, "tvhabita") else {
   if (missing(tv_home)) tv_home <- tv.home()
   site <- read.dbf(file.path(tv_home, "Data", db[1], "tvhabita.dbf"), as.is=TRUE)
   if(!missing(replace.names)) 
@@ -15,9 +12,11 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, iconv="CP437
 	    site.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvhabita.dbf'), as.is = TRUE)
 	    if(!any(c('SURF_AREA','AREA_MIN') %in% names(site.tmp))) stop(db[i]) # plot area must be present
   	if(any(site$RELEVE_NR %in% site.tmp$RELEVE_NR)) stop('Found duplicate releve numbers in ', db[i] , ' aborting!')
-  	if(!missing(replace.names)) 
+  	if(!missing(replace.names)) {
+  	  if(sum(c('PRECISION', 'UNSCH', 'GEO_PREC', 'GEO_DEV') %in% names(site.tmp)) > 1) stop(paste('More than one precision column in database ', db[i], ' found, please simplify.'))
   	  for(r in 1:nrow(replace.names))
   	    names(site.tmp) <- sub(paste('^', replace.names[r,1], '$', sep=''), replace.names[r,2], names(site.tmp))
+  	}
   	cols1 <- names(site)
   	cols2 <- names(site.tmp)
   	if (common.only){
@@ -35,7 +34,7 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, iconv="CP437
 
 ### Conversion of factors
 # fac <- sapply(site, is.factor)
-    for(i in names(site)) if(is.character(site[,i])) site[,i] <- iconv(site[,i], iconv, '')
+    for(i in names(site)) if(is.character(site[,i])) site[,i] <- iconv(site[,i], getOption('tv.iconv'), '')
 
     ### Time
     if(any(is.na(site$DATE))) 

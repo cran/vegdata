@@ -32,8 +32,7 @@ The function checks for different taxon numbers and, or taxon names in two TURBO
 \references{
 Jansen, F. and Dengler, J. (2010) Plant names in vegetation databases - a neglected source of bias. Journal of Vegetation Science, 21, 1179-1186.}
 
-\author{Florian Jansen
-}
+\author{Florian Jansen \email{florian.jansen@uni-rostock.de} }
 
 \seealso{
 \code{\link{tax}}

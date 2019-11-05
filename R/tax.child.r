@@ -71,7 +71,7 @@ child <- function (x, refl = tv.refl(), gen=4, tree=FALSE, quiet=FALSE, syn=FALS
           if(!is.null(gen)) ch <- ch[ch$GENERATION <= gen,]
           if(!quiet) {
     cat('Children of ', s$TaxonName, ' (', s$TaxonUsageID, ')', if(x$TaxonUsageID != s$TaxonUsageID) {paste(" = Synonym of ", x$TaxonName, ' (', x$TaxonConceptID, ')', sep='')},':\n', sep='')
-            print(ch[, names(ch)[names(ch) %in% c('TaxonUsageID','TaxonName','TaxonRank','AccordingTo','IsChildTaxonOfID','GENERATION','SYNONYM','EDITSTATUS')]], row.names=FALSE)
+            print(ch[, names(ch)[names(ch) %in% c('TaxonUsageID','TaxonName','NameAuthor','TaxonRank','AccordingTo','IsChildTaxonOfID','GENERATION','SYNONYM','EDITSTATUS')]], row.names=FALSE)
           }}
     invisible(ch)
     }
@@ -81,7 +81,8 @@ childs <- function(...) child(...)
 
 ## Parents of a taxon
 parent <- function (x, refl = tv.refl(), rank, quiet = FALSE, ...) {
-  taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','AGG','SGE','SGR','SSE','SER','SEC','AG1','GAT','AG2','FAM','ORD','UKL','KLA','UAB','ABT','AG3','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','AGG', 'SGE','SGR','SSE','SER','SEC','AG1','GAT','AG2','FAM','ORD','UKL','KLA','UAB','ABT','AG3','ROOT'), ordered=TRUE)
+#  taxlevels <- factor(taxlevels$taxlevel, levels=taxlevels$taxlevel, ordered=TRUE)
+#  taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','AGG','SEC','SGR','SSE','SER','SGE','AG1','GAT','AG2','FAM','ORD','CL3','CL2','UKL','CL1','KLA','UAB','ABT','AG3','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','AGG', 'SGE','SGR','SSE','SER','SEC','AG1','GAT','AG2','FAM','ORD','CL3','CL2','UKL','CL1','KLA','UAB','ABT','AG3','ROOT'), ordered=TRUE)
   species <- tax("all", detailed = TRUE, refl = refl, syn = TRUE, quiet =TRUE, ...)
   if(length(x)>1) {
   	warning('More than one match, using only first.')

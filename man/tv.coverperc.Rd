@@ -27,8 +27,7 @@ tv.coverperc(db, obs, RelScale, tv_home, tvscale, quiet = FALSE,  ...)
 ## For examples see in vignette('vegdata').
 }
 
-\author{Florian Jansen
-\email{florian.jansen@uni-rostock.de}
-        }
+\author{Florian Jansen \email{florian.jansen@uni-rostock.de} }
 
 \keyword{misc}
+\keyword{manip}

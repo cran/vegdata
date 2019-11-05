@@ -57,7 +57,7 @@ select.taxa <- function(x, species, strict = FALSE, vernacular = FALSE, simplify
   
 #### beginning to execute function tax()
 if(missing(refl)) {
-  refl <- tv.refl(tv_home=tv_home)
+  refl <- if(!is.null(getOption('tv.refl'))) getOption('tv.refl') else tv.refl(tv_home=tv_home)
   if(!quiet) message('Reference list used:', refl)	
 }
 species <- load.taxlist(refl, reflist.type=reflist.type, detailed=detailed)

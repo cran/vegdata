@@ -29,4 +29,4 @@ head(obs)
 
 \author{Florian Jansen \email{florian.jansen@uni-rostock.de}}
 
-\keyword{misc, survey}
+\keyword{misc}

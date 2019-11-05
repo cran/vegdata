@@ -12,7 +12,7 @@ Package indicspecies with function \link[indicspecies]{multipatt} for indicator 
 }
 
 \usage{
-syntab(veg, clust, type = c('rel','abs','mean.cover'), mupa=NULL, dec=0, refl, ...)
+syntab(veg, clust, type = c('rel','abs','mean.cover'), mupa, dec=0, refl, ...)
 \method{print}{syntab}(x, zero.print = ".", trait, limit = 1, minstat = 0, alpha = 0.05, \dots)
 }
 
@@ -58,6 +58,4 @@ rownames(sttable) <- taxa[match(rownames(sttable), taxa$LETTERCODE, nomatch = 0)
 write.csv(sttable, 'sttable.csv')
 }
 }
-
-\keyword{misc}
 

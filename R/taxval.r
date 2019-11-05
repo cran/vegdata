@@ -19,7 +19,7 @@ interactive = FALSE,
   if(missing(obs)) 
     if(missing(db)) 
       stop('Please specify either an observation dataframe or the name of your Turboveg database.') 
-  else  obs <- tv.obs(db=db, tv_home)  
+  else  obs <- tv.obs(db=db, tv_home)
   ##
   tv_home <- tv.home()
   # if(missing(arg('maxtaxlevel))) warning('maxtaxlevel set to', maxtaxlevel, '. Occurrence list will be truncated above this taxonomic level.' )
@@ -28,14 +28,16 @@ interactive = FALSE,
   if(missing(refl)) if(missing(db)) stop('If you do not give a taxonomic reference list name, you have to specify at least a name of a Turboveg database.') else 
      refl <- tv.refl(db = db[1], tv_home=tv_home)
   species <- load.taxlist(refl=refl, detailed=TRUE, ...)
-  taxlevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','AGG','SGE','SSE','SER','SEC','AG1','GAT','AG2','FAM','ORD','UKL','KLA','UAB','ABT','AG3','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','AGG', 'SGE','SSE','SER','SEC','AG1','GAT','AG2','FAM','ORD','UKL','KLA','UAB','ABT','AG3','ROOT'), ordered=TRUE)
+  ranklevels <- factor(taxlevels$level, levels=taxlevels$level, ordered=TRUE)
+#  ranklevels <- factor(c('FOR','VAR','ZUS','SSP','SPE','AGG','SEC','SSE','SER','SGE','AG1','GAT','AG2','FAM','ORD','CL3','CL2','UKL','CL1','KLA','UAB','ABT','AG3','ROOT'), levels= c('FOR','VAR','ZUS','SSP','SPE','AGG', 'SGE','SSE','SER','SEC','AG1','GAT','AG2','FAM','ORD','CL3','CL2','UKL','CL1','KLA','UAB','ABT','AG3','ROOT'), ordered=TRUE)
 
   if(interactive & file.exists('taxvalDecisionTable.csv')) {
     message('File ./taxvalDecisionTable.csv is used for taxonomic harmonization.')
     fr <- read.csv2('taxvalDecisionTable.csv')
     obs <- obs[!obs$TaxonUsageID %in% fr$TaxonUsageID[fr$TaxlevelTooHigh],]
     obs$TaxonUsageID <- fr$NewTaxonID[match(obs$TaxonUsageID, fr$TaxonUsageID)]
-    } else {
+    check.critical = FALSE
+    } else {  ## see line 197 for ende of this else
       ##-- start taxval functions
   if(ag == 'adapt' & missing(rank)) stop('Please specify to which "rank" the taxa shall be adapted.')
   if(ag != 'adapt' & !missing(rank)) {
@@ -44,7 +46,7 @@ interactive = FALSE,
   }
 ##############################
 ###--- check TaxonID's
-if(any(!obs$TaxonUsageID %in% species$TaxonUsageID)) 
+if(any(!obs$TaxonUsageID %in% species$TaxonUsageID))
   stop(paste("The following Taxon ID's do not exist in reference list:", paste(obs$TaxonUsageID[which(!obs$TaxonUsageID %in% species$TaxonUsageID)])))
 ##########################
 
@@ -67,7 +69,7 @@ if(any(!obs$TaxonUsageID %in% species$TaxonUsageID))
 ### ------ define functions  # 
 ##############################
 agg.conflict <- function(fr, ...) {
-  if(maxtaxlevel == 'ROOT') maxtaxlevel <- taxlevels[max(match(unique(fr$TaxonRank), taxlevels))]
+  if(maxtaxlevel == 'ROOT') maxtaxlevel <- ranklevels[max(match(unique(fr$TaxonRank), ranklevels))]
   # Subsuming elements into higher rank observations (if necessary) for adapt or conflict .
   origin <- fr$NewTaxonID
   fr$round <- 0
@@ -81,10 +83,8 @@ agg.conflict <- function(fr, ...) {
       if(length(OccurringChilds) < 10) print(sort(tax(OccurringChilds, quiet=T, refl = refl)$TaxonName))
       for(i in 1:length(OccurringChilds)) {
         nested.in <- parent(OccurringChilds[i], refl = refl, quiet = TRUE)
-        nested.occ <- nested.in[match(nested.in$TaxonRank, taxlevels) <= match(maxtaxlevel, taxlevels),]
+        nested.occ <- nested.in[match(nested.in$TaxonRank, ranklevels) <= match(maxtaxlevel, ranklevels),]
         if(nrow(nested.occ) > 0) {
-#           print('Will change:')
-#           print(fr$TaxonName[fr$NewTaxonID == OccurringChilds[i] & !is.na(fr$NewTaxonID)])
           fr$round[fr$NewTaxonID == OccurringChilds[i] & !is.na(fr$NewTaxonID)] <- r
           fr$NewTaxonID[fr$NewTaxonID == OccurringChilds[i] & !is.na(fr$NewTaxonID)] <- nested.occ$TaxonConceptID[nrow(nested.occ)]
         }
@@ -109,14 +109,14 @@ if(length(synonyms) > 0) {
 
 ###------ restrict to maximum taxonomic level
 ##############################
-if(maxtaxlevel %in% taxlevels) {
-  fr$TaxlevelTooHigh <- species$TaxonRank[match(fr$NewTaxonID, species$TaxonUsageID)] %in% taxlevels[taxlevels > maxtaxlevel]
+if(maxtaxlevel %in% ranklevels) {
+  fr$TaxlevelTooHigh <- species$TaxonRank[match(fr$NewTaxonID, species$TaxonUsageID)] %in% ranklevels[ranklevels > maxtaxlevel]
   if(sum(fr$TaxlevelTooHigh) > 0) {
     cat(sum(fr$TaxlevelTooHigh), 'taxa higher than', maxtaxlevel,'found. Deleted!\n')
-    fr$NewTaxonID[fr$TaxlevelTooHigh] <- NA
+#    fr$NewTaxonID[fr$TaxlevelTooHigh] <- NA
     obs <- obs[!obs$TaxonUsageID %in% fr$TaxonUsageID[is.na(fr$NewTaxonID)], ]
   }
- } else stop(paste('The given rank code', maxtaxlevel, 'is not a known rank identifier:', paste(taxlevels, collapse=', ')))
+ } else stop(paste('The given rank code', maxtaxlevel, 'is not a known rank identifier:', paste(ranklevels, collapse=', ')))
 ##############################
 
 ###------ resolve monotypic taxa
@@ -134,14 +134,15 @@ if (mono %in% c("species", "lower", "higher")) {
       if (mono == "higher") tmp <- Mono$AGG_NR[match(fr$NewTaxonID, Mono$MEMBER_NR)]
       if (mono == 'species') {
         tmp <- Mono$AGG_NR[match(fr$NewTaxonID, Mono$MEMBER_NR)]
-        tmp[Mono$MEMB_Rank[match(tmp, Mono$AGG_NR)] %in% taxlevels[taxlevels >= 'SPE']] <- NA
+        tmp[Mono$MEMB_Rank[match(tmp, Mono$AGG_NR)] %in% ranklevels[ranklevels >= 'SPE']] <- NA
         tmp <- Mono$MEMBER_NR[match(fr$NewTaxonID, Mono$AGG_NR)]
-        tmp[Mono$MEMB_Rank[match(tmp, Mono$MEMBER_NR)] %in% taxlevels[taxlevels <= 'SPE']] <- NA
+        tmp[Mono$MEMB_Rank[match(tmp, Mono$MEMBER_NR)] %in% ranklevels[ranklevels <= 'SPE']] <- NA
       }
       if(sum(tmp > 0, na.rm = TRUE) == 0) {break}# cat('\nNo (more) monotypic taxa found.\n'); 
       cat(sum(tmp > 0, na.rm = TRUE), "monotypic taxa found in dataset.")
       fr$Monotypic <- !is.na(tmp)
       fr$NewTaxonID[which(!is.na(tmp))] <- tmp[!is.na(tmp)]
+      if(any(is.na(fr$NewTaxonID))) message('Not for all taxa new TaxonIDs could be found. ')
     }
   }
 #  cat(sum(fr$Monotypic), "monotypic taxa found in dataset.")
@@ -158,7 +159,7 @@ fr <- switch(ag,
     conflict = agg.conflict(fr, quiet=TRUE),
     adapt = {
       if(refl %in% c('GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2')) warning(paste('The taxonomic hierarchy of', refl, 'is inaccurate, please upgrade to version >= 1.3'))
-	    if(which(taxlevels==rank) > which(taxlevels==maxtaxlevel)) 
+	    if(which(ranklevels==rank) > which(ranklevels==maxtaxlevel)) 
           stop('Maximum allowed taxonomic rank lower than the aggregation level!')
 #	for(i in which(!fr$TaxlevelTooHigh)) {
   for(i in 1:nrow(fr)) {
@@ -237,6 +238,8 @@ if(check.critical) {
  return(obs)
 }
 
+
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("taxlevels"))
 
 tv.taxval <- function(...)  {
 cat('tv.taxval is a deprecated function. Use taxval() instead\n

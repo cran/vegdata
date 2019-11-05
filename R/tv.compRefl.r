@@ -1,6 +1,7 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("write.dbf"))
 
-tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRUE, verbose = FALSE, Sink = TRUE, filter.1, filter.2, new = FALSE, file="compRefl.txt", ...)  {
+tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRUE, verbose = FALSE, Sink = TRUE, filter.1, filter.2, 
+  new = FALSE, file="compRefl.txt", ...)  {
   if (missing(tv_home)) 
         tv_home <- tv.home()
     refl.a <- if(is.character(refl1)) read.dbf(file.path(tv_home, "Species", refl1, "species.dbf")) else refl1
@@ -11,8 +12,8 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRU
     refl1 <- deparse(substitute(refl1))
     refl2 <- deparse(substitute(refl2))
   	refl.a$TaxonNameOriginal <- refl.a[, "TaxonName"]; refl.b$TaxonNameOriginal <- refl.b[, "TaxonName"]
-    refl.a[, "TaxonName"] <- taxname.abbr(refl.a[, "TaxonName"])
-    refl.b[, "TaxonName"] <- taxname.abbr(refl.b[, "TaxonName"])
+    refl.a[, "TaxonName"] <- taxname.abbr(refl.a[, "TaxonName"], hybrid = FALSE)
+    refl.b[, "TaxonName"] <- taxname.abbr(refl.b[, "TaxonName"], hybrid = FALSE)
   if(simplify) {
     refl.a[, "TaxonName"] <- taxname.simplify(refl.a[, "TaxonName"])
     refl.b[, "TaxonName"] <- taxname.simplify(refl.b[, "TaxonName"])  	
@@ -96,13 +97,19 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRU
         tmp.wid = getOption("width")
         options(width = 5000)
         sink(file)
-        print(paste(".x =", refl1, ".y =", refl2))
+        print(paste("Comparing .x =", refl1, ".y =", refl2))
         if (check.nr) {
-           print(paste(nrow(nonmatchingNumbers), "taxon names with different numbers"), quote = FALSE)
-           print(nonmatchingNumbers, row.names=FALSE)
+          print(paste(sum(!refl.a$TaxonUsageID %in% refl.b$TaxonUsageID), "numbers of first list not occuring in second list", collapse = '\n'), quote = FALSE)
+          cat(refl.a$TaxonUsageID[!refl.a$TaxonUsageID %in% refl.b$TaxonUsageID], collapse = '\n\n')
+          
+          print(paste(sum(!refl.b$TaxonUsageID %in% refl.a$TaxonUsageID), "new numbers", collapse = '\n'), quote = FALSE)
+          cat(refl.b$TaxonUsageID[!refl.b$TaxonUsageID %in% refl.a$TaxonUsageID], collapse = '\n\n')
+
+          print(paste(nrow(nonmatchingNumbers), "taxon names with different numbers"), quote = FALSE)
+          print(nonmatchingNumbers, row.names=FALSE, quote = FALSE)
 #         write.csv2(cbind(nonmatchingNumbers, refl.a[match(nonmatchingNumbers[,1], refl.a$TaxonName), c("BEGRUEND","EDITSTATUS")]), file='differentNumbers.csv')
-           print(paste(nrow(nonmatchingNames), "taxon numbers with different names"), quote = FALSE)
-           print(nonmatchingNames, row.names=FALSE)
+          print(paste(nrow(nonmatchingNames), "taxon numbers with different names"), quote = FALSE)
+          print(nonmatchingNames, row.names=FALSE, quote = FALSE)
         }
         options(width = tmp.wid)
         cat('\n', length(diff.B), "TaxNames of", refl1, "not occurring in", refl2, ':\n')

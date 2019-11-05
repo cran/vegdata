@@ -3,6 +3,7 @@
 \alias{lc.0}
 \alias{lc.1}
 \alias{lc.all}
+\alias{taxlevels}
 
 \title{Templates for pseudo-species according to Turboveg layer informations.}
 
@@ -65,4 +66,4 @@ layer \tab comb \cr
 \email{florian.jansen@uni-rostock.de}
 }
 
-\keyword{data}
+\keyword{datasets}

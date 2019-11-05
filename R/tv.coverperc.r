@@ -32,7 +32,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
     if (i == "00") {
     	obs[[i]]$COVER_CODE <- replace(as.character(obs[[i]]$COVER_CODE), obs[[i]]$COVER_CODE == '9X', '100')
     	if(any(is.na(as.numeric(obs[[i]]$COVER_CODE)))) 
-    	  stop('Not all percentage cover values in your databse are numeric, please check in Turboveg.')
+    	  warning('Not all percentage cover values in your database are numeric, please check in Turboveg.')
       obs[[i]] <- data.frame(obs[[i]], COVER_PERC = as.numeric(as.character(obs[[i]][, "COVER_CODE"])))
     }
     else {
@@ -40,7 +40,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
       if(is.na(p)) p <- ncol(tvscale)
       scala <- tvscale[i,]
       if(is.na(scala[1])) stop('Can not find cover scale "', i, '" in ', file.path('Turbowin','Popup', tv.dict(db),'tvscale.dbf'))
-      code <- iconv(t(scala[seq(4,(p-1),2)]), from="CP437", to='UTF-8')
+      code <- iconv(t(scala[seq(4,(p-1),2)]), from=getOption('tv.iconv'), to='')
       perc <- scala[seq(5,p,2)][1,]
       d.f <- data.frame(code=code[,1], perc = as.numeric(perc))
       if(!quiet) {

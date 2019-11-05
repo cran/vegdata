@@ -42,8 +42,9 @@ options(warn=1)
     } else {
       if (!any(names(obs) == values)) stop(paste(values, " could not be found.")) 
           obs[,values] <- type.convert(as.character(obs[,values]))
-          if(is.factor(obs[,values])) { lc='first'
-          warning("Multiple occurrences of a species in one releve can not be supported without cover code conversion. 
+          if(is.factor(obs[,values])) {
+            lc='first'
+            warning("Multiple occurrences of a species in one layer of a releve can not be supported without cover code conversion. 
                   Only the first occurrence will be used!")}
     }
 ## empty plots

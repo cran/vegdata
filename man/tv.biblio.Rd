@@ -6,7 +6,7 @@
 \description{Check bibliographic references from Turboveg codes}
 
 \usage{
-tv.biblio(x='all', db, dict = tv.dict(db), quiet=FALSE, tv_home, iconv = "CP437", ...)
+tv.biblio(x='all', db, dict = tv.dict(db), quiet=FALSE, tv_home, ...)
 }
 
 \arguments{
@@ -15,7 +15,6 @@ tv.biblio(x='all', db, dict = tv.dict(db), quiet=FALSE, tv_home, iconv = "CP437"
 \item{quiet}{If you want to print the reference to the screen.}
 \item{tv_home}{Turbowin installation path. If not specified function \code{\link{tv.home}} tries to discover.}
 \item{dict}{Name of Turboveg Dictionary (term lists for header data) if not the default one.}
-\item{iconv}{encoding of Turboveg files if different from your actual environment}
 \item{\dots}{additional arguments}
 }
 
@@ -25,4 +24,4 @@ tv.biblio(x='all', db, dict = tv.dict(db), quiet=FALSE, tv_home, iconv = "CP437"
 
 \author{Florian Jansen \email{florian.jansen@uni-rostock.de} }
 
-\keyword{misc, survey}
+\keyword{misc}

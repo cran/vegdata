@@ -3,7 +3,7 @@
 \title{Load site data from Turboveg Database}
 
 \usage{
-tv.site(db, tv_home, drop=TRUE, common.only = FALSE, iconv="CP437", verbose = TRUE, 
+tv.site(db, tv_home, drop=TRUE, common.only = FALSE, verbose = TRUE, 
 replace.names, ...)
 }
 
@@ -12,7 +12,6 @@ replace.names, ...)
   \item{tv_home}{Turbowin installation path. Optional, if Turbowin is either on "C:/turbowin" or "C:/Programme/Turbowin".}
   \item{drop}{Drop variables without values.}
   \item{common.only}{Import only header data with the same name in all databases.}
-  \item{iconv}{specify locale if necessary}
   \item{verbose}{print warnings and hints}
   \item{replace.names}{replace variable names. Useful if using multiple source databases. Data frame with names to be replaced in first and replacing names in second column.}
   \item{...}{Additional options like \code{dec} for type.convert}
@@ -33,8 +32,6 @@ You can use the example in the final output line to make a summary statistic for
 data.frame of site variables.
 }
 
-\author{Florian Jansen
-\email{florian.jansen@uni-rostock.de}
-        }
+\author{Florian Jansen \email{florian.jansen@uni-rostock.de} }
 
-\keyword{misc, survey}
+\keyword{misc}

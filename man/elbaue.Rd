@@ -37,6 +37,3 @@ Data frame \code{elbaue.env} contains the following variables:
   elbaue.env <- tv.site('elbaue')
 }
 }
-
-\keyword{datasets}
-

@@ -1,81 +1,48 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("gwindow", "gtree", "addHandlerDoubleclick", "svalue"))
 
 ##### Child taxa of a taxon
-child <- function (x, refl = tv.refl(), gen=4, tree=FALSE, quiet=FALSE, syn=FALSE, ...) {
+child <- function (x, refl = tv.refl(), gen=4, quiet=FALSE, syn=FALSE, ...) {
   if(missing(refl)) refl <- tv.refl()
   species <- tax("all", detailed = TRUE, refl = refl, syn = TRUE, quiet =TRUE, ...)
   if(length(x) > 1) { warning('More than one species selected, using only the first.');  x <- x[1]}
   s <- tax(x, refl = refl, strict = TRUE, quiet = TRUE, ...)
   x <- s$TaxonConceptID
-# if(is.character(x) & nchar(x) != 36) stop('x must be given as Taxon ID (GUID or integer).')
-  if(tree) {
-    root <- child(x, gen=1, ...)
-    if(!is.null(root)) {
-      offspring <- function(path, ...) {
-        ll <- root
-        for(i in path)
-          ll <- childs(i, gen=1, tree=FALSE, quiet=TRUE, syn=syn)
-        off <- logical(nrow(ll))
-        for(n in 1:nrow(ll)) off[n] <- !is.null(childs(ll$TaxonUsageID[n], quiet=TRUE))
-        if(syn) out <- data.frame(
-          Name=ll$TaxonName,
-          hasOffspring=off,
-          Rang=ll$TaxonRank,
-          Synonym=ll$SYNONYM,
-          stringsAsFactors=FALSE
-        ) else
-          out <- data.frame(
-            Name=ll$TaxonName,
-            hasOffspring=off,
-            Rang=ll$TaxonRank,
-            Nr=ll$TaxonUsageID,
-            stringsAsFactors=FALSE
-          )
-        out
-      }
-      if (requireNamespace("gWidgets", quietly = TRUE)) {
-      w <- gWidgets::gwindow(paste("Taxonomic Tree of", species$TaxonName[species$TaxonUsageID==x]))
-      tr <- gWidgets::gtree(offspring=offspring, container=w)  
-      gWidgets::addHandlerDoubleclick(tr, handler=function(h,...) {
-        print(childs(gWidgets::svalue(h$obj), gen=1, syn=syn , quiet=TRUE)[, c('TaxonUsageID' , 'LETTERCODE' , 'TaxonName' , 'GRUPPE' , 'TaxonRank' , 'SYNONYM', 'IsChildTaxonOfID' , 'AccordingTo' , 'EDITSTATUS')], row.names=FALSE)
-      })
-      } else   stop('Please install gWidgetstcltk to run this function with tree = TRUE.')
-  }} else {
-      x <- species[match(x, species$TaxonUsageID),'TaxonConceptID']
-      x <- species[match(x, species$TaxonUsageID),]
-      if(syn) {
-        ch <- species[which(species$IsChildTaxonOfID == x$TaxonUsageID),'TaxonUsageID']
-        if(length(ch)>0) ch <- do.call(rbind, lapply(ch, function(x) syn(x, quiet=TRUE, refl=refl)))
-      } else 
-      	ch <- species[which(species$IsChildTaxonOfID == x$TaxonUsageID),]
-      if(is.null(ch)) stop('ch is NULL')
-       else
-        if(nrow(ch)==0) {
-          if(!quiet)  if(is.na(x$TaxonName)) message('Could not find ', s) else message(x$TaxonName, ' has no children.')
-        } else {
-          ch$GENERATION <- 1
-          ch2 <- ch
-          t <- 1
-          repeat {
-            t <- t+1
-            if(syn) {
-              ch2 <- species[which(species$IsChildTaxonOfID == x$TaxonUsageID),'TaxonUsageID']
-              ch2 <- do.call(rbind, lapply(ch2, function(x) syn(x, quiet=TRUE)))
-            } else 
-            	ch2 <- species[which(species$IsChildTaxonOfID %in% ch2$TaxonUsageID),]
-            if(nrow(ch2)== 0 ) break
-            ch2$GENERATION <- t
-            ch <- rbind(ch, ch2)
-            if(gen <= t) break
-          }
-          if(!is.null(gen)) ch <- ch[ch$GENERATION <= gen,]
-          if(!quiet) {
-    cat('Children of ', s$TaxonName, ' (', s$TaxonUsageID, ')', if(x$TaxonUsageID != s$TaxonUsageID) {paste(" = Synonym of ", x$TaxonName, ' (', x$TaxonConceptID, ')', sep='')},':\n', sep='')
-            print(ch[, names(ch)[names(ch) %in% c('TaxonUsageID','TaxonName','NameAuthor','TaxonRank','AccordingTo','IsChildTaxonOfID','GENERATION','SYNONYM','EDITSTATUS')]], row.names=FALSE)
-          }}
-    invisible(ch)
-    }
+
+    x <- species[match(x, species$TaxonUsageID),'TaxonConceptID']
+    x <- species[match(x, species$TaxonUsageID),]
+    if(syn) {
+      ch <- species[which(species$IsChildTaxonOfID == x$TaxonUsageID),'TaxonUsageID']
+      if(length(ch)>0) ch <- do.call(rbind, lapply(ch, function(x) syn(x, quiet=TRUE, refl=refl)))
+    } else 
+    	ch <- species[which(species$IsChildTaxonOfID == x$TaxonUsageID),]
+    if(is.null(ch)) stop('ch is NULL')
+     else
+      if(nrow(ch)==0) {
+        if(!quiet)  if(is.na(x$TaxonName)) message('Could not find ', s) else message(x$TaxonName, ' has no children.')
+      } else {
+        ch$GENERATION <- 1
+        ch2 <- ch
+        t <- 1
+        repeat {
+          t <- t+1
+          if(syn) {
+            ch2 <- species[which(species$IsChildTaxonOfID == x$TaxonUsageID),'TaxonUsageID']
+            ch2 <- do.call(rbind, lapply(ch2, function(x) syn(x, quiet=TRUE)))
+          } else 
+          	ch2 <- species[which(species$IsChildTaxonOfID %in% ch2$TaxonUsageID),]
+          if(nrow(ch2)== 0 ) break
+          ch2$GENERATION <- t
+          ch <- rbind(ch, ch2)
+          if(gen <= t) break
+        }
+        if(!is.null(gen)) ch <- ch[ch$GENERATION <= gen,]
+        if(!quiet) {
+  cat('Children of ', s$TaxonName, ' (', s$TaxonUsageID, ')', if(x$TaxonUsageID != s$TaxonUsageID) {paste(" = Synonym of ", x$TaxonName, ' (', x$TaxonConceptID, ')', sep='')},':\n', sep='')
+          print(ch[, names(ch)[names(ch) %in% c('TaxonUsageID','TaxonName','NameAuthor','TaxonRank','AccordingTo','IsChildTaxonOfID','GENERATION','SYNONYM','EDITSTATUS')]], row.names=FALSE)
+        }}
+  invisible(ch)
 }
+
 childs <- function(...) child(...)
 
 

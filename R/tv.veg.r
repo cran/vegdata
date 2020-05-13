@@ -5,7 +5,7 @@ tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE,
   spcnames = c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), 
   obs, site, refl, RelScale, ...) 
 {
-options(warn=1)
+  options(warn=1)
   ## Checks
     lc <- toupper(match.arg(lc))
     cover.transform <- match.arg(cover.transform)
@@ -20,10 +20,9 @@ options(warn=1)
     lc.1 <- data.frame(LAYER=0:9, COMB=c(0,rep('Tree',3),rep('Shrub',2),rep(0,4)))
 #    data("lc.1", package = 'vegdata', envir = 'vegdata')
     if(missing(pseudo)) pseudo <- list(lc.1, 'LAYER')
-
 ## Taxa
     if(missing(refl)) refl <- tv.refl(db = db[1], tv_home = tv_home)
-    cat('Taxonomic reference list: ',refl, '\n')
+    cat('Taxonomic reference list: ', refl, '\n')
     if(taxval) {
       obs <- taxval(obs=obs, refl = refl, ...)
     }
@@ -55,6 +54,7 @@ options(warn=1)
         obs$RELEVE_NR[nrow(obs)] <- noobs[i]; obs$TaxonUsageID[nrow(obs)] <- 0; obs$LAYER[nrow(obs)] <- 0
       }
 ## Pseudo-Species / Layer
+    print('PSeudo species')
     if(!is.null(pseudo)) {
         cat('creating pseudo-species ... \n')
 	if(length(pseudo[[2]]) > 1) stop('Possibility to differentiate more than one plot-species attribute not yet implemented. \n
@@ -66,17 +66,19 @@ options(warn=1)
     cat('combining occurrences using type', toupper(lc), 'and creating vegetation matrix ... \n')
     gc(TRUE, verbose = FALSE)
     layerfun <- function(x) round((1 - prod(1 - x/100)) * 100, dec)
+    print('Inflate')
     results <- switch(lc,  # Inflate matrix
       LAYER = tapply(obs[, values], list(rowlab, collab), layerfun),
       MEAN  = tapply(obs[, values], list(rowlab, collab), mean), 
       MAX   = tapply(obs[, values], list(rowlab, collab), max), 
       SUM   = tapply(obs[, values], list(rowlab, collab), sum),
-      FIRST = tapply(obs[, values], list(rowlab, collab), first.word) )
+      FIRST = tapply(obs[, values], list(rowlab, collab), stringr::word) )
     results[is.na(results)] <- 0
     results <- as.data.frame(results)
     colnames(results)
     
 ## Names
+    print('names')
     if(spcnames %in% c('short','long')) {
       cat('replacing species numbers with ', spcnames, ' names ... \n')
       if(is.null(pseudo)) {

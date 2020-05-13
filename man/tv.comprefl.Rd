@@ -11,7 +11,7 @@ The function checks for different taxon numbers and, or taxon names in two TURBO
 \usage{
    tv.compRefl(refl1, refl2, tv_home, check.nr=FALSE, 
    simplify = TRUE, verbose=FALSE, Sink=TRUE, 
-   filter.1, filter.2, new = FALSE, file="compRefl.txt", ...)
+   new = FALSE, file="compRefl.txt", ...)
 }
 
 \arguments{
@@ -22,8 +22,6 @@ The function checks for different taxon numbers and, or taxon names in two TURBO
   \item{simplify}{normalize taxon names with function taxname.simplify}
   \item{verbose}{Print species names on screen.}
   \item{Sink}{Write text file with differences.}
-  \item{filter.1}{Character vector of filter keywords for refl1 to omit taxa from the comparison.}
-  \item{filter.2}{Character vector of filter keywords for refl2 to omit taxa from the comparison.}
   \item{new}{Write new combined TURBOVEG reference list.}
   \item{file}{Name of the sink file.}
   \item{\dots}{Additional arguments.}

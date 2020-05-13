@@ -1,6 +1,6 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("write.dbf"))
 
-tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRUE, verbose = FALSE, Sink = TRUE, filter.1, filter.2, 
+tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRUE, verbose = FALSE, Sink = TRUE, 
   new = FALSE, file="compRefl.txt", ...)  {
   if (missing(tv_home)) 
         tv_home <- tv.home()
@@ -12,8 +12,8 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRU
     refl1 <- deparse(substitute(refl1))
     refl2 <- deparse(substitute(refl2))
   	refl.a$TaxonNameOriginal <- refl.a[, "TaxonName"]; refl.b$TaxonNameOriginal <- refl.b[, "TaxonName"]
-    refl.a[, "TaxonName"] <- taxname.abbr(refl.a[, "TaxonName"], hybrid = FALSE)
-    refl.b[, "TaxonName"] <- taxname.abbr(refl.b[, "TaxonName"], hybrid = FALSE)
+    refl.a[, "TaxonName"] <- taxname.abbr(refl.a[, "TaxonName"], hybrid = 'remove')
+    refl.b[, "TaxonName"] <- taxname.abbr(refl.b[, "TaxonName"], hybrid = 'remove')
   if(simplify) {
     refl.a[, "TaxonName"] <- taxname.simplify(refl.a[, "TaxonName"])
     refl.b[, "TaxonName"] <- taxname.simplify(refl.b[, "TaxonName"])  	
@@ -24,8 +24,8 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRU
   diff.B <- sort(as.character(refl.a[!refl.a[, "TaxonName"] %in% refl.b[, "TaxonName"], "TaxonName"]))
   if (check.nr) {
       merged.df <- merge(refl.a, refl.b, by = "TaxonName", all.x = FALSE)
-      selectedcolumns <- if('EDITSTATUS' %in% names(merged.df)) c("TaxonName", "TaxonUsageID.x", "TaxonUsageID.y", 'BEGRUEND', 'EDITSTATUS') else c("TaxonName", "TaxonUsageID.x", "TaxonUsageID.y")
-      nonmatchingNumbers <- merged.df[as.character(merged.df$TaxonUsageID.x) != as.character(merged.df$TaxonUsageID.y), selectedcolumns]
+      selectedcolumns <- if('EDITSTATUS' %in% names(merged.df)) c("TaxonName", "TaxonUsageID.x", "TaxonUsageID.y", 'EDITSTATUS') else c("TaxonName", "TaxonUsageID.x", "TaxonUsageID.y")
+      nonmatchingNumbers <- merged.df[as.character(merged.df$usaTaxonUsageID.x) != as.character(merged.df$TaxonUsageID.y), selectedcolumns]
       nonmatchingNumbers <- nonmatchingNumbers[!is.na(nonmatchingNumbers[, 1]), ]
       #   nonmatchingNumbers <-  if('EDITSTATUS' %in% names(merged.df)) nonmatchingNumbers[order(nonmatchingNumbers$EDITSTATUS, nonmatchingNumbers[, 2]), ] else nonmatchingNumbers[order(nonmatchingNumbers[, 2]), ]
       cat(nrow(nonmatchingNumbers), 'lines with non-matching numbers.')
@@ -34,7 +34,7 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRU
       nonmatchingNumbers$TaxonName[which(nonmatchingNumbers$TaxonName %in% names(tab[tab == 1]))]
     }
       merged.df <- merge(refl.a, refl.b, by = 'TaxonUsageID', all.x = FALSE)
-      selectedcolumns <- if('EDITSTATUS' %in% names(merged.df)) c("TaxonUsageID", 'TaxonName.x', "TaxonName.y", 'BEGRUEND', 'EDITSTATUS') else c("TaxonUsageID", 'TaxonName.x', "TaxonName.y")
+      selectedcolumns <- if('EDITSTATUS' %in% names(merged.df)) c("TaxonUsageID", 'TaxonName.x', "NameAuthor.x", "TaxonName.y", "NameAuthor.y", 'EDITSTATUS') else c("TaxonUsageID", 'TaxonName.x', "TaxonName.y")
       nonmatchingNames <- merged.df[merged.df$TaxonName.x != merged.df$TaxonName.y, selectedcolumns]
       nonmatchingNames <- nonmatchingNames[!is.na(nonmatchingNames[, 1]), ]
       nonmatchingNames <- if('EDITSTATUS' %in% names(merged.df)) nonmatchingNames[order(nonmatchingNames[, 'EDITSTATUS'], nonmatchingNames[, 2]), ] else  nonmatchingNames <- nonmatchingNames[order(nonmatchingNames[, 2]), ]
@@ -77,16 +77,12 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRU
     if(length(diff.B) == 0 & length(diff.A) == 0)
         cat("\n Species names are identical \n")
     else {
-      if(!missing(filter.1)) diff.B <- diff.B[!diff.B %in% filter.1]
       if (length(diff.B) > 0) {
             cat("\n", length(diff.B), "TaxNames of reflist nr 1 =", refl1, "not occurring in reflist nr 2 =", refl2, "\n")
             if (verbose) 
                 print(diff.B, quote = FALSE, row.names=FALSE)
       }
-      if(!missing(filter.2)) {
-        diff.A <- diff.A[!diff.A %in% filter.2]
-      }
-    
+
       if (length(diff.A) > 0) {
           cat("\n", length(diff.A), "TaxNames of reflist nr 2 =", refl2, "not occurring in reflist nr 1 =", refl1, ": \n")
           if (verbose) 
@@ -119,11 +115,8 @@ tv.compRefl <- function (refl1, refl2, tv_home, check.nr = FALSE, simplify = TRU
         sink()
         cat("\n Report is written to file \"", file, " \n")
         if (check.nr) write.csv2(nonmatchingNumbers, file='differentNumbers.csv')
-        if(!missing(filter.1)) write.csv2(nonmatchingNames[!nonmatchingNames[,2] %in% filter.1,], file='differentNames.csv')
-#         write.csv2(diff.B[!diff.B %in% nonmatchingNames], file='noMatches_inRefl_2.csv')
-#         write.csv2(diff.A[!diff.A %in% nonmatchingNames], file='noMatches_inRefl_1.csv')
-        write.csv2(refl.a[refl.a[, "TaxonName"] %in% diff.B, c("TaxonNameOriginal","TaxonName")], file='noMatches_inRefl_2.csv')
-        write.csv2(refl.b[refl.b[, "TaxonName"] %in% diff.A, c("TaxonNameOriginal","TaxonName")], file='noMatches_inRefl_1.csv')
+        write.csv2(refl.a[refl.a[, "TaxonName"] %in% diff.B, c('TaxonUsageID', "TaxonNameOriginal","TaxonName")], file='noMatches_inRefl_2.csv', row.names = FALSE)
+        write.csv2(refl.b[refl.b[, "TaxonName"] %in% diff.A, c('TaxonUsageID',"TaxonNameOriginal","TaxonName")], file='noMatches_inRefl_1.csv', row.names = FALSE)
     }
     if (new) {
       names(refl.a) <- TV.replace(names(refl.a))

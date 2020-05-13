@@ -1,4 +1,4 @@
-## ----prep, echo=FALSE, results='hide'------------------------------------
+## ----prep, echo=FALSE, results='hide'-----------------------------------------
 library(knitr)
 options(stringsAsFactors=FALSE)
 opts_chunk$set(concordance = TRUE, comment = "", warning = FALSE, message = TRUE, echo = TRUE, results = 'tex', size="footnotesize")
@@ -12,64 +12,66 @@ file.copy(from = file.path(path.package("vegdata"), 'tvdata', 'Popup'), to = tmp
 file.copy(from = file.path(path.package("vegdata"), 'tvdata', 'Species'), to = tmp, recursive = TRUE)
 file.copy(from = file.path(path.package("vegdata"), 'tvdata', 'Data'), to = tmp, recursive = TRUE)
 
-## ----load, results='hide'------------------------------------------------
+## ----load, results='hide'-----------------------------------------------------
 library(vegdata)
 
-## ----eval=TRUE-----------------------------------------------------------
+## ----eval=TRUE----------------------------------------------------------------
 tv_home <- tv.home()
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  options(tv_home="path_to_your_Turboveg_root_directory")
 
-## ----dblisting-----------------------------------------------------------
+## ----dblisting----------------------------------------------------------------
 tv.db()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 tv.refl()
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  tv.refl('your_preferred_list')
 
-## ----tax, eval =TRUE-----------------------------------------------------
+## ----tax, eval =TRUE----------------------------------------------------------
 tax('Brachythecium rutabulum')
 
-## ----syn-----------------------------------------------------------------
+## ----syn----------------------------------------------------------------------
 tax('Elytrigia repens')$TaxonName
 syn('Elytrigia repens')
 
-## ----childs, eval=FALSE--------------------------------------------------
+## ----childs, eval=FALSE-------------------------------------------------------
 #  child(27, quiet=TRUE)$TaxonName
 #  parent('ACHIMIL')
 
-## ----db------------------------------------------------------------------
+## ----db-----------------------------------------------------------------------
 db <- 'taxatest'
 
-## ----meta, eval=FALSE----------------------------------------------------
+## ----meta, eval=FALSE---------------------------------------------------------
 #  tv.metadata(db)
 
-## ----obs-----------------------------------------------------------------
+## ----obs----------------------------------------------------------------------
 getOption('tv_home')
-obs.tax <- tv.obs(db)
+obs <- tv.obs(db)
 # Adding species names
 species <- tax('all', refl=tv.refl(db=db))
-obs.tax$TaxonName <-  species$TaxonName[match(obs.tax$TaxonUsageID, species$TaxonUsageID)]
-head(obs.tax[,c('RELEVE_NR','TaxonUsageID','COVER_CODE','LAYER','TaxonName')])
+obs$TaxonName <-  species$TaxonName[match(obs$TaxonUsageID, species$TaxonUsageID)]
+head(obs[,c('RELEVE_NR','TaxonUsageID','COVER_CODE','LAYER','TaxonName')])
 
-## ----taxval, eval=TRUE---------------------------------------------------
-obs.taxval <- taxval(obs.tax, db=db, maxtaxlevel='AGG', interactive=FALSE, check.critical = TRUE)
+## ----data---------------------------------------------------------------------
+library(vegdata)
+obs <- tv.obs('taxatest')
+sort(tax(unique(obs$TaxonUsageID))$TaxonName)
 
-## ----Taxon---------------------------------------------------------------
-obs.taxval$OriginalName <- obs.taxval$TaxonName
-obs.taxval$TaxonName <-  species$TaxonName[match(obs.taxval$TaxonUsageID, species$TaxonUsageID)]
-obs.taxval[!duplicated(obs.taxval$OriginalName),c('RELEVE_NR', 'COVER_CODE', 'TaxonName', 'OriginalName')]
+## ----adapt--------------------------------------------------------------------
+obs.tax <- taxval(obs, db='taxatest', ag='adapt', rank='SPE', check.critical = FALSE)
+sort(tax(unique(obs.tax$TaxonUsageID), db=db)$TaxonName)
 
-## ----coarsen, eval=TRUE, results='hide'----------------------------------
-obs.tax$OriginalName <-obs.tax$TaxonName
-tmp <- taxval(obs.tax, db=db, ag='adapt', maxtaxlevel = 'ROOT', rank='FAM', check.critical = FALSE)
-tmp$newTaxon <- tax(tmp$TaxonUsageID, db=db)$TaxonName
+## ----conflict-----------------------------------------------------------------
+obs.tax <- taxval(obs, db='taxatest', ag='conflict', check.critical = FALSE)
+sort(tax(unique(obs.tax$TaxonUsageID), db=db)$TaxonName)
 
-## ----print.coarsen-------------------------------------------------------
-head(tmp[,c('OriginalName','newTaxon')], 10)
+## ----maxtax-------------------------------------------------------------------
+obs.tax <- taxval(obs, db='taxatest', ag='conflict', maxtaxlevel = 'AGG', check.critical = FALSE, interactive = TRUE)
+obs.tax <- taxval(obs.tax, db='taxatest', ag='adapt', rank='SPE', check.critical = FALSE)
+sort(tax(unique(obs.tax$TaxonUsageID), db=db)$TaxonName)
 
 ## ----coverperc, echo=2:4, eval=TRUE-------------------------------------------------------------------------
 options(width=120)

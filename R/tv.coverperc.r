@@ -27,15 +27,15 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
     stop('The above releve numbers have no cover scale value in the header data or cover code is missing in proposed scale.')
     }
   #### Split ###
-  obs <- split(obs, obs$COVERSCALE, drop = FALSE)
+  g <- obs$COVERSCALE
+  obs <- split(obs, g, drop = FALSE)
   for (i in names(obs)) {
     if (i == "00") {
     	obs[[i]]$COVER_CODE <- replace(as.character(obs[[i]]$COVER_CODE), obs[[i]]$COVER_CODE == '9X', '100')
     	if(any(is.na(as.numeric(obs[[i]]$COVER_CODE)))) 
     	  warning('Not all percentage cover values in your database are numeric, please check in Turboveg.')
       obs[[i]] <- data.frame(obs[[i]], COVER_PERC = as.numeric(as.character(obs[[i]][, "COVER_CODE"])))
-    }
-    else {
+    }  else {
       p <- which(is.na(tvscale[i,]))[1]
       if(is.na(p)) p <- ncol(tvscale)
       scala <- tvscale[i,]
@@ -52,7 +52,7 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
       obs[[i]]["COVER_PERC"] <- d.f$perc[match(obs[[i]][,"COVER_CODE"], d.f$code)]
   }
   }
-  obs <- unsplit(obs, 'COVERSCALE')
+  obs <- unsplit(obs, g)
   if(any(is.na(obs$COVER_PERC))) {
       print(obs[is.na(obs$COVER_PERC),'COVER_CODE'])
       stop("Invalid cover codes, please check tvabund.dbf and tvscale.dbf!")

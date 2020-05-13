@@ -157,13 +157,24 @@ tax('Elytrigia repens')$TaxonName
 syn('Elytrigia repens')
 @
 
-The reference list contains information about the taxonomic hierarchy which can be used with \textit{childs} or \textit{parents}.
+The reference list contains information about the taxonomic hierarchy which can be used with \textit{child} or \textit{parent}.
 <<childs, eval=FALSE>>=
 child(27, quiet=TRUE)$TaxonName
 parent('ACHIMIL')
 @
-If you want to learn more about the taxonomic reference list \emph{GermanSL} for Germany, please look at \cite{Jansen2008}. You can download the list manually from \url{'http://geobot.botanik.uni-greifswald.de/portal/reflist'}.
+If you want to learn more about the taxonomic reference list \emph{GermanSL} for Germany, please look at \cite{Jansen2008}.
 
+\subsection{Name manipulation}
+
+We often need to adapt spelling differences and changes of species names not belonging to species concepts. Package vegdata contains several service functions to help with that.
+
+\textbf{taxname.abbr} is for standardisation of names, mostly for rank spellings.
+
+\textbf{taxname.simplify} can be used to compare two name vectors of species names regarding "taxonomic fuzziness". Taxon names will differ through time and opportunity. But not all parts of the names are equally affected. Case endings change much more frequently than the beginning of names, ii and y are exchangeable, etc. Those name parts and diacritic marks, double consonants, "th", and other frequent differences in writing style will be eliminated.
+
+\textbf{parse.taxa}: parse genus and epitheta from name strings.
+
+\textbf{taxname.removeAuthors} Remove name authors from full scientific name strings.
 
 
 \section{Load data from Turboveg}
@@ -186,11 +197,11 @@ Database \texttt{taxatest} is an artificial dataset to show functionalities and 
 Let's have a look at the Turboveg data structure.
 <<obs>>=
 getOption('tv_home')
-obs.tax <- tv.obs(db)
+obs <- tv.obs(db)
 # Adding species names
 species <- tax('all', refl=tv.refl(db=db))
-obs.tax$TaxonName <-  species$TaxonName[match(obs.tax$TaxonUsageID, species$TaxonUsageID)]
-head(obs.tax[,c('RELEVE_NR','TaxonUsageID','COVER_CODE','LAYER','TaxonName')])
+obs$TaxonName <-  species$TaxonName[match(obs$TaxonUsageID, species$TaxonUsageID)]
+head(obs[,c('RELEVE_NR','TaxonUsageID','COVER_CODE','LAYER','TaxonName')])
 @
 
 This condensed format shows only presences of species observations. Every species observation is stored in one row and the membership to a specific vegetation plot is given in column \textit{RELEVE\_NR}.
@@ -259,57 +270,68 @@ This condensed format shows only presences of species observations. Every specie
 
 \subsection{Taxonomic harmonisation - function taxval}
 
-We are using the taxonomic reference list GermanSL \citep{Jansen2008} which contains not only information about synonymy of species names, but also about the taxonomic hierarchy. This enables several semi-automatic enhancements of the taxonomic information stored in your vegetation database. If your database is not referenced to GermanSL (and can not be converted), you have to dismiss function \texttt{taxval} (option tax=FALSE in \texttt{tv.veg}) and do the taxonomic harmonization by hand (function \texttt{comb.species}).
 
-\footnotesize
+Prerequisits for taxonomic harmonisations in vegdata are 
+\begin{enumerate}
+ \item a taxonomic tree, i.e. a taxon list with parent-child relationships, given in a column called \textbf{IsChildTaxonOfID}
+ \item ordered taxonomic levels, given as a data.frame, see \texttt{taxlevels} with rank abbreviation and numerical values giving the lowest number for the highest level. The rank abbreviation must correlate to of column \textbf{TaxonRank} in the taxonomic reference list. Type \textit{taxlevels} to see the implemented table for GermanSL.
+\end{enumerate}
 
-<<taxval, eval=TRUE>>=
-obs.taxval <- taxval(obs.tax, db=db, maxtaxlevel='AGG', interactive=FALSE, check.critical = TRUE)
+We are using the taxonomic reference list GermanSL \citep{Jansen2008}, which contains not only information about synonymy of species names, but also a taxonomic hierarchy. This enables several semi-automatic enhancements of the taxonomic information stored in your vegetation database. If your database is not referenced to GermanSL (and can not be converted), you have to care for a column IsChildtaxonOfID and an appropriate taxlevels data.frame to use function \texttt{taxval}. \textbf{Otherwise please use option tax=FALSE in \texttt{tv.veg}) and do the taxonomic harmonization by hand} (e.g. with function \texttt{comb.species}).
+
+Dataset \textit{taxatest} is used to evaluate package code and to show the functionality especially for the taxonomic harmonization.
+We have Achillea species with a subspecies sudetica, a synonym subspecies collina, two observations on species level (A. atrata and millefolium) and even one on genus level.
+
+<<data>>=
+library(vegdata)
+obs <- tv.obs('taxatest')
+sort(tax(unique(obs$TaxonUsageID))$TaxonName)
 @
-\normalsize
 
 The database contains 20 different names in the beginning.
+
 \paragraph{Synonyms} First the number of species names which are synonyms are given. They are transferred to accepted taxon names, respectively numbers (see option syn='adapt'). If you want to preserve synonyms, choose option syn = 'conflict' or 'preserve'.
 
 \paragraph{Monotypic species within the area}
 Monotypic taxa are valid taxa which are the only child of their next higher taxonomic rank within the survey area. By default they will be converted by \texttt{taxval} to the higher rank. For instance \emph{Poa trivialis} is in Germany only represented by \emph{Poa trivialis subspecies trivialis}. Both taxa are valid, but for most analysis only one name for these identical entities must be used. By default a list of monotypic taxa within the GermanSL (whole Germany) is considered (see \texttt{tv.mono('GermanSL 1.4')}). The default is to set all monotypic species to the higher rank (because many monotypic subspecies can occur in vegetation databases). \\
 If necessary, the procedure has to be repeated through the taxonomic 
 
-\paragraph{Trimming the hierarchy}
-If your database contains the taxon \textit{Asteraceae spec.}, the taxval code explained in the next chapter will aggregate occurrences of all your \textit{Asteracea} to the family level. To prevent this you can delete all observations above a certain taxonomic level. The default is not to trim the hierarchy (ROOT = "Greenish something" is the toplevel).
-
-\paragraph{Solving the nestedness}
-If your database contains \textit{Achillea millefolium} but also \textit{Achillea millefolium agg.} for most analysis it will be necessary to coarsen the first (option ag='conflict') because \textit{A. millefolium agg.} will probably include further occurrences of \textit{Achillea millefolium}. \\
-The procedure has to be repeated until all occurring taxonomical levels are considered. \\
-Especially with aggregates and their members the coarsening to the higher level can be a sad fate. If you have 100 occurrences of \textit{Achillea millefolium} but a single one with \textit{A. mill. agg.} you might want to clean your observational dataframe beforehand or do the aggregation afterwards manually with tv.veg(db, ag='preserve') and a manual correction with function comb.species (see below).
-
-I confess that it is a strange and complete artificial example. Starting with 20 names in the beginning only 11 names survived the valuation. All others had to be converted to give only information about consistent taxon concepts.
-
-\footnotesize
-<<Taxon>>=
-obs.taxval$OriginalName <- obs.taxval$TaxonName
-obs.taxval$TaxonName <-  species$TaxonName[match(obs.taxval$TaxonUsageID, species$TaxonUsageID)]
-obs.taxval[!duplicated(obs.taxval$OriginalName),c('RELEVE_NR', 'COVER_CODE', 'TaxonName', 'OriginalName')]
-@
-\normalsize
-
 \paragraph{Critical Pseudonyms}
 
 Taxon misapplication is maybe the greatest danger in using survey data. Known misapplications of names (.auct) are embedded within GermanSL. Please pay attention, if these might also be relevant for your dataset. \\
-Completely independent from the questions of correct taxonomic naming of a specific specimen, the boundary of a taxon interpretation can differ much \citet[see][]{Jansen2010}. This should be adequately solved during data entry. Nevertheless these warnings gives you a last chance to rethink the correctness of your taxon assignments.
+Completely independent from the questions of correct taxonomic naming of a specific specimen, the boundary of a taxon interpretation can differ much, see \citet{Jansen2010}. This should be adequately solved during data entry. Nevertheless the "Warning: Critical species" and "Warning: Potential pseudonyms" give you a last chance to rethink the correctness of your taxon assignments.
+
 
 \paragraph{Coarsening to a specific taxonomic level}
 
-If you want only taxa of e.g. level "species" in your analyses but no other taxonomic level, use \texttt{taxval(obs, ag='adapt', rank='SPE')}. All hierarchical levels below the species level (including the above specified monotypic subspecies) are set to species level in this case.
+For most analyses it will be necessary to analyse only one taxonomic level, e.g. not to confuse species numbers per plot, community means etc. For this you normally have to raise the lower observations to a coarser level. If you want the species level, you can specify ag='adapt' and rank='SPE'. All hierarchical levels below the species level (including the above specified monotypic subspecies) are set to species level in this case.
 
-<<coarsen, eval=TRUE, results='hide'>>=
-obs.tax$OriginalName <-obs.tax$TaxonName
-tmp <- taxval(obs.tax, db=db, ag='adapt', maxtaxlevel = 'ROOT', rank='FAM', check.critical = FALSE)
-tmp$newTaxon <- tax(tmp$TaxonUsageID, db=db)$TaxonName
+<<adapt>>=
+obs.tax <- taxval(obs, db='taxatest', ag='adapt', rank='SPE', check.critical = FALSE)
+sort(tax(unique(obs.tax$TaxonUsageID), db=db)$TaxonName)
 @
-<<print.coarsen>>=
-head(tmp[,c('OriginalName','newTaxon')], 10)
+
+
+The subspecies have been raised to the species level. However, there is still a conflict between the Achillea millefolium observations and the aggregate. The same for Hieracium pilosella and H. subg. Pilosella.  To solve these issues we can us ag='conflict': 
+
+<<conflict>>=
+obs.tax <- taxval(obs, db='taxatest', ag='conflict', check.critical = FALSE)
+sort(tax(unique(obs.tax$TaxonUsageID), db=db)$TaxonName)
 @
+
+The yarrow taxa are all subsumed to the highest occurring taxon in this taxon tree, i.e. a genus observation. For the two Armeria species the subspecies level was kept because there is no conflicting higher taxon in the dataset.
+
+The result might be disappointing, e.g. think of a single coarse determination only on the family level in a huge dataset. This will lead to raising all species of that family to the family level. This would impede many analyses and you might want to choose a maximum taxonomic level to remain in the dataset. This can be done with option "maxtaxlevel".
+If you use interactive=TRUE, you will be able to see the number of occurrences for the different levels in file "taxvalDecisionTable.csv" which might help to decide which way to go.
+
+Combining "maxtaxlevel" and the two options of "ag" might come closest to what seems scientifically reasonable in many cases.
+
+<<maxtax>>=
+obs.tax <- taxval(obs, db='taxatest', ag='conflict', maxtaxlevel = 'AGG', check.critical = FALSE, interactive = TRUE)
+obs.tax <- taxval(obs.tax, db='taxatest', ag='adapt', rank='SPE', check.critical = FALSE)
+sort(tax(unique(obs.tax$TaxonUsageID), db=db)$TaxonName)
+@
+
 
 Check \texttt{?taxval} and \texttt{args(taxval)} for more options.
 

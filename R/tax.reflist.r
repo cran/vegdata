@@ -10,7 +10,7 @@ store <- local({
 # Load taxonomic reference list
 load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = TRUE, check = FALSE, hybrid, ...) {
   reflist.type <- match.arg(reflist.type, c('Turboveg', 'EDIT'))
-  if(missing(hybrid)) hybrid = 'substitute'
+  if(missing(hybrid)) hybrid = 'retain'
   if(reflist.type == 'Turboveg') {
     tv_home <- do.call("tv.home", list(check = check))
     dbf <- if(detailed && refl %in% c('GermanSL 1.0', 'GermanSL 1.1', 'GermanSL 1.2', 'GermanSL 1.3')) 'tax.dbf' else 'species.dbf'
@@ -53,7 +53,7 @@ load.taxlist <- function(refl, reflist.type = c('Turboveg', 'EDIT'), detailed = 
         include <- !names(species) %in% c('SHORTNAME')
         species <- species[, include]
       }
-      if(is.character(species$TaxonUsageID)) stop(cat('Taxon ID must be integer or numeric. Please check reference list', refl, ifelse(detailed, 'tax.dbf', 'species.dbf')))
+      # if(is.character(species$TaxonUsageID)) warning(cat('Taxon ID should be integer or numeric. Please check reference list', refl, ifelse(detailed, 'tax.dbf', 'species.dbf'), '\n'))
        store(reflist, species)
     } else  species <- store(reflist)
   } else stop(c('Until now only reference list type "Turboveg" is supported. If you want to use taxval with other reflists please contact me.'))

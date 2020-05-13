@@ -6,20 +6,38 @@
   attr(veg, 'taxreflist') <- taxref
   return(out)
 }
-
-first.word <- function (x, i = 1, expr = substitute(x), add.legal=NULL) {
-  words <- if(!missing(x)) as.character(x)[1] else as.character(unlist(expr))[1]
-  if (i > 2) stop("only first and second word implemented")
-  chars <- substring(words, 1:nchar(words, keepNA = FALSE), 1:nchar(words, keepNA = FALSE))
-  legal.chars <- c(letters, LETTERS, '\u00fc','\u00e4','\u00f6','\u00df','\u00d7', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", add.legal)
-  non.legal.chars <- (1:length(chars))[!chars %in% legal.chars]
-  # length(non.legal.chars) > 0
-  if (i==1 & is.na(non.legal.chars[1])) return(words)
-  if (i==1 & !is.na(non.legal.chars[1])) return(substring(words, 1, non.legal.chars[1] - 1))
-  if (i==2 & is.na(non.legal.chars[2])) return(substring(words, non.legal.chars[1], nchar(words, keepNA = FALSE)))
-  if (i==2 & !is.na(non.legal.chars[2])) return(substring(words, non.legal.chars[1]+1, non.legal.chars[2]-1)) else return(character(0))
-}
-
+# 
+# first.word <- function (x, i = 1, expr = substitute(x), add.legal=NULL) {
+#   words <- if(!missing(x)) as.character(x)[1] else as.character(unlist(expr))[1]
+#   if (i > 2) stop("only first and second word implemented")
+#   chars <- substring(words, 1:nchar(words, keepNA = FALSE), 1:nchar(words, keepNA = FALSE))
+#   legal.chars <- c(letters, LETTERS, '\u00fc','\u00e4','\u00f6','\u00df','\u00d7', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", add.legal)
+#   non.legal.chars <- (1:length(chars))[!chars %in% legal.chars]
+#   # length(non.legal.chars) > 0
+#   if (i==1 & is.na(non.legal.chars[1])) return(words)
+#   if (i==1 & !is.na(non.legal.chars[1])) return(substring(words, 1, non.legal.chars[1] - 1))
+#   if (i==2 & is.na(non.legal.chars[2])) return(substring(words, non.legal.chars[1], nchar(words, keepNA = FALSE)))
+#   if (i==2 & !is.na(non.legal.chars[2])) return(substring(words, non.legal.chars[1]+1, non.legal.chars[2]-1)) else return(character(0))
+# }
+# 
+# word <- function (string, start = 1L, end = start, sep = fixed(" ")) {
+#   n <- max(length(string), length(start), length(end))
+#   string <- rep(string, length.out = n)
+#   start <- rep(start, length.out = n)
+#   end <- rep(end, length.out = n)
+#   breaks <- str_locate_all(string, sep)
+#   words <- lapply(breaks, invert_match)
+#   len <- vapply(words, nrow, integer(1))
+#   neg_start <- !is.na(start) & start < 0L
+#   start[neg_start] <- start[neg_start] + len[neg_start] + 1L
+#   neg_end <- !is.na(end) & end < 0L
+#   end[neg_end] <- end[neg_end] + len[neg_end] + 1L
+#   start[start > len] <- NA
+#   end[end > len] <- NA
+#   starts <- mapply(function(word, loc) word[loc, "start"], words, start)
+#   ends <- mapply(function(word, loc) word[loc, "end"], words, end)
+#   str_sub(string, starts, ends)
+# }
 # x <-  c('Tortula acaulon (With.) R. H.Zander var. acaulon', 'Phascum cuspidatum Hedw. v. cuspidatum', 'Tortula acaulon var. papillosa (Lindb.) R. H. Zander', 'Phascum cuspidatum subsp. papillosum (Lindb.) J. Guerra & Ros', 'Tortula SP.')
 
 

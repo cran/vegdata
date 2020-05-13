@@ -1,7 +1,6 @@
 
-taxname.abbr <- function(x, hybrid = c('ignore', 'TRUE', 'preserve', 'FALSE', 'substitute'), species = FALSE, cf = FALSE, ...) {
-    hybrid <- as.character(hybrid)
-    hybrid <- match.arg(hybrid, c('ignore', 'TRUE', 'preserve', 'FALSE', 'substitute'))
+taxname.abbr <- function(x, hybrid = c('remove', 'retain'), species = FALSE, cf = FALSE, ...) {
+    hybrid <- match.arg(hybrid)
   #  loc <- Sys.getlocale(category='LC_CTYPE')
 #  Sys.setlocale("LC_ALL","C")
 #  print('Executing taxname.abbr ...')
@@ -33,15 +32,13 @@ taxname.abbr <- function(x, hybrid = c('ignore', 'TRUE', 'preserve', 'FALSE', 's
     x <- sub('\ nothossp[.]' , '\ nssp.', x, perl=TRUE, useBytes=TRUE)
     x <- sub('\ nothovar[.]' , '\ nvar.', x, perl=TRUE, useBytes=TRUE)
     
-    if(hybrid %in% c('ignore', 'TRUE')) {
+    if(hybrid == 'remove') {
       x <- sub('\ x ' , '\ ', x, perl=TRUE, useBytes=TRUE)
       x <- gsub('\U00D7 ', '', x)
       x <- sub('\ nssp[.]' , '\ ssp.', x, perl=TRUE, useBytes=TRUE)
       x <- sub('\ nvar[.]' , '\ var.', x, perl=TRUE, useBytes=TRUE)
     }
-    if(hybrid %in% c('preserve', 'FALSE')) {
-    }
-    if(hybrid == 'substitute') {
+    if(hybrid == 'retain') {
       x <- sub('\ x\ ' , ' \u00d7\ ', x, perl=TRUE, useBytes=TRUE)
     }
 
@@ -62,7 +59,10 @@ taxname.abbr <- function(x, hybrid = c('ignore', 'TRUE', 'preserve', 'FALSE', 's
 }
 
 
-taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, hybrid=TRUE, concept.add='ignore', ...) {
+taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, hybrid=c('remove', 'retain'), rank=c('remove', 'retain'), concept.status=c('remove', 'retain'), ...) {
+  hybrid <- match.arg(hybrid)
+  rank <- match.arg(rank)
+  concept.status <- match.arg(concept.status)
     x <- gsub('\U00EB', 'e', x, perl=TRUE, useBytes=TRUE)
     x <- gsub('\U00CF', 'i', x, perl=TRUE, useBytes=TRUE)
     x <- gsub('ii', 'i', x, perl=TRUE, useBytes=TRUE)
@@ -76,10 +76,23 @@ taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, hybrid=TRUE, concept.a
     x <- gsub('tt', 't', x, perl=TRUE, useBytes=TRUE)
     x <- gsub( 'y', 'i', x, perl=TRUE, useBytes=TRUE)
     x <- gsub('ranum', 'rianum', x, perl=TRUE, useBytes=TRUE)
-if(concept.add == 'ignore') {
+if(concept.status == 'remove') {
   x <- gsub(' s[.] str[.]', '', x, perl=TRUE, useBytes=TRUE)
   x <- gsub(' s[.] l[.]', '', x, perl=TRUE, useBytes=TRUE)
 }
+if(hybrid == 'remove') {
+  x <- gsub('^X ', '', x)
+  x <- gsub('x ', '', x)
+  x <- gsub('\U00D7 ', '', x)
+}
+if(rank == 'remove') {
+  x <- gsub(' fo.', '', x, fixed = TRUE)
+  x <- gsub(' race', '', x, fixed = TRUE)
+  x <- gsub(' var.', '', x, fixed = TRUE)
+  x <- gsub(' subsp.', '', x, fixed = TRUE)
+  x <- gsub(' [ranglos]', '', x, fixed = TRUE) 
+}
+
 if(genus) {
   x <-	paste(sub('a$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
   x <-	paste(sub('as$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
@@ -114,22 +127,19 @@ if(epithet) {
     x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('us\\b', '', substr(x, regexpr('\ ', x), nchar(x))), sep='')
     x <- paste(substr(x, 1, regexpr('\ ', x)-1), gsub('ae', 'e', substr(x, regexpr('\ ', x), nchar(x))), sep='')    
 }
-if(hybrid) {
-	x <- gsub(' x ', ' ', x)
-	x <- gsub('\U00D7 ', '', x)
-}
 return(x)
 }
 # taxname.simplify(x, Gattungsendung=TRUE, Artendung=TRUE)
 
 
+
 TCS.replace <- function(x) {
 ## Turboveg & ## Florkart Germany (BfN lists)
-  x <- replace(x, toupper(x) %in% c('SPECIES_NR', 'TAXNR', 'NAMNR', 'NAMEID', 'TAXONUSAGEID'), 'TaxonUsageID')
-  x <- replace(x, toupper(x) %in% c('ABBREVIAT','TAXONNAME','TAXON','TAXNAME'), 'TaxonName')
-  x <- replace(x, toupper(x) %in% c('VALID_NR', 'SIPNR', 'NAMNR_GUELT', 'SYNNAMEID', 'TAXONCONCEPTID'), 'TaxonConceptID')
+  x <- replace(x, toupper(x) %in% c('SPECIES_NR', 'TAXNR', 'NAMNR', 'NAMEID', "NAME_ID", 'TAXONUSAGEID'), 'TaxonUsageID')
+  x <- replace(x, toupper(x) %in% c('ABBREVIAT','TAXONNAME','TAXON','TAXNAME',"WISS_NAME"), 'TaxonName')
+  x <- replace(x, toupper(x) %in% c('VALID_NR', 'SIPNR', "TAXON_ID", 'NAMNR_GUELT', 'SYNNAMEID', 'TAXONCONCEPTID'), 'TaxonConceptID')
   x <- replace(x, toupper(x) %in% c('VALID_NAME', 'VALIDNAME', 'TAXONCONCEPT'), 'TaxonConcept')
-  x <- replace(x, toupper(x) %in% c('AGG', 'AGGNR', 'NAMEPARENTID', 'ISCHILDTAXONOFID'), 'IsChildTaxonOfID')
+  x <- replace(x, toupper(x) %in% c('AGG', 'AGGNR', 'NAMEPARENTID', "NAME_CHILD_OF", 'ISCHILDTAXONOFID'), 'IsChildTaxonOfID')
   x <- replace(x, toupper(x) %in% c('AGG_NAME', 'AGGNAME', 'ISCHILDTAXONOF'), 'IsChildTaxonOf')
   x <- replace(x, toupper(x) %in% c('SECUNDUM', 'ACCORDINGTO'), 'AccordingTo')
   x <- replace(x, toupper(x) %in% c('NATIVENAME', "COMMONNAME", 'VERNACULARNAME'), 'VernacularName')
@@ -137,20 +147,20 @@ TCS.replace <- function(x) {
   x <- replace(x, toupper(x) %in% c('RANG', 'RANK', "TAXONOMICRANK", 'TAXONRANK'), 'TaxonRank')
   x <- replace(x, toupper(x) %in% c('AUTOR', 'AUTHOR'), 'NameAuthor')
 
-## ESveg & FloraEuropaaea
-  x <- replace(x, toupper(x) %in% c("TAXONCODE", 'ETAXON'), 'TaxonUsageID')
+## ESveg & FloraEuropaaea & sPlot
+  x <- replace(x, toupper(x) %in% c("TAXONCODE", 'ETAXON', 'SPECIESID'), 'TaxonUsageID')
+  x <- replace(x, toupper(x) %in% c('TAXONNAME', 'TAXON_NAME'), 'TaxonName')
   x <- replace(x, toupper(x) %in% c('PARENT'), 'IsChildTaxonOfID')
   x <- replace(x, toupper(x) %in% c('RANK_NAME'), 'TaxonRank')
   x <- replace(x, toupper(x) %in% c('SYNONYM_OF'), 'TaxonConceptID')
-  x <- replace(x, toupper(x) %in% c("OBSERVATIONCODE"), "RELEVE_NR")
-  x <- replace(x, toupper(x) %in% c("OBSERVATIONID"), "RELEVE_NR")
+  x <- replace(x, toupper(x) %in% c("OBSERVATIONCODE", "OBSERVATIONID","PLOTID"), "RELEVE_NR")
   x <- replace(x, toupper(x) %in% c("STRATUMCODE"), "LAYER_ID")
   x <- replace(x, toupper(x) %in% c("STRATUM"), "LAYER")
   x <- replace(x, toupper(x) %in% c("PERCENTAGE_MEAN", "COVERPERCENT"), "Cover_Perc")
 
 ## CDM & EuroMed
-  x <- replace(x, toupper(x) %in% c('TAXON', 'NAMECACHE'), 'TaxonName')
-  x <- replace(x, toupper(x) %in% c('SYNUUID', 'RIDENTIFIER'), 'TaxonUsageID')
+  x <- replace(x, toupper(x) %in% c('NAME', 'TAXON', 'NAMECACHE'), 'TaxonName')
+  x <- replace(x, toupper(x) %in% c('TAXONUUID', 'SYNUUID', 'RIDENTIFIER'), 'TaxonUsageID')
   x <- replace(x, toupper(x) %in% c('ACCTAXONID', 'ACCEPTEDTAXONFK'), 'TaxonConceptID')
   x <- replace(x, toupper(x) %in% c('RANKABBREV'), 'TaxonRank')
   x <- replace(x, toupper(x) %in% c('PARENTKEY'), 'IsChildTaxonOfID')
@@ -173,24 +183,24 @@ TCS.replace <- function(x) {
 
 TV.replace <- function(x) {
   ## Florkart Germany (BfN lists) and others
-  x <- replace(x, toupper(x) %in% c('TAXONUSAGEID', 'TAXNR', 'NAMNR', 'NAMEID'), 'SPECIES_NR')
-  x <- replace(x, toupper(x) %in% c('TAXONNAME','TAXON','TAXNAME'), 'ABBREVIAT')
-  x <- replace(x, toupper(x) %in% c('TAXONCONCEPTID', 'SIPNR', 'SYNNAMEID','NAMNR_GUELT'), 'VALID_NR')
+  x <- replace(x, toupper(x) %in% c('TAXONUSAGEID', 'TAXNR', 'NAMNR', 'NAMEID', "NAME_ID"), 'SPECIES_NR')
+  x <- replace(x, toupper(x) %in% c('TAXONNAME','TAXON','TAXNAME',"WISS_NAME"), 'ABBREVIAT')
+  x <- replace(x, toupper(x) %in% c('TAXONCONCEPTID', 'SIPNR', 'SYNNAMEID','NAMNR_GUELT', "TAXON_ID"), 'VALID_NR')
   x <- replace(x, toupper(x) %in% c('VALIDNAME', 'TAXONCONCEPT'), 'VALID_NAME')
-  x <- replace(x, toupper(x) %in% c('AGGNR', 'NAMEPARENTID', 'ISCHILDTAXONOFID'), 'AGG')
+  x <- replace(x, toupper(x) %in% c('AGGNR', 'NAMEPARENTID', 'ISCHILDTAXONOFID',"TAXON_CHILD_OF"), 'AGG')
   x <- replace(x, toupper(x) %in% c('ISCHILDTAXONOF'), 'AGG_NAME')
   x <- replace(x, toupper(x) %in% c('ACCORDINGTO'), 'SECUNDUM')
   x <- replace(x, toupper(x) %in% c("COMMONNAME", 'VERNACULARNAME'), 'NATIVENAME')
   x <- replace(x, toupper(x) %in% c('CLASSIFICATION'), 'CLASSIFICA')
   x <- replace(x, toupper(x) %in% c('RANK', 'TAXONOMICRANK', 'TAXONRANK'), 'RANG')
   x <- replace(x, toupper(x) %in% c('NAMEAUTHOR', 'AUTHOR'), 'AUTHOR')
-    
+
   ## CDM & EuroMed
   x <- replace(x, toupper(x) %in% c('SYNUUID', 'RIDENTIFIER'), 'SPECIES_NR')
   x <- replace(x, toupper(x) %in% c('ACCTAXONID'), 'VALID_NR')
   x <- replace(x, toupper(x) %in% c('AGGNAME'), 'PARNAME')
   x <- replace(x, toupper(x) %in% c('PARENTKEY'), 'PARENT')
-
+  
   ## Veg-X
   x <- replace(x, toupper(x) %in% c('PLOTNAME'), 'RELEVE_NR')
   x <- replace(x, toupper(x) %in% c('ORGANISMIDENTITYNAME'), 'SPECIES_NR')
@@ -218,7 +228,8 @@ taxname.removeAuthors <- function(x) {
 }
 
 parse.taxa <- function(x, epis) {
-  warning('Function does not account for "Sect./Ser." etc., nor for intraspecific taxa without specifier ("subsp./var." etc. or aggregates ("agg.")') 
+  warning('Function does not account for "Sect./Ser." etc., nor for intraspecific taxa without specifier ("subsp./var." etc. or aggregates ("agg.")')
+  if(length(x) <= 1) stop('Only for vectors of length > 1, i.e. more than one taxon name')
   simpleCap <- function(x) {
     s <- strsplit(x, " ")[[1]]
     paste(toupper(substring(s, 1,1)), tolower(substring(s, 2)),
@@ -236,15 +247,15 @@ parse.taxa <- function(x, epis) {
   genus <- sapply(genus, simpleCap)
   epi1 <- sapply(x, stringr::word, 2)
   intra <- sapply(epis, function(y) grepl(y, x, fixed = TRUE))
-  rang.suff <- as.character(apply(intra, 1, function(x) epis[x]))
+  rank.suff <- as.character(apply(intra, 1, function(x) epis[x]))
   epi2 <- character(length = length(x))
-  if(any(intra)) for(i in 1:length(x)) if(rang.suff[i] != 'character(0)') epi2[i] <- paste(rang.suff[i], stringr::word(strsplit(x[i], rang.suff[i], fixed = TRUE)[[1]][2],2))
+  if(any(intra)) for(i in 1:length(x)) if(rank.suff[i] != 'character(0)') epi2[i] <- paste(rank.suff[i], stringr::word(strsplit(x[i], rank.suff[i], fixed = TRUE)[[1]][2],2))
   species <- trimws(paste(genus, tolower(epi1), tolower(epi2)))
   species[species == "NA NA"] <- ''
   species <- sub(' NA', replacement = '', x = species, fixed = TRUE)
   epi2 <-  sub('subsp. ', replacement = '', x = epi2, fixed = TRUE)
-  result <- data.frame(original, genus, epi1=tolower(epi1), rang.suff= if(length(rang.suff)>0) rang.suff else NA, epi2, scientificName = species)
-  result$rang.suff[result$rang.suff == 'character(0)'] <- NA
+  result <- data.frame(original, genus, epi1=tolower(epi1), rank.suff= if(length(rank.suff)>0) rank.suff else NA, epi2, scientificName = species)
+  result$rank.suff[result$rank.suff == 'character(0)'] <- NA
   return(result)
 }
 # parse.taxa(x)

@@ -1,4 +1,8 @@
-verdsion 0.9.7 November 2019
+version 0.9.8 May 2020
+  * bugs in taxval
+  * removed tree view in child because of orphaned gtkwidgets package
+
+version 0.9.7 November 2019
   * default GermanSL version changed to 1.4
   * tv.readXML changed from XML to xml2 for faster access of huge Turboveg XML files
 

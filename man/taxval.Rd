@@ -15,7 +15,7 @@ Necessary prerequisite is information about taxonomic status (synonomy) and hier
 taxval(obs, refl, db,
 ag = c('conflict', 'adapt', 'preserve'), 
 rank, mono = c('species', 'higher', 'lower', 'preserve'), monolist = "monotypic-D", 
-maxtaxlevel = 'AGG', check.critical = TRUE, interactive = FALSE, ...)
+maxtaxlevel = 'AGG', taxlevels, check.critical = TRUE, interactive = FALSE, ...)
 comb.species(x, sel, newname, refl)
 }
 
@@ -28,6 +28,7 @@ comb.species(x, sel, newname, refl)
   \item{mono}{Should monotypic taxa be combined at subspecies = \option{lower} or species level = \option{higher}}
   \item{monolist}{Name of monotypic species list, must be in dBase format and in the same directory as the reference list, e.g. \code{"monotypic-D"} for the area of germany.}
   \item{maxtaxlevel}{Maximum taxonomic levels to be used. See details.}
+  \item{taxlevels}{dataframe of ordered taxonomic rank levels}
   \item{check.critical}{Check for critical names in your dataset and give warnings.'}
   \item{interactive}{Do you want to adapt the list of changes.}
   \item{x}{Dataframe of class 'veg'. See \code{\link{tv.veg}}}

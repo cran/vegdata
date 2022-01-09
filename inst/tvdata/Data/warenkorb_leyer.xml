@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="windows-1250" ?>
-<Plot_package UserName="" EmailAddress="" TurbovegVersion="2.116 (International single user version)" Dictionary="vegetweb_dict" SpeciesList="germansl 1.2" Description="" ShareWithMembersOnly="no" CreationDate="30/01/2018">
+<Plot_package UserName="" EmailAddress="" TurbovegVersion="2.116 (International single user version)" Dictionary="vegetweb_dict" SpeciesList="GermanSL 1.5" Description="" ShareWithMembersOnly="no" CreationDate="30/01/2018">
 	<Plots>
 		<Plot database="Leyer 2007 (100705)" releve_nr="10" guid="c9f0b7b3-0ee8-42cf-b61d-a01faa053367" create_user="ASUS" create_date="01/01/1900" modify_user="ASUS" modify_date="01/01/1900" ndff_qual="0">
 			<header_data>

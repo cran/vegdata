@@ -1,23 +1,27 @@
 Package: vegdata
-Version: 0.9.8
+Version: 0.9.10
 Encoding: UTF-8
 Title: Access Vegetation Databases and Treat Taxonomy
 Author: Florian Jansen <florian.jansen@uni-rostock.de>
 Maintainer: Florian Jansen <florian.jansen@uni-rostock.de>
-Depends: R (>= 2.0.0), foreign
-Imports: utils, xml2, plyr
+Depends: R (>= 3.5.0), foreign
+Imports: curl (>= 2.4), RCurl, DBI (>= 0.6-1), RSQLite (>= 1.1.2),
+        dplyr (>= 0.7.0), rlang, readr (>= 1.1.1), dbplyr (>= 1.0.0),
+        magrittr (>= 1.5), hoardr (>= 0.1.0), utils, xml2 (>= 1.3.0),
+        httr, plyr, tibble
 Suggests: vegan, labdsv, akima, googleVis, indicspecies, uuid, knitr,
         stringr, testthat
 LazyData: Yes
 VignetteBuilder: knitr
 Description: Handling of vegetation data from different sources (
-	Turboveg <http://www.synbiosys.alterra.nl/turboveg/>; 
-	the German national repository <http://www.vegetweb.de> and others. 
+	Turboveg 2.0 <https://www.synbiosys.alterra.nl/turboveg/>; 
+	the German national repository <https://www.vegetweb.de> and others. 
     Taxonomic harmonization (given appropriate taxonomic lists,
-    e.g. the German taxonomic standard list "GermanSL", <http://germansl.infinitenature.org>).
+    e.g. the German taxonomic standard list "GermanSL", <https://germansl.infinitenature.org>).
 License: GPL (>= 2)
-URL: http://germansl.infinitenature.org
+URL: https://germansl.infinitenature.org
+RoxygenNote: 7.1.2
 NeedsCompilation: no
-Packaged: 2020-05-13 07:09:41 UTC; jansen
+Packaged: 2022-01-09 22:29:37 UTC; jansen
 Repository: CRAN
-Date/Publication: 2020-05-13 12:40:02 UTC
+Date/Publication: 2022-01-09 23:00:02 UTC

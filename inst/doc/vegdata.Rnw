@@ -19,7 +19,7 @@
 \bibliographystyle{unsrtnat}
 \usepackage[english]{babel}
 \usepackage{hyperref}
-\usepackage{graphicx} 
+\usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage[left=25mm,right=20mm,top=35mm,bottom=35mm]{geometry}
 \usepackage{tikz}
@@ -35,7 +35,7 @@ version \Sexpr{packageDescription("vegdata", field="Version")}}
 library(knitr)
 options(stringsAsFactors=FALSE)
 opts_chunk$set(concordance = TRUE, comment = "", warning = FALSE, message = TRUE, echo = TRUE, results = 'tex', size="footnotesize")
-tmp <- tempdir()
+tmp <- tempdir(check = T)
 suppressPackageStartupMessages(library(vegdata))
 options(tv_home = tmp)
 dir.create(file.path(tmp, 'Species'))
@@ -44,6 +44,7 @@ dir.create(file.path(tmp, 'Data'))
 file.copy(from = file.path(path.package("vegdata"), 'tvdata', 'Popup'), to = tmp, recursive = TRUE)
 file.copy(from = file.path(path.package("vegdata"), 'tvdata', 'Species'), to = tmp, recursive = TRUE)
 file.copy(from = file.path(path.package("vegdata"), 'tvdata', 'Data'), to = tmp, recursive = TRUE)
+# dim(tax('all'))
 @
 %Sys.setlocale("LC_TIME", "de_DE.iso8859")
 
@@ -74,7 +75,7 @@ vignette('vegdata')
 \subsection{Database access}
     vegdata (will) provide direct access to different vegetation database formats:
 \begin{description}
- \item[Turboveg] is a desktop program, written in VisualBasic. It provides basic functions to enter, import, maintain and export vegetation data. From the 2 000 000 vegetation plots registered in \url{http://www.GIVD.info} approximately 1.5 million are stored in Turboveg databases format.
+ \item[Turboveg] is a desktop program, written in VisualBasic. It provides basic functions to enter, import, maintain and export vegetation data. From the 2 000 000 vegetation plots registered in \url{https://www.GIVD.info} approximately 1.5 million are stored in Turboveg databases format.
 \item[vegetweb] is the German national vegetation database. vegetweb is accessible at \url{https://www.vegetweb.de}. Data can be selected, open access data can be downloaded directly, other data after clearance from the owners.
 \item VegX is an international exchange standard. An R package with a S4 implementation of the standard is in development
  \end{description}
@@ -93,7 +94,7 @@ vignette('vegdata')
 
   \subsection{Vegetation matrix}
     Turboveg stores relev\'{e}s as a dataframe of occurrences (s. below) but almost all functions and programs for vegetation analyses use plot-species cross-tables with a 0 value for non-occurrence = observed absence.
-    Function \texttt{tv.veg} inflates the Turboveg list to matrix format with plots in rows and species in columns. Column names can be either species numbers, species letter-codes (default) or full names (with underscores instead of blanks to match the R naming conevntions).
+    Function \texttt{tv.veg} inflates the Turboveg list to matrix format with plots in rows and species in columns. Column names can be either species numbers, species letter-codes (default) or full names (with underscores instead of blanks to match the R naming conventions).
 
 \section{Preparations}
 
@@ -106,7 +107,7 @@ library(vegdata)
 
 
 Several functions of this package use the directory structure of Turboveg. The first time such a function is called, the internal function \texttt{tv.home} tries to find your Turboveg installation path. Depending on whether you have Turboveg installed on your computer or not, it will give you a message (and an invisible return) about the Turboveg installation path or the path to the Turboveg directory structure of package vegdata.
-<<eval=TRUE>>=
+<<eval=FALSE>>=
 tv_home <- tv.home()
 @
 
@@ -128,7 +129,7 @@ tv.refl()
 @
 
 GermanSL is the default Taxonomic reference list in package \texttt{vegdata}.
-However, whenever you use a Turboveg database name in a function, the Reference list will be read from the database configuration file "tvwin.set" if possible. 
+However, whenever you use a Turboveg database name in a function, the Reference list will be read from the database configuration file "tvwin.set" if possible.
 If you want to change the default reference list:
 <<eval=FALSE>>=
 tv.refl('your_preferred_list')
@@ -138,19 +139,18 @@ will change option \textit{tv.refl} which will be used whenever db or refl is no
 Package vegdata contains several service functions to query the taxonomic information contained in the reference list.
 
 <<tax, eval =TRUE>>=
-tax('Brachythecium rutabulum')
+tax('Quercus robur')
 @
 
 The GermanSL is not included in vegdata to keep the R package small. Instead the reference list will be automatically downloaded into the tv\_home directory (see \texttt{tv.home()}) or a temporary folder, if it is not installed but needed. If you want to use a different list, specify \texttt{refl=<Name of your list>} according to the directory name in the Turboveg directory \emph{Species}.
 Function \texttt{tax} can use the given species name (with option strict=FALSE also name parts), or 7 letter abbreviation or the TaxonUsageID (called SPECIES\_NR in Turboveg) to look for all (partially) matching species names within the reference list.
 
-
-In GermanSL versions 1.1 to 1.3 additional information for every taxon is stored in an extra file (tax.dbf) which could be used with option \textit{detailed = TRUE}. 
+In GermanSL versions 1.1 to 1.3 additional information for every taxon is stored in an extra file (tax.dbf) which can be used with option \textit{detailed = TRUE}.
 Since version 1.4 all information is included in the normal Turboveg file \textit{species.dbf}.  \\
 \textit{tax} will give you all matching names by default. If you set option \textit{strict=TRUE}, only the species with exact match to the given character string will be returned. \\
 \textit{syn} will give you all taxon names within the swarm of synonyms. The valid name is marked in column SYNONYM with FALSE.
 
-%\inputencoding{utf8} 
+%\inputencoding{utf8}
 
 <<syn>>=
 tax('Elytrigia repens')$TaxonName
@@ -160,7 +160,8 @@ syn('Elytrigia repens')
 The reference list contains information about the taxonomic hierarchy which can be used with \textit{child} or \textit{parent}.
 <<childs, eval=FALSE>>=
 child(27, quiet=TRUE)$TaxonName
-parent('ACHIMIL')
+parent(32)
+parent(32, rank = 'FAM')
 @
 If you want to learn more about the taxonomic reference list \emph{GermanSL} for Germany, please look at \cite{Jansen2008}.
 
@@ -201,13 +202,13 @@ obs <- tv.obs(db)
 # Adding species names
 species <- tax('all', refl=tv.refl(db=db))
 obs$TaxonName <-  species$TaxonName[match(obs$TaxonUsageID, species$TaxonUsageID)]
-head(obs[,c('RELEVE_NR','TaxonUsageID','COVER_CODE','LAYER','TaxonName')])
+head(obs[,c('PlotObservationID','TaxonUsageID','COVER_CODE','LAYER','TaxonName')])
 @
 
 This condensed format shows only presences of species observations. Every species observation is stored in one row and the membership to a specific vegetation plot is given in column \textit{RELEVE\_NR}.
 
 
-\begin{figure} 
+\begin{figure}
 \begin{tikzpicture}
 %\draw[step=0.5cm,color=gray](-2,-2) grid (10,2);
 \draw (3.5,1.5) node [anchor = north east] {Field survey \ \ \ \ \ \ } -- (3.5,0.7);
@@ -252,7 +253,7 @@ This condensed format shows only presences of species observations. Every specie
   \item summarize monotypic taxa
   \item clean up nested taxa
   \item clean up taxonomic ranks
-  \item \dots  
+  \item \dots
 \end{itemize}
 
 \paragraph{Three steps of taxonomic interpretation}
@@ -271,13 +272,13 @@ This condensed format shows only presences of species observations. Every specie
 \subsection{Taxonomic harmonisation - function taxval}
 
 
-Prerequisits for taxonomic harmonisations in vegdata are 
+Prerequisits for taxonomic harmonisation in vegdata are
 \begin{enumerate}
  \item a taxonomic tree, i.e. a taxon list with parent-child relationships, given in a column called \textbf{IsChildTaxonOfID}
  \item ordered taxonomic levels, given as a data.frame, see \texttt{taxlevels} with rank abbreviation and numerical values giving the lowest number for the highest level. The rank abbreviation must correlate to of column \textbf{TaxonRank} in the taxonomic reference list. Type \textit{taxlevels} to see the implemented table for GermanSL.
 \end{enumerate}
 
-We are using the taxonomic reference list GermanSL \citep{Jansen2008}, which contains not only information about synonymy of species names, but also a taxonomic hierarchy. This enables several semi-automatic enhancements of the taxonomic information stored in your vegetation database. If your database is not referenced to GermanSL (and can not be converted), you have to care for a column IsChildtaxonOfID and an appropriate taxlevels data.frame to use function \texttt{taxval}. \textbf{Otherwise please use option tax=FALSE in \texttt{tv.veg}) and do the taxonomic harmonization by hand} (e.g. with function \texttt{comb.species}).
+We are using the taxonomic reference list GermanSL \citep{Jansen2008}, which contains not only information about synonymy of species names, but also a taxonomic hierarchy. This enables several semi-automatic enhancements of the taxonomic information stored in your vegetation database. If your database is not referenced to GermanSL (and can not be converted), you have to care for a column IsChildTaxonOfID and an appropriate taxlevels data.frame to use function \texttt{taxval}. \textbf{Otherwise please use option tax=FALSE in \texttt{tv.veg}) and do the taxonomic harmonization by hand} (e.g. with function \texttt{comb.species}).
 
 Dataset \textit{taxatest} is used to evaluate package code and to show the functionality especially for the taxonomic harmonization.
 We have Achillea species with a subspecies sudetica, a synonym subspecies collina, two observations on species level (A. atrata and millefolium) and even one on genus level.
@@ -293,8 +294,8 @@ The database contains 20 different names in the beginning.
 \paragraph{Synonyms} First the number of species names which are synonyms are given. They are transferred to accepted taxon names, respectively numbers (see option syn='adapt'). If you want to preserve synonyms, choose option syn = 'conflict' or 'preserve'.
 
 \paragraph{Monotypic species within the area}
-Monotypic taxa are valid taxa which are the only child of their next higher taxonomic rank within the survey area. By default they will be converted by \texttt{taxval} to the higher rank. For instance \emph{Poa trivialis} is in Germany only represented by \emph{Poa trivialis subspecies trivialis}. Both taxa are valid, but for most analysis only one name for these identical entities must be used. By default a list of monotypic taxa within the GermanSL (whole Germany) is considered (see \texttt{tv.mono('GermanSL 1.4')}). The default is to set all monotypic species to the higher rank (because many monotypic subspecies can occur in vegetation databases). \\
-If necessary, the procedure has to be repeated through the taxonomic 
+Monotypic taxa are valid taxa which are the only child of their next higher taxonomic rank within the survey area. By default they will be converted by \texttt{taxval} to the higher rank. For instance \emph{Poa trivialis} is in Germany only represented by \emph{Poa trivialis subspecies trivialis}. Both taxa are valid, but for most analysis only one name for these identical entities must be used. By default a list of monotypic taxa within the GermanSL (whole Germany) is considered (see \texttt{tv.mono('GermanSL 1.5')}). The default is to set all monotypic species to the higher rank (because many monotypic subspecies can occur in vegetation databases). \\
+If necessary, the procedure has to be repeated through the taxonomic
 
 \paragraph{Critical Pseudonyms}
 
@@ -307,12 +308,12 @@ Completely independent from the questions of correct taxonomic naming of a speci
 For most analyses it will be necessary to analyse only one taxonomic level, e.g. not to confuse species numbers per plot, community means etc. For this you normally have to raise the lower observations to a coarser level. If you want the species level, you can specify ag='adapt' and rank='SPE'. All hierarchical levels below the species level (including the above specified monotypic subspecies) are set to species level in this case.
 
 <<adapt>>=
-obs.tax <- taxval(obs, db='taxatest', ag='adapt', rank='SPE', check.critical = FALSE)
+obs.tax <- taxval(obs, db='taxatest', ag='adapt', rank='SPE', check.critical = FALSE, taxlevels = taxlevels)
 sort(tax(unique(obs.tax$TaxonUsageID), db=db)$TaxonName)
 @
 
 
-The subspecies have been raised to the species level. However, there is still a conflict between the Achillea millefolium observations and the aggregate. The same for Hieracium pilosella and H. subg. Pilosella.  To solve these issues we can us ag='conflict': 
+The subspecies have been raised to the species level. However, there is still a conflict between the Achillea millefolium observations and the aggregate. The same for Hieracium pilosella and H. subg. Pilosella.  To solve these issues we can us ag='conflict':
 
 <<conflict>>=
 obs.tax <- taxval(obs, db='taxatest', ag='conflict', check.critical = FALSE)
@@ -326,7 +327,7 @@ If you use interactive=TRUE, you will be able to see the number of occurrences f
 
 Combining "maxtaxlevel" and the two options of "ag" might come closest to what seems scientifically reasonable in many cases.
 
-<<maxtax>>=
+<<maxtax, eval=FALSE>>=
 obs.tax <- taxval(obs, db='taxatest', ag='conflict', maxtaxlevel = 'AGG', check.critical = FALSE, interactive = TRUE)
 obs.tax <- taxval(obs.tax, db='taxatest', ag='adapt', rank='SPE', check.critical = FALSE)
 sort(tax(unique(obs.tax$TaxonUsageID), db=db)$TaxonName)
@@ -385,7 +386,7 @@ names(tmp)
 Separated by dots and layer numbers you can see the preserved layers. For meaning of layer numbers see Turboveg help.\\
 Check \texttt{(data(lc.1))} for the default layer combination.
 
-Beside layers you can use any kind of species-plot attributes to distinguish between occurrences, for instance in a multi-temporal survey. 
+Beside layers you can use any kind of species-plot attributes to distinguish between occurrences, for instance in a multi-temporal survey.
 
 <<Season>>=
 comb <- list(data.frame(SEASON=0:4, COMB=c(0,'Spring','Summer','Autumn','Winter')),'SEASON')
@@ -411,10 +412,10 @@ will replace all occurrences of \emph{Achillea millefolium agg.} with \emph{Achi
 
 <<replace>>=
 taxon.repl <- data.frame(old=c(27), new=c(31))
-obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID, 
+obs.tax$TaxonUsageID <- replace(obs.tax$TaxonUsageID,
                                 match(taxon.repl$old, obs.tax$TaxonUsageID), taxon.repl$new)
 @
-  
+
 The second possibility is to use function \texttt{comb.species} on vegetation matrices.
 
 <<comb.spec, eval=FALSE>>=
@@ -431,7 +432,7 @@ Vegetation data should come with information about date, place, plot size as wel
 <<site.echo, eval=TRUE>>=
 site <- tv.site(db)
 @
-  
+
 The function is quite straightforward. After loading the file \emph{tvhabita.dbf} from the specified database folder, warnings are given for plots without specified relev\'{e} area or date and fields are checked if they are empty (a lot of predefined header fields in Turboveg are often unused) or contain probably mistakable 0 values in numerical fields, due to dBase deficiencies (dBase can not handle NA = not available values reliably).
 It is stated in the output, if you have to check and possibly correct 0 values.
 
@@ -465,15 +466,8 @@ Additionally you can use the affiliation of species to abiotic clusters with the
 
 <<syntab.mupa>>=
 require(indicspecies)
-mu <- multipatt(elbaue, clust)
-veg <- elbaue; dec=0
-st <- syntab(elbaue, clust, 'rel', mupa=mu)
-# Print Ellenberg indicator values for soil moisture and nutrient demand
-traits <- tv.traits()
-trait <- traits[traits$LETTERCODE %in% names(elbaue), ]
-rownames(trait) <- trait$LETTERCODE
-trait <- trait[,c('OEK_F', 'OEK_N')]
-print(st, limit=30, trait=trait)
+synt <- syntab(elbaue, clust, mupa=TRUE)
+synt
 @
 
 
@@ -493,15 +487,15 @@ which is a wrapper for Kruskal's Non-metric Multidimensional Scaling \citep{Cox1
 <<nmds, quiet=TRUE, results='hide'>>=
 ## Data analyses
 library(vegan)
-veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE, 
+veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE,
                     noshare = 1, expand = TRUE, trace = 2)
 #eco <- tv.traits()
 #eco$OEK_F <- as.numeric(eco$OEK_F)
-F <- isc(elbaue, trait.db = 'ecodbase.dbf', ivname = 'OEK_F', method = 'mean')
-N <- isc(elbaue, trait.db = 'ecodbase.dbf', ivname = 'OEK_N', method = 'mean')
+F <- cwm(veg = elbaue, trait.db = 'ecodbase.dbf', ivname = 'OEK_F', method = 'mean')
+N <- cwm(veg = elbaue, trait.db = 'ecodbase.dbf', ivname = 'OEK_N', method = 'mean')
 env <- envfit(veg.nmds, env = data.frame(F, N))
 @
-  
+
 To show the result in comparison with environmental measurements in a nice graphic we do some plotting magic.
 
 <<nmdsplotfun, quiet=TRUE, results='hide'>>=
@@ -510,7 +504,7 @@ library(akima)
 color = function(x)rev(topo.colors(x))
 nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', env = NULL, ...) {
 lplot <- nrow(ordi$points);  lspc <- nrow(ordi$species)
-filled.contour(interp(ordi$points[, 1], ordi$points[, 2], site[, var1]), 
+filled.contour(interp(ordi$points[, 1], ordi$points[, 2], site[, var1], duplicate = 'strip'),
            ylim = c(-1, 1.1), xlim = c(-1.4, 1.4),
            color.palette = color, xlab = var1, ylab = var2, main = plottitle,
            key.title = title(main = var1, cex.main = 0.8, line = 1, xpd = NA),
@@ -525,7 +519,7 @@ filled.contour(interp(ordi$points[, 1], ordi$points[, 2], site[, var1]),
            ,...)
 }
 @
-  
+
 \begin{figure}
 \begin{center}
 <<nmdsplot, quiet=TRUE, results='hide', eval=TRUE, warning=FALSE, eval=TRUE>>=

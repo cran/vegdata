@@ -1,9 +1,66 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("lc.1"))
 
-tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE, 
-  lc = c("layer","mean","max","sum","first"), pseudo, values = "COVER_PERC", 
-  spcnames = c('short','long','numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'), 
-  obs, site, refl, RelScale, ...) 
+#' Tabulates vegetation tables from Turboveg database
+#' @name tv.veg
+#' @aliases tv.veg
+#'
+#' @description Tabulates vegetation tables from Turboveg resp. VegetWeb database, including taxonomic emendation and layer combination. Using various default parameters for the included functions.
+#' It is a wrapper for *tv.obs*, *taxval*, *tv.coverperc* and creating a vegetation matrix
+#'
+#' @export
+#' @param db Name of your Turboveg database. Directory name containing tvabund.dbf, tvhabita.dbf and tvwin.set. Please specify pathnames below (if you sorted your databases in subfolders) but not above Turbowin/Data.
+#' @param tv_home Turbowin installation path.
+#' @param taxval Should taxonomic valuation (see \code{\link{taxval}}) be performed?
+#' @param convcode Should cover code be converted to percentage values?
+#' @param lc Layer combination type. Possible values: layer (default), sum, mean or max, see details
+#' @param pseudo List used for layer combinations, see details
+#' @param values Name of the variable which should be used for the vegetations matrix.
+#' @param spcnames Should species numbers be replaced by shortletters or scientific species names? Layer information is appended with dot.
+#' @param dec Number of decimals for cover values in the resulting vegetation matrix.
+#' @param cover.transform If you want to transform the abundancce values within your samples
+#'     you can choose 'pa' for presence-absence or 'sqrt' for the \code{dec} rounded square root.
+#' @param obs Observations, optional
+#' @param site plot header data, see \code{\link{tv.site}}
+#' @param refl Taxonomic reference list, optional
+#' @param RelScale Vector with Cover Scale code per Releve.
+#' @param ... additional arguments for included functions
+#'
+#' @usage tv.veg(db, taxval=TRUE,tv_home,convcode=TRUE,
+#' lc = c("layer","mean","max","sum","first"),
+#' pseudo, values='COVER_PERC', spcnames=c('shortletters','ScientificNames','Numbers'),
+#' dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, site, refl, RelScale, ...)
+#'
+#' @details  \code{layer} means, the different layers are combined assuming there independence (a species occurring in two layers with a cover of 50\% will result in a overall cover of 75\%. \code{sum} will sum up cover values of all layers With option \code{pseudo} you can decide, which layers should be combined. Give a list with a combination data.frame and second the name of the column for combination. The default is \code{pseudo = list(lc.1, c('LAYER'))}, where lc.1 is a data.frame \code{data(lc.1)}, which will combine all tree layers, all shrub layers and all layers below shrubs. An alternative would be data(lc.all), combining all layers. With option pseudo=NULL there will be no layer aggregation.
+#'
+#' @return an object of class matrix with (combined) cover values.
+#'
+#' @seealso{
+#'   \code{\link{taxval}}, \code{\link{tv.coverperc}}, \code{\link{tv.obs}}, \code{\link{tv.site}}
+#' }
+#'
+#' @examples
+#'   \dontrun{
+#'     vignette("vegdata")
+#'     #' If you have Turboveg installed on your computer try for a beginning
+#'     #' tv.veg('databasename', tax=FALSE).
+#'     args(tv.veg)
+#'     help('taxval')
+#'
+#'     veg <- tv.veg('taxatest')
+#'     names(veg)
+#'     tv.veg('taxatest', uncertain=list('DET_CERT', data.frame(0:2,c('pres','agg','agg'))),
+#'            pseudo=list(lc.0,'LAYER'), genus = 'delete')
+#'   }
+#'
+#' @author Florian Jansen \email{florian.jansen@uni-rostock.de}
+#'
+#' @keywords misc manip
+#'
+
+tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE,
+  lc = c("layer","mean","max","sum","first"), pseudo, values = "COVER_PERC",
+  spcnames = c('shortletters','ScientificNames','Numbers'), dec = 0, cover.transform = c('no', 'pa', 'sqrt'),
+  obs, site, refl, RelScale, ...)
 {
   options(warn=1)
   ## Checks
@@ -13,9 +70,9 @@ tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE,
     if(missing(tv_home)) tv_home <- tv.home()
     if(missing(obs)) {
       cat('Reading tvabund.dbf\n')
-      obs <- tv.obs(db, tv_home) 
+      obs <- tv.obs(db, tv_home)
       } else names(obs) <- TCS.replace(names(obs))
-#     if(suppressWarnings(any(obs < -1e+05, na.rm = TRUE))) 
+#     if(suppressWarnings(any(obs < -1e+05, na.rm = TRUE)))
 #       cat("\n WARNING! Values less than -100,000. \n WARNING! tvabund.dbf may be corrupt. \n WARNING! Please correct by reexporting e.g. with OpenOffice.")
     lc.1 <- data.frame(LAYER=0:9, COMB=c(0,rep('Tree',3),rep('Shrub',2),rep(0,4)))
 #    data("lc.1", package = 'vegdata', envir = 'vegdata')
@@ -35,26 +92,26 @@ tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE,
         cat('converting cover code ... \n')
         if(missing(RelScale)) {
           if(missing(db)) stop('\nEither database name or a vector with CoverScale per releve has to be permitted, to cope with Cover Scale information\n')
-          RelScale <- site[, c("RELEVE_NR", "COVERSCALE")]
+          RelScale <- site[, c("PlotObservationID", "COVERSCALE")]
         }
      	  obs <- tv.coverperc(db=db, obs=obs, RelScale = RelScale, tv_home = tv_home, ...)
     } else {
-      if (!any(names(obs) == values)) stop(paste(values, " could not be found.")) 
+      if (!any(names(obs) == values)) stop(paste(values, " could not be found."))
           obs[,values] <- type.convert(as.character(obs[,values]))
           if(is.factor(obs[,values])) {
             lc='first'
-            warning("Multiple occurrences of a species in one layer of a releve can not be supported without cover code conversion. 
+            warning("Multiple occurrences of a species in one layer of a releve can not be supported without cover code conversion.
                   Only the first occurrence will be used!")}
     }
 ## empty plots
-    noobs <- site$RELEVE_NR[!site$RELEVE_NR %in% obs$RELEVE_NR]
+    noobs <- site$PlotObservationID[!site$PlotObservationID %in% obs$PlotObservationID]
     if(length(noobs) > 0)
       for(i in 1:length(noobs)) {
         obs[(nrow(obs)+1), ] <- NA
-        obs$RELEVE_NR[nrow(obs)] <- noobs[i]; obs$TaxonUsageID[nrow(obs)] <- 0; obs$LAYER[nrow(obs)] <- 0
+        obs$PlotObservationID[nrow(obs)] <- noobs[i]; obs$TaxonUsageID[nrow(obs)] <- 0; obs$LAYER[nrow(obs)] <- 0
       }
 ## Pseudo-Species / Layer
-    print('PSeudo species')
+    # print('Pseudo species')
     if(!is.null(pseudo)) {
         cat('creating pseudo-species ... \n')
 	if(length(pseudo[[2]]) > 1) stop('Possibility to differentiate more than one plot-species attribute not yet implemented. \n
@@ -62,39 +119,39 @@ tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE,
         obs$COMB <- pseudo[[1]][, 2][match(obs[, pseudo[[2]]], pseudo[[1]][,1])]
         collab <- paste(obs$TaxonUsageID, obs$COMB, sep = ".")
     } else  collab <- as.vector(obs$TaxonUsageID)
-    rowlab <- as.vector(obs$RELEVE_NR)
+    rowlab <- as.vector(obs$PlotObservationID)
     cat('combining occurrences using type', toupper(lc), 'and creating vegetation matrix ... \n')
     gc(TRUE, verbose = FALSE)
     layerfun <- function(x) round((1 - prod(1 - x/100)) * 100, dec)
-    print('Inflate')
+    # print('Inflate')
     results <- switch(lc,  # Inflate matrix
       LAYER = tapply(obs[, values], list(rowlab, collab), layerfun),
-      MEAN  = tapply(obs[, values], list(rowlab, collab), mean), 
-      MAX   = tapply(obs[, values], list(rowlab, collab), max), 
+      MEAN  = tapply(obs[, values], list(rowlab, collab), mean),
+      MAX   = tapply(obs[, values], list(rowlab, collab), max),
       SUM   = tapply(obs[, values], list(rowlab, collab), sum),
       FIRST = tapply(obs[, values], list(rowlab, collab), stringr::word) )
     results[is.na(results)] <- 0
     results <- as.data.frame(results)
     colnames(results)
-    
+
 ## Names
-    print('names')
-    if(spcnames %in% c('short','long')) {
+    # print('names')
+    if(spcnames %in% c('shortletters','ScientificNames')) {
       cat('replacing species numbers with ', spcnames, ' names ... \n')
       if(is.null(pseudo)) {
       	species <- tax(as.numeric(colnames(results)), detailed=TRUE, syn=FALSE, refl = refl, tv_home=tv_home)
-      	if(spcnames=='short') colnames(results) <- species$LETTERCODE[match(colnames(results), species$TaxonUsageID)]
-      	if(spcnames=='long') colnames(results) <- gsub(' ','_', species$TaxonName[match(colnames(results), species$TaxonUsageID)] )
+      	if(spcnames=='shortletters') colnames(results) <- species$LETTERCODE[match(colnames(results), species$TaxonUsageID)]
+      	if(spcnames=='ScientificNames') colnames(results) <- gsub(' ','_', species$TaxonName[match(colnames(results), species$TaxonUsageID)] )
        } else {
 	st <- unlist(strsplit(colnames(results), ".", fixed = TRUE))
 	colspc <- st[seq(1, length(st), 2)]
 	species <- tax(as.numeric(colspc), detailed=FALSE, refl = refl, tv_home=tv_home)
 
-	if(spcnames=='short') coln <- as.character(species$LETTERCODE[match(as.numeric(colspc), species$TaxonUsageID)])
-	if(spcnames=='long') coln <- gsub(' ','_', species$TaxonName[match(as.numeric(colspc), species$TaxonUsageID)]) 
+	if(spcnames=='shortletters') coln <- as.character(species$LETTERCODE[match(as.numeric(colspc), species$TaxonUsageID)])
+	if(spcnames=='ScientificNames') coln <- gsub(' ','_', species$TaxonName[match(as.numeric(colspc), species$TaxonUsageID)])
 
   ll <- st[seq(2, length(st), 2)]
-  cn <- replace(coln, which(ll != 0), paste(coln, ll, sep = ".")[ll != 0])
+  cn <- replace(coln, which(ll != '0'), paste(coln, ll, sep = ".")[ll != '0'])
 	colnames(results) <- cn
 	}
    }

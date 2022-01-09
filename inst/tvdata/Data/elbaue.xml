@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<Plot_package UserName="jansen" EmailAddress="" TurbovegVersion="2.142a (International single user version)" Dictionary="vegetweb_dict" SpeciesList="germansl 1.4" Description="" ShareWithMembersOnly="no" CreationDate="04/11/2019">
+<Plot_package UserName="jansen" EmailAddress="" TurbovegVersion="2.142a (International single user version)" Dictionary="vegetweb_dict" SpeciesList="Germansl 1_5" Description="" ShareWithMembersOnly="no" CreationDate="04/11/2019">
 	<Plots>
 		<Plot database="Elbaue" releve_nr="1" guid="{2B4CF1C0-2C0E-4B32-99DB-87874358125F}" create_user="vegetweb" create_date="01/01/1900" modify_user="" modify_date="" ndff_qual="0">
 			<header_data>

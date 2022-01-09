@@ -1,3 +1,5 @@
+
+
 reShape.veg <- function (veg, crop = TRUE, refl) {
 if(!'veg' %in% class(veg)) stop('Only applicable for objects of class \"veg\".')
 if(any(is.null(dimnames(veg)))) stop('Only applicable if dimnames are present (Plot IDs as rownames, species IDs as colnames.')
@@ -23,12 +25,12 @@ if(any(is.na(as.integer(row.names(veg))))) stop("Plot ID's must be integer numbe
       TaxonUsageID <- taxa$TaxonUsageID[match(code, taxa$TaxonName)]
     }
   } else TaxonUsageID <- as.integer(code)
-  df <- data.frame(RELEVE_NR = plots, SPECIES_NR = TaxonUsageID, 
+  df <- data.frame(PlotObservationID = plots, SPECIES_NR = TaxonUsageID,
                    COVER_CODE = as.character(perf), LAYER = layer, stringsAsFactors = FALSE)
-  df <- df[order(df$RELEVE_NR, df$SPECIES_NR), ]
+  df <- df[order(df$PlotObservationID, df$SPECIES_NR), ]
   df <- df[df$COVER_CODE != 0 & !is.na(df$COVER_CODE), ]
   class(df) <- c("tv.obs", "data.frame")
-  if (!is.null(attr(veg, "taxreflist"))) 
+  if (!is.null(attr(veg, "taxreflist")))
     attr(df, "taxreflist") <- attr(veg, "taxreflist")
   return(df)
 }

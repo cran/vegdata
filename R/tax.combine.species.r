@@ -1,3 +1,13 @@
+#' Combine species in vegetation matrix
+#'
+#' @name comb.species
+#' @export
+#' @param x (veg) vegetation matrix of class veg
+#' @param sel (character) vector of species to combine
+#' @param newname (character) name of the new taxon
+#' @param refl (character) Name of taxonomic reference list
+#'
+
 comb.species <- function (x, sel, newname, refl) {
   if (!"veg" %in% class(x)) warning(paste("Object", x, "not of class \"veg\""))
   if (missing(sel)) stop(paste("Either vegetation matrix or the vector of species names to combine is missing."))

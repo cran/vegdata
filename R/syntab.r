@@ -81,8 +81,8 @@ type <- match.arg(type)
     st <- t(as.data.frame(temp))
     st[is.na(st)] <- 0
 
-    if(!missing(mupa) | class(mupa) == 'multipatt' & ncl < 1) {
-      if(class(mupa)!='multipatt') {
+    if(!missing(mupa) | inherits(mupa, 'multipatt') & ncl < 1) {
+      if(!inherits(mupa, 'multipatt')) {
           requireNamespace("indicspecies", quietly = TRUE)
           mu <- indicspecies::multipatt(veg, clust, ...)
         }  else mu <- mupa

@@ -2,7 +2,7 @@
 #' @name cwm
 #' @aliases cwm
 #' @usage cwm(veg, refl, trait.db = 'ecodbase.dbf', ivname, keyname = 'LETTERCODE',
-#'       method = c('mean', 'mode'), weight, db, ...)
+#'       method, weight, db, ...)
 #' @export
 #' @param veg Vegetation matrix with plots in rows and species in columns
 #' @param refl Name of Turboveg taxonomic reference list
@@ -49,9 +49,6 @@
 
 
 #### community weighted trait means
-# isc(veg, trait.db, ivname, keyname = 'LETTERCODE', species <- tax('all', refl = refl, quiet = TRUE, 'mean'), db, ...)
-# isc(veg.perc, trait.db = eco, ivname = 'OEK_F', keyname = 'TaxonName', method = 'mean')
-
 cwm <- function(veg,
                 refl,
                 trait.db = 'ecodbase.dbf',
@@ -70,7 +67,6 @@ cwm <- function(veg,
   if(is.character(trait.db)) iv <- tv.traits(trait.db = trait.db, refl = refl, ...) else iv = trait.db
   if(missing(veg)) veg <- tv.veg(db, ...) else if(!'data.frame' %in% class(veg)) veg <- as.data.frame(veg)
   if(!all(ivname %in% names(iv))) stop('Not all ivname in table of indicators.')
-  method <- match.arg(method)
   if(missing(weight)) {
     iv$weight <- 1
   #  weight <- 'weight'
@@ -98,6 +94,7 @@ cwm <- function(veg,
   w <- as.numeric(w)
   veg <- t(t(veg) * w)
   # Method == mean
+
   if(method == 'mean') {
     io <- matrix(0, nrow = nrow(veg), ncol = ncol(v)) # Plots * sum of WS indicators for WS
     io <- apply(v, 2, function(x) rowSums(as.matrix(veg/apply(veg, 1, sum)) %*% x, na.rm=TRUE) )
@@ -140,4 +137,3 @@ cwm <- function(veg,
 # }
 # # showindiplot(veg, wsingo, which(ingo == '5+/4+/3+'))
 
-meanTraits <- function (...) stop('This function is deprecated, use isc with method "mean" instead.')

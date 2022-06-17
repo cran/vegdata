@@ -63,7 +63,7 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, verbose = TR
 ## Conversion of factors
   for(i in names(site)) if(is.character(site[,i])) site[,i] <- iconv(site[,i], getOption('tv.iconv'), '')
 
-  if(class(site$DATE) != 'Date') {
+  if(!inherits(site$DATE, 'Date')) {
     if(any(is.na(site$DATE)))
       message(sum(is.na(site$DATE)), ' releves without date. Not converted from factor to date format.') else {
       site$DATE <- gsub('/','',site$DATE)

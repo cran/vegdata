@@ -104,7 +104,7 @@ parent <- function (x, refl = tv.refl(), rank, quiet = FALSE, ...) {
   	x <- x[1]
   }
   s <- tax(x, refl = refl, strict = TRUE, quiet = TRUE, ...)
-  if(nrow(s) != 1) stop(x, ' can not be found in reference list.', s$TaxonUsageID)
+  if(nrow(s) != 1) stop(x, ' can not be found in list.', s$TaxonUsageID)
   y <- species[match(s$TaxonConceptID, species$TaxonUsageID),]
   if(y$TaxonUsageID != s$TaxonUsageID) warning('Synonym, will use valid taxon "', y$TaxonName, '" instead.')
   # Fehler in if (y$TaxonUsageID != s$TaxonUsageID) warning("Synonym, will use valid taxon \"",  :

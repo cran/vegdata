@@ -5,7 +5,7 @@
 \title{Indicate site conditions with community weighted mean values of traits or with mode of gradient classes (sum of species amplitudes).}
 \usage{
 cwm(veg, refl, trait.db = 'ecodbase.dbf', ivname, keyname = 'LETTERCODE',
-      method = c('mean', 'mode'), weight, db, ...)
+      method, weight, db, ...)
 }
 \arguments{
 \item{veg}{Vegetation matrix with plots in rows and species in columns}

@@ -26,7 +26,5 @@ Read list of available Turboveg2 databases in given Turboveg directory
 }
 \author{
 Florian Jansen \email{florian.jansen@uni-rostock.de}
-
-Florian Jansen \email{florian.jansen@uni-rostock.de}
 }
 \keyword{Turboveg}

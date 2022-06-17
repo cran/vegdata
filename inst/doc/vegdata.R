@@ -63,7 +63,7 @@ obs <- tv.obs('taxatest')
 sort(tax(unique(obs$TaxonUsageID))$TaxonName)
 
 ## ----adapt--------------------------------------------------------------------
-obs.tax <- taxval(obs, db='taxatest', ag='adapt', rank='SPE', check.critical = FALSE, taxlevels = taxlevels)
+obs.tax <- taxval(obs, db='taxatest', ag='adapt', rank='SPE', check.critical = FALSE, taxlevels = taxlevels, mono = 'pre')
 sort(tax(unique(obs.tax$TaxonUsageID), db=db)$TaxonName)
 
 ## ----conflict-----------------------------------------------------------------
@@ -133,7 +133,8 @@ synt
 
 ## ----nmds, quiet=TRUE, results='hide'-----------------------------------------------------------------------
 ## Data analyses
-library(vegan)
+if (requireNamespace('vegan', quietly = TRUE) ) {
+  library(vegan)
 veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE,
                     noshare = 1, expand = TRUE, trace = 2)
 #eco <- tv.traits()
@@ -141,10 +142,13 @@ veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE,
 F <- cwm(veg = elbaue, trait.db = 'ecodbase.dbf', ivname = 'OEK_F', method = 'mean')
 N <- cwm(veg = elbaue, trait.db = 'ecodbase.dbf', ivname = 'OEK_N', method = 'mean')
 env <- envfit(veg.nmds, env = data.frame(F, N))
+} else
+  message("package vegan not available")
 
-## ----nmdsplotfun, quiet=TRUE, results='hide'----------------------------------------------------------------
-library(labdsv)
-library(akima)
+## ----nmdsplot, quiet=TRUE, results='hide', warning=FALSE, eval=TRUE-----------------------------------------
+if (requireNamespace('interp', quietly = TRUE) & requireNamespace('labdsv', quietly = TRUE) & requireNamespace('vegan', quietly = TRUE) ) {
+  library(labdsv)
+  library(interp)
 color = function(x)rev(topo.colors(x))
 nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', env = NULL, ...) {
 lplot <- nrow(ordi$points);  lspc <- nrow(ordi$species)
@@ -163,6 +167,8 @@ filled.contour(interp(ordi$points[, 1], ordi$points[, 2], site[, var1], duplicat
            ,...)
 }
 
-## ----nmdsplot, quiet=TRUE, results='hide', eval=TRUE, warning=FALSE, eval=TRUE------------------------------
 nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env, plottitle = 'Elbaue floodplain dataset')
+} else {
+  message("packages interp and/or labdsv not available")
+}
 

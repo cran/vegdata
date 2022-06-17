@@ -82,11 +82,13 @@ taxval <- function (obs, refl, db,
       stop("Please specify either an observation dataframe or the name of your Turboveg database.")
         else  obs <- tv.obs(db=db, tv_home)
   tv_home <- tv.home()
-  if(missing(refl))
+  if(missing(refl)) {
     if(missing(db)) stop('If you do not give a taxonomic reference list name, you have to specify at least a name of a Turboveg database.') else
      refl <- tv.refl(db = db[1], tv_home = tv_home)
-  if(is.character(refl))
-    species <- tax('all', refl=refl, detailed=TRUE, ...) else refl
+  }
+  if(is.character(refl)) {
+    species <- tax('all', refl=refl, detailed=TRUE, ...)
+    } else species <- refl
   ranklevels <- factor(taxlevels$level, levels=taxlevels$level, ordered=TRUE)
   if(any(!species$TaxonRank %in% taxlevels$level)) warning('Not all taxon rank levels in taxlevels. Please check!')
 
@@ -139,7 +141,7 @@ agg.conflict <- function(fr, ...) {
 
 agg.adapt <- function(fr, ...) {
   for(i in which(!fr$TaxlevelTooHigh)) {
-      p <- parent(fr$NewTaxonID[i], refl = species, quiet=TRUE)
+      p <- parent(as.numeric(fr$NewTaxonID[i]), refl = species, quiet=TRUE)
       p$level <- match(p$TaxonRank, ranklevels)
       rankl <- which(ranklevels == rank)
       taxl <- which(ranklevels == species$TaxonRank[match(fr$TaxonUsageID[i], species$TaxonUsageID)])
@@ -287,14 +289,14 @@ if(check.critical) {
   }
 
   ### Extent of taxon interpretation
-  sl <- species[grep("\ s.\ l.", species$TaxonName, perl=TRUE), c('TaxonUsageID','TaxonName','TaxonConceptID','TaxonConcept','TaxonRank','IsChildTaxonOfID','IsChildTaxonOf','AccordingTo') ] # c(1:5, 11, 13, 14, 15)
+  sl <- species[grep("\ s.\ l.", species$TaxonName, perl=TRUE), which(names(species) %in% c('TaxonUsageID','TaxonName','TaxonConceptID','TaxonConcept','TaxonRank','IsChildTaxonOfID','IsChildTaxonOf','AccordingTo')) ]
   sl$to_check <- sub("\ s.\ l.$", "", sl$TaxonName, perl=TRUE)
-  sstr <- species[grep("\ s.\ str.$", species$TaxonName, perl=TRUE), c('TaxonUsageID','TaxonName','TaxonConceptID','TaxonConcept','TaxonRank','IsChildTaxonOfID','IsChildTaxonOf','AccordingTo')]
+  sstr <- species[grep("\ s.\ str.$", species$TaxonName, perl=TRUE), which(names(species) %in% c('TaxonUsageID','TaxonName','TaxonConceptID','TaxonConcept','TaxonRank','IsChildTaxonOfID','IsChildTaxonOf','AccordingTo'))]
   sstr$to_check <- sub("\ s.\ str.$", "", sstr$TaxonName, perl=TRUE)
   ext <- rbind(sl,sstr)
 
   ext$check_No <- species$TaxonUsageID[match(ext$to_check, species$TaxonName)]
-  ext <- ext[!is.na(ext$check_No), c('to_check', 'check_No', 'TaxonName','TaxonUsageID', 'AccordingTo')] #  c(10, 11, 2, 1, 5, 4, 6)
+  ext <- ext[!is.na(ext$check_No), which(names(ext) %in% c('to_check', 'check_No', 'TaxonName','TaxonUsageID', 'AccordingTo'))]
   names(ext)[3] <- "check against"
   if (any(fr$TaxonUsageID %in% ext$check_No)) {
     cat('Warning: Critical species in dataset, please check\n')

@@ -31,7 +31,7 @@ Vector with the ecological classification of sites. Either mean trait values or 
 }
 \description{
 Calculates community weighted mean trait values, like mean Ellenberg indicator values.
-Alternatively (method = 'mode') environmental conditions can be calculated according to the concept of sums of amplitudes of species along ecological gradients.
+  Alternatively (method = 'mode') environmental conditions can be calculated according to the concept of sums of amplitudes of species along ecological gradients.
 }
 \details{
 Trait values of 0 will be handled as NA values because Turboveg dBase can not handle NA values properly.

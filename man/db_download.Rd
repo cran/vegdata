@@ -13,10 +13,10 @@ db_download_germansl(version = "latest", verbose = TRUE, overwrite = FALSE)
 \arguments{
 \item{version}{(character) desired version number of the list}
 
-\item{verbose}{(logical) Print messages. Default: \code{TRUE}}
+\item{verbose}{(logical) Print messages. Default: `TRUE`}
 
-\item{overwrite}{(logical) If \code{TRUE} force an update by overwriting
-previously downloaded data. Default: \code{FALSE}}
+\item{overwrite}{(logical) If `TRUE` force an update by overwriting
+previously downloaded data. Default: `FALSE`}
 }
 \value{
 (character) path to the downloaded SQL database
@@ -42,5 +42,5 @@ to sql file
 }
 }
 \seealso{
-\link{tdb_cache}
+[tdb_cache]
 }

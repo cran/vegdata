@@ -31,10 +31,10 @@ Input is either species number (integer), shortletter (7 characters) or full (ex
 }
 \details{
 \dfn{concept}: GermanSL is a list with a single taxon view according to the standard lists of the different taxon groups (e.g Wisskirchen and Haeupler for higher plants, see).
-Nevertheless a huge number of synonyms is included which allows in many cases the transformation into different concepts.
-For illustration the concept of \emph{Armeria maritima} from Korneck 1996 is included, which accepts e.g. \emph{Armeria maritima ssp. bottendorfensis}.
-\dfn{parse.taxa}: parse genus and epitheta from name strings.
-\dfn{taxname.removeAuthors} Remove name authors from full scientific name strings.
+  Nevertheless a huge number of synonyms is included which allows in many cases the transformation into different concepts.
+  For illustration the concept of \emph{Armeria maritima} from Korneck 1996 is included, which accepts e.g. \emph{Armeria maritima ssp. bottendorfensis}.
+  \dfn{parse.taxa}: parse genus and epitheta from name strings.
+  \dfn{taxname.removeAuthors} Remove name authors from full scientific name strings.
 }
 \references{
 Jansen, F. and Dengler, J. (2008) GermanSL - eine universelle taxonomische Referenzliste für Vegetationsdatenbanken. Tuexenia, 28, 239-253.

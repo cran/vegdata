@@ -7,8 +7,8 @@
 \format{
 A data frame with rows and 2 variables:
 \describe{
-\item{LAYER}{Layer code, i.e. 0:9 for Turboveg}
-\item{COMB}{Combinations. Same integer means, they will be combined}
+  \item{LAYER}{Layer code, i.e. 0:9 for Turboveg}
+  \item{COMB}{Combinations. Same integer means, they will be combined}
 }
 }
 \usage{

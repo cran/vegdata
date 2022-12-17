@@ -9,7 +9,6 @@ taxname.simplify(
   x,
   genus = TRUE,
   epithet = TRUE,
-  hybrid = TRUE,
   concept = TRUE,
   rank = TRUE,
   tax.status = TRUE,
@@ -23,8 +22,6 @@ taxname.simplify(
 
 \item{epithet}{(logical) simplify epithet(s)}
 
-\item{hybrid}{(logical) remove hybrid markers}
-
 \item{concept}{(logical) remove name parts which describe taxon concept size like "s. str.","s. l."}
 
 \item{rank}{(logical) remove rank specifications}
@@ -37,7 +34,7 @@ taxname.simplify(
 Simplify name parts for better string matching
 }
 \details{
-taxname.abbr will be applied beforehand automatically. The function simplifies name parts which are empirically unstable, i.e. sylvatica might alos written as silvatica, or majus s maius. Sex of latin genus or epithet name parts often change and are therefore deleted (us vs. a, ea vs. eos, etc.). taxname.simpl works well for plant names, but be careful with very long name lists or if combined with animal taxa which are sometimes very short and can be confused after applying taxname.simpl
+taxname.abbr will be applied beforehand automatically. The function simplifies name parts which are empirically unstable, i.e. sylvatica might also written as silvatica, or majus vs. maius. Sex of latin genus or epithet name parts often change and are therefore deleted (us vs. a, ea vs. eos, etc.). Hybrid signs are removed. taxname.simpl works well for plant names, but be careful with very long name lists or if combined with animal taxa which are sometimes very short and can be confused after applying taxname.simpl
 }
 \author{
 Florian Jansen florian.jansen@uni-rostock.de

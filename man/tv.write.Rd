@@ -31,13 +31,13 @@ drop = FALSE, obl = TRUE, overwrite = FALSE, ...)
 \item{\dots}{additional arguments}
 }
 \value{
-Five files will be created in "tv_home/Data/databasename" directory. \emph{tvabund.dbf} with occurrence information n long format, \emph{tvhabita.dbf} with plot information, remarks.dbf with comments longer then 255 characters, \emph{TvAdmin.dbf} with plot UUID's and tvwin.dbf with information about taxonomic reference list, and dictionary used.
+Five files will be created in "tv_home/Data/databasename" directory. *tvabund.dbf* with occurrence information n long format, *tvhabita.dbf* with plot information, remarks.dbf with comments longer then 255 characters, *TvAdmin.dbf* with plot UUID's and tvwin.dbf with information about taxonomic reference list, and dictionary used.
 }
 \description{
 Write species-plot observations and site information to Turboveg database.
 }
 \details{
-By default Covercode is written to Turboveg. This is only meaningful, if correct CoverScales are given in the site dataframe. Unique plot ID's are stored in \emph{TvAdmin.dbf}. If you want to preserve already given UUID's you have to prepare an appropriate data.frame. Look for existing \emph{TvAdmin.dbf} files for necessary columns.
+By default Covercode is written to Turboveg. This is only meaningful, if correct CoverScales are given in the site dataframe. Unique plot ID's are stored in *TvAdmin.dbf*. If you want to preserve already given UUID's you have to prepare an appropriate data.frame. Look for existing *TvAdmin.dbf* files for necessary columns.
 }
 \seealso{
 tv.veg

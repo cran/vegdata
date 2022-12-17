@@ -12,9 +12,9 @@ src_germansl(path = db_path("germansl"), ...)
 }
 \arguments{
 \item{path}{(character) path to SQLite database. by default
-we use the function \code{\link[=db_path]{db_path()}} to get the path}
+we use the function [db_path()] to get the path}
 
-\item{...}{Further args passed on to \code{\link[DBI:dbConnect]{DBI::dbConnect()}}}
+\item{...}{Further args passed on to [DBI::dbConnect()]}
 }
 \value{
 an src object

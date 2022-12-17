@@ -115,8 +115,8 @@ tv_home <- tv.home()
 If you want to change this, declare manually by setting option "tv\_home":
 <<eval=FALSE>>=
 options(tv_home="path_to_your_Turboveg_root_directory")
+options(tv_home="/home/jansen/aGitRepos/vegdata/vegdata/inst/tvdata/")
 @
-% options(tv_home="/home/jansen/workspace/vegdata/vegdata/inst/tvdata/")
 
 \section{Service functions}
 <<dblisting>>=

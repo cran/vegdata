@@ -7,8 +7,8 @@
 \format{
 A data frame with rows and 2 variables:
 \describe{
-\item{LAYER}{Layer code, i.e. 0:9 for Turboveg}
-\item{COMB}{Combinations. Same integer means, they will be combined}
+  \item{LAYER}{Layer code, i.e. 0:9 for Turboveg}
+  \item{COMB}{Combinations. Same integer means, they will be combined}
 }
 }
 \usage{
@@ -16,6 +16,6 @@ lc.0
 }
 \description{
 datasets with layer codes and how they should be combined
-in vegetation anlyses. lc.o: do not combine any layers
+ in vegetation anlyses. lc.o: do not combine any layers
 }
 \keyword{datasets}

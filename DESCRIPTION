@@ -1,5 +1,5 @@
 Package: vegdata
-Version: 0.9.11.3
+Version: 0.9.11.4
 Encoding: UTF-8
 Title: Access Vegetation Databases and Treat Taxonomy
 Author: Florian Jansen <florian.jansen@uni-rostock.de>
@@ -19,7 +19,8 @@ Description: Handling of vegetation data from different sources (
     e.g. the German taxonomic standard list "GermanSL", <https://germansl.infinitenature.org>).
 License: GPL (>= 2)
 URL: https://germansl.infinitenature.org
+RoxygenNote: 7.2.1
 NeedsCompilation: no
-Packaged: 2022-06-15 18:23:00 UTC; jansen
+Packaged: 2022-12-17 15:02:43 UTC; jansen
 Repository: CRAN
-Date/Publication: 2022-06-17 23:50:02 UTC
+Date/Publication: 2022-12-17 15:50:02 UTC

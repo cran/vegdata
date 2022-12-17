@@ -44,19 +44,22 @@ select.taxa <- function(x, species, strict = FALSE, simplify = FALSE, genus = TR
   if(is.factor(x)) x <- as.character(x)
   if(is.numeric(x) | is.integer(x))
     ## Tax numbers
-    l <- species[match(x, species$TaxonUsageID),] else { 															## Selecting by string
-  	if(nchar(x[1]) == 7 & x[1] == toupper(x[1]))  { ## Lettercode
+    l <- species[match(x, species$TaxonUsageID),] else {
+      ## Selection by string
+  	if(nchar(x[1]) == 7 & x[1] == toupper(x[1]))  {
+  	  ## Lettercode
       l <- species[species$LETTERCODE %in% x,]
       if(nrow(l) > 1) l <- l[!l$SYNONYM,]
     } else {
-   	if(all(sapply(x, function(x) nchar(x) == 36))) {
-   	  if(is.null(getOption('UUID.taxon'))) {
-   	      message('x is interpreted as 36 character representation of a UUID Taxon ID.')
-   	      options(UUID.taxon = TRUE)
-   	  }
-      l <- species[match(x, species$TaxonUsageID), ] ## GUID Tax ID's
-    } else {   																				## Taxnames
-    x <- taxname.abbr(x, ...)
+   # 	if(all(sapply(x, function(x) nchar(x) == 36))) {
+   # 	  if(is.null(getOption('UUID.taxon'))) {
+   # 	      message('x is interpreted as 36 character representation of a UUID Taxon ID.')
+   # 	      options(UUID.taxon = TRUE)
+   # 	  }
+   #    l <- species[match(x, species$TaxonUsageID), ] ## GUID Tax ID's
+   #  } else      {
+      ## Taxnames
+   # x <- taxname.abbr(x, ...)
 	if(simplify) {
 #  		if('simplified' %in% names(species)) species$TaxonName <- species$simplified else {
 #		  	species$TaxonName <- taxname.simplify(species$TaxonName, genus, epithet, ...)
@@ -73,7 +76,8 @@ select.taxa <- function(x, species, strict = FALSE, simplify = FALSE, genus = TR
 			} else {
 				l <- species[match(x, species$TaxonName, nomatch=0),]
     }
-  } } }
+  #  }
+      } }
  	if(nrow(l) == 0 & !quiet) message('No species found!')
  	return(l)
 }

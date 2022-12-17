@@ -30,7 +30,7 @@ Loading Turboveg header data and do basic data evaluation. Empty columns are eli
 \details{
 Please specify pathnames below but not above Turbowin/Data. Can be a single database or a character vector of multiple databases. In the latter case you have to assure, that all databases use the same taxonomic reference list.
 
-You can use the example in the final output line to make a summary statistic for attributes with potentially misleading '0' values. Just delete the \" at beginning and end.
+  You can use the example in the final output line to make a summary statistic for attributes with potentially misleading '0' values. Just delete the \" at beginning and end.
 }
 \author{
 Florian Jansen \email{florian.jansen@uni-rostock.de}

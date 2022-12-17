@@ -36,8 +36,8 @@ Functions return the input dataframe of observations with harmonised taxon numbe
 }
 \description{
 Performs taxonomic valuation of species names according to synonomy, taxonomic level, unambiguous biotic content etc.
-Necessary prerequisite is information about taxonomic status (synonomy) and hierarchy (next higher aggregate).
-Until now only applicable for reference list 'GermanSL' (>= version 1.1, see References Section), which is valid in Germany and adjacent countries.
+  Necessary prerequisite is information about taxonomic status (synonomy) and hierarchy (next higher aggregate).
+  Until now only applicable for reference list 'GermanSL' (>= version 1.1, see References Section), which is valid in Germany and adjacent countries.
 }
 \details{
 Working with vegetation datasets, especially from different sources needs taxonomic valuation. The function tries to automate this process. Therefore the German taxonomic reference list (GermanSL, \url{https://germansl.infinitenature.org} ) contains additional taxon attributes (tax.dbf) and monotypic taxa of Germany (monotypic.dbf). Without an appropriate species list (see \code{\link{tax}}) the function will not work.

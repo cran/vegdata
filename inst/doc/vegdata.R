@@ -21,6 +21,7 @@ library(vegdata)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  options(tv_home="path_to_your_Turboveg_root_directory")
+#  options(tv_home="/home/jansen/aGitRepos/vegdata/vegdata/inst/tvdata/")
 
 ## ----dblisting----------------------------------------------------------------
 tv.db()

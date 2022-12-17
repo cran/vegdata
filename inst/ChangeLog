@@ -1,4 +1,8 @@
-version 0.9.10 Dec 2021
+version 0.9.11.4 Dec 2022
+  * dies gracefully now if GermanSL server is down
+  * improvements in parcing with taxname.abbr and taxname.removeAuthors
+
+version 0.9.10 Dec 2021 - Aug 2022
   * taxname.removeAuthors
 
 version 0.9.9 Dec 2020

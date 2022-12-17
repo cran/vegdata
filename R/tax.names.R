@@ -18,53 +18,63 @@ taxname.abbr <- function(x, hybrid = TRUE, concept = FALSE, species = TRUE, cf =
     trim <- function (x) gsub("^\\s+|\\s+$", "", x)
     x <- trim(x)
     x <- gsub('\"', '', x)
-    x <- sub('\ ag[.]', ' agg.', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ aggr[.]', ' agg.', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ species group[\ ]', ' agg.', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ ssp[.]', ' subsp.', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ v[.]\ ', ' var. ', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ sv[.]\ ', ' subvar. ', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ Sec[.]\ ', ' sect. ', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ sect[.][(]bot[.][)]\ ', ' sect. ', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ Ser[.]\ ', ' ser. ', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ Subs[.]\ ', ' subsect. ', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ se?n?s?[.]\\s?st?r?[.]', ' sensustricto', x)
-    x <- sub('\ s[.]\\s?la?t?o?[.]', ' sensulato', x)
-    x <- sub('\ s[.]\ ', ' subsp. ', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ f[.]\ ', ' fo. ', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ species', ' spec.', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ nothosubsp[.]' , '\ nothossp.', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ nothossp[.]' , '\ nothosubsp.', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ nothovar[.]' , '\ nvar.', x, perl=TRUE, useBytes=TRUE)
-    if(concept) {
-      x <- sub('\ sensulato', '', x, perl=TRUE, useBytes=TRUE)
-      x <- sub('\ sensustricto', '', x, perl=TRUE, useBytes=TRUE)
-    } else {
-      x <- sub('\ sensulato', ' s. l.', x, perl=TRUE, useBytes=TRUE)
-      x <- sub('\ sensustricto', ' s. str.', x, perl=TRUE, useBytes=TRUE)
-    }
+    x <- gsub("\\s+", " ", x)
+    x <- gsub('\u00A0', ' ', x)
+    x <- trimws(sub('\ aggr\\.?(\ |$)', ' agg. ', x))
+    x <- trimws(sub('\ ag\\.?(\ |$)', ' agg. ', x))
+    x <- sub('\ species group[\ ]', ' agg.', x)
+    x <- sub('\ ssp\\.?', ' subsp.', x)
+    x <- sub('\ v\\.?\ ', ' var. ', x)
+    x <- sub('\ sv\\.?\ ', ' subvar. ', x)
+    x <- sub('\ Sec\\.?\ ', ' sect. ', x)
+    x <- sub('\ sect\\.?[(]bot\\.?[)]\ ', ' sect. ', x)
+    x <- sub('\ Ser\\.?\ ', ' ser. ', x)
+    x <- sub('\ Subs\\.?\ ', ' subsect. ', x)
+    ## in the wider sense
+    # for(x in c('Genus species sens. lat.', 'Genus species sens lat', 'Genus species sens l.', 'Genus species s. lat.', 'Genus species s. l.', 'Genus species s.l.', 'Genus species sl'))  print(  sub('\ s(ens)?\\.?\\s?l(at)?\\.?($|\ )', ' sensulato', x))
+    x <-  sub('\ s(ens)?\\.?\\s?l(at)?\\.?($|\ )', ' sensulato', x)
 
-    if(hybrid) {
-      x <- gsub('\ x ' , '\ ', x, perl=TRUE, useBytes=TRUE)
-      x <- gsub('^x ' , '', x, perl=TRUE, useBytes=TRUE)
-      x <- gsub('\U00D7', '', x)
-      x <- sub('\ nssp[.]' , '\ ssp.', x, perl=TRUE, useBytes=TRUE)
-      x <- sub('\ nvar[.]' , '\ var.', x, perl=TRUE, useBytes=TRUE)
+    ## in the stricter sense
+    # for(x in c('Genus species sens. str.', 'Genus species sens str', 'Genus species sens s', 'Genus species sens s.', 'Genus species s. str.', 'Genus species s.str.', 'Genus species s.s.', 'Genus species ss'))   print( sub('\ s(ens)?\\.?\\s*?s(tr)?\\.?($|\ )', ' sensustricto', x)  )
+    x <- sub('\ s(ens)?\\.?\\s*?s(tr)?\\.?($|\ )', ' sensustricto', x)
+
+    x <- sub('\ f\\.?\ ', ' fo. ', x)
+    x <- sub('\ species', ' spec.', x)
+    if(concept) {
+      x <- sub('\ sensulato', '', x)
+      x <- sub('\ sensustricto', '', x)
     } else {
-      x <- gsub('\ x\ ' , ' \u00d7', x, perl=TRUE, useBytes=TRUE)
+      x <- sub('\ sensulato($|\ )', ' s. l.', x)
+      x <- sub('\ sensustricto($|\ )', ' s. str.', x)
     }
+    # Hybrids
+    x <- gsub('^x ', ' \u00d7', x)
+    x <- gsub(' x ',' \U00D7', x)
+    x <- gsub('\U00D7 ', '\U00D7', x)
+    x <- gsub('\ x\ ', ' \u00d7', x)
+    x <- gsub('^x\ ', '\u00d7', x)
+
+    x <- sub('\ nothovar\\.?' , '\ nvar.', x)
+    x <- sub('\ nothosubsp\\.?', '\ subsp.', x)
+    x <- sub('\ nssp\\.?', '\ subsp.', x)
+    x <- sub('\ nothossp\\.?' , '\ subsp.', x)
+    x <- sub('\ nvar\\.?', '\ var.', x)
+
+    if(hybrid)  x <- gsub('\U00D7', '', x, fixed = TRUE)
+
     if(cf) x <- sub('cf.\ ', '', x, ignore.case=TRUE)
 		if(species)  {
-		  x <- sub('\ sp[.]' , '', x, perl=TRUE, useBytes=TRUE)
-		  x <- sub('\ sp$', '', x, perl=TRUE, useBytes=TRUE)
-		  x <- sub('\ spec[.]' , '', x, perl=TRUE, useBytes=TRUE)
-		  x <- sub('\ species$' , '', x, perl=TRUE, useBytes=TRUE)
+		  x <- sub('\ sp\\.?$' , '', x)
+		  x <- sub('\ sp$', '', x)
+		  x <- sub('\ spec\\.?$' , '', x)
+		  x <- sub('\ species$' , '', x)
 			} else {
-		  x <- sub('\ sp[.]', ' species', x, perl=TRUE, useBytes=TRUE)
-		  x <- sub('\ sp$', ' species', x, perl=TRUE, useBytes=TRUE)
-		  x <- sub('\ spec[.]', ' species', x, perl=TRUE, useBytes=TRUE)
+		  x <- sub('\ sp\\.?$', ' species', x)
+		  x <- sub('\ sp$', ' species', x)
+		  x <- trimws(sub('\ spec\\.?[\ $]', ' species\ ', x))
 		}
-    x <- sub("\\s+$", "", x) # trim trailing leading spaces
+#    x <- sub("\\s+$", "", x) # trim trailing leading spaces
+    x <- trimws(x) # trim leading and trailing leading spaces
     #  Sys.setlocale(category='LC_CTYPE', locale=loc)
    return(x)
 }
@@ -78,58 +88,58 @@ taxname.abbr <- function(x, hybrid = TRUE, concept = FALSE, species = TRUE, cf =
 #' @export
 #' @param x (integer or character) Species number, lettercode or species name(s)
 #' @param genus (logical) simplify genus name part
-#' @param hybrid (logical) remove hybrid markers
 #' @param concept (logical) remove name parts which describe taxon concept size like "s. str.","s. l."
 #' @param rank (logical) remove rank specifications
 #' @param epithet (logical) simplify epithet(s)
 #' @param tax.status (logical) remove taxon status like 'nom. illeg.' or 'auct.'
 #' @param \dots additional attributes
 #'
-#' @details taxname.abbr will be applied beforehand automatically. The function simplifies name parts which are empirically unstable, i.e. sylvatica might alos written as silvatica, or majus s maius. Sex of latin genus or epithet name parts often change and are therefore deleted (us vs. a, ea vs. eos, etc.). taxname.simpl works well for plant names, but be careful with very long name lists or if combined with animal taxa which are sometimes very short and can be confused after applying taxname.simpl
+#' @details taxname.abbr will be applied beforehand automatically. The function simplifies name parts which are empirically unstable, i.e. sylvatica might also written as silvatica, or majus vs. maius. Sex of latin genus or epithet name parts often change and are therefore deleted (us vs. a, ea vs. eos, etc.). Hybrid signs are removed. taxname.simpl works well for plant names, but be careful with very long name lists or if combined with animal taxa which are sometimes very short and can be confused after applying taxname.simpl
 #'
 #' @author Florian Jansen florian.jansen@uni-rostock.de
 #'
 
-taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, hybrid=TRUE, concept = TRUE, rank=TRUE, tax.status=TRUE, ...) {
+taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, concept = TRUE, rank=TRUE, tax.status=TRUE, ...) {
+  x <- taxname.abbr(x, ...)
   if(tax.status) {
-    x <- gsub(' nom[.] illeg[.]', '', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub(' nom[.] inval[.]', '', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub(' nom[.] rej[.]', '', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub(' auct[.]', '', x, perl=TRUE, useBytes=TRUE)
+    x <- gsub(' nom\\.? illeg\\.?', '', x)
+    x <- gsub(' nom\\.? inval\\.?', '', x)
+    x <- gsub(' nom\\.? rej\\.?', '', x)
+    x <- gsub(' auct\\.?', '', x)
   }
   if(concept) {
-    x <- sub('\ sensulato', '', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ sensustricto', '', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub(' s[.] str[.]', '', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub(' s[.] l[.]', '', x, perl=TRUE, useBytes=TRUE)
+    x <- gsub('\ sensulato', '', x)
+    x <- gsub('\ sensustricto', '', x)
+    x <- gsub(' s\\.?\ str\\.?', '', x)
+    x <- gsub(' s\\.?\ l\\.?', '', x)
   } else {
-    x <- sub('\ sensulato', ' s. l.', x, perl=TRUE, useBytes=TRUE)
-    x <- sub('\ sensustricto', ' s. str.', x, perl=TRUE, useBytes=TRUE)
+    x <- gsub('\ sensulato', ' s. l.', x)
+    x <- gsub('\ sensustricto', ' s. str.', x)
   }
 
-    x <- gsub('\U00EB', 'e', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('\U00CF', 'i', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('ii', 'i', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('ck', 'k', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('nn', 'n', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('fa', 'pha', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('ej', 'ei', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('oe', 'ae', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('ph', 'p', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('rh', 'h', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('rr', 'r', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('th', 't', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('tt', 't', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub( 'y', 'i', x, perl=TRUE, useBytes=TRUE)
-    x <- gsub('ranum', 'rianum', x, perl=TRUE, useBytes=TRUE)
+    x <- gsub('\U00EB', 'e', x)
+    x <- gsub('\U00CF', 'i', x)
+    x <- gsub('ii', 'i', x)
+    x <- gsub('ck', 'k', x)
+    x <- gsub('nn', 'n', x)
+    x <- gsub('fa', 'pha', x)
+    x <- gsub('ej', 'ei', x)
+    x <- gsub('oe', 'ae', x)
+    x <- gsub('ph', 'p', x)
+    x <- gsub('rh', 'h', x)
+    x <- gsub('rr', 'r', x)
+    x <- gsub('th', 't', x)
+    x <- gsub('tt', 't', x)
+    x <- gsub( 'y', 'i', x)
+    x <- gsub( '-', '', x)
+    x <- gsub('ranum', 'rianum', x)
 
-    if(hybrid) {
-      x <- gsub('^X ', '', x)
-      x <- gsub('^x ' , '', x)
-      x <- gsub(' x ',' ', x)
-      x <- gsub('\U00D7 ', '', x)
-      x <- gsub('\U00D7', '', x)
-    }
+    # Hybrids
+      x <- gsub('^X ', '\U00D7', x)
+      x <- gsub('^x ' , '\U00D7', x)
+      x <- gsub(' x ',' \U00D7', x)
+      x <- gsub('\U00D7 ', '\U00D7', x)
+
     if(rank) {
       x <- gsub(' fo.', '', x, fixed = TRUE)
       x <- gsub(' race', '', x, fixed = TRUE)
@@ -137,6 +147,7 @@ taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, hybrid=TRUE, concept =
       x <- gsub(' subsp.', '', x, fixed = TRUE)
       x <- gsub(' [ranglos]', '', x, fixed = TRUE)
     }
+
     if(genus) {
       x <-	paste(sub('a$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
       x <-	paste(sub('as$', '', substr(x, 1, regexpr('\ ', x)-1)), substr(x, regexpr('\ ', x), nchar(x)), sep='')
@@ -174,102 +185,6 @@ taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, hybrid=TRUE, concept =
  return(x)
 }
 
-#' Standardise taxon list field names to match the Taxonomic Concept Transfer Schema (TCS)
-#'
-#' @name TCS.replace
-#' @description Applies Taxonomic Concept Transfer Schema (TCS) to the different name list conventions of different sources
-#'
-#' @export
-#' @param x (character) string of column names used in data.frames storing taxon lists
-#'
-#' @author Florian Jansen florian.jansen@uni-rostock.de
-#' @references Taxonomic Names and Concepts interest group. 2006. Taxonomic Concept Transfer Schema (TCS), version 1.01. Biodiversity Information Standards (TDWG) http://www.tdwg.org/standards/117
-
-TCS.replace <- function(x) {
-## Turboveg & ## Florkart Germany
-  x <- replace(x, toupper(x) %in% c('TAXONUSAGEID', 'SPECIES_NR', 'TAXNR', 'NAMNR', 'NAMEID', "NAME_ID", 'TAXONUSAGEID','TAXONID'), 'TaxonUsageID')
-  x <- replace(x, toupper(x) %in% c('TAXONNAME','ABBREVIAT','TAXONNAME','TAXON','TAXNAME',"WISS_NAME"), 'TaxonName')
-  x <- replace(x, toupper(x) %in% c('TAXONCONCEPTID','VALID_NR', 'SIPNR', 'NAMNR_GUELT', 'SYNNAMEID', 'TAXONCONCEPTID',"ACCEPTEDNAMEUSAGEID"), 'TaxonConceptID')
-  x <- replace(x, toupper(x) %in% c('TAXONCONCEPT', 'VALID_NAME', 'VALIDNAME', 'TAXONCONCEPT'), 'TaxonConcept')
-  x <- replace(x, toupper(x) %in% c('ISCHILDTAXONOFID', 'AGG', 'AGGNR', 'NAMEPARENTID', 'ISCHILDTAXONOFID', "PARENTNAMEUSAGEID"), 'IsChildTaxonOfID')
-  x <- replace(x, toupper(x) %in% c('ISCHILDTAXONOF', 'AGG_NAME', 'AGGNAME', 'ISCHILDTAXONOF'), 'IsChildTaxonOf')
-  x <- replace(x, toupper(x) %in% c('ACCORDINGTO', 'SECUNDUM'), 'AccordingTo')
-  x <- replace(x, toupper(x) %in% c('VERNACULARNAME', 'NATIVENAME', "COMMONNAME"), 'VernacularName')
-  x <- replace(x, toupper(x) %in% c('CLASSIFICATION','CLASSIFICA'), 'Classification')
-  x <- replace(x, toupper(x) %in% c('TAXONRANK', 'RANG', 'RANK', "TAXONOMICRANK"), 'TaxonRank')
-  x <- replace(x, toupper(x) %in% c('NAMEAUTHOR', 'AUTOR', 'AUTHOR',"SCIENTIFICNAMEAUTHORSHIP"), 'NameAuthor')
-  x <- replace(x, toupper(x) %in% c('REFERENCE', 'BIBLIO'), 'REFERENCE')
-
-## ESveg & FloraEuropaaea & sPlot
-  x <- replace(x, toupper(x) %in% c("TAXONCODE", 'ETAXON', 'SPECIESID'), 'TaxonUsageID')
-  x <- replace(x, toupper(x) %in% c('TAXON_NAME'), 'TaxonName')
-  x <- replace(x, toupper(x) %in% c('PARENT'), 'IsChildTaxonOfID')
-  x <- replace(x, toupper(x) %in% c('RANK_NAME'), 'TaxonRank')
-  x <- replace(x, toupper(x) %in% c('SYNONYM_OF'), 'TaxonConceptID')
-  x <- replace(x, toupper(x) %in% c('PLOTOBSERVATIONID', "OBSERVATIONCODE", "OBSERVATIONID","PLOTID", "RELEVE_NR"), "PlotObservationID")
-  x <- replace(x, toupper(x) %in% c("STRATUMCODE"), "LAYER_ID")
-  x <- replace(x, toupper(x) %in% c("STRATUM"), "LAYER")
-  x <- replace(x, toupper(x) %in% c("PERCENTAGE_MEAN", "COVERPERCENT"), "Cover_Perc")
-
-## CDM & EuroMed
-  x <- replace(x, toupper(x) %in% c('NAME', 'TAXON', 'NAMECACHE'), 'TaxonName')
-  x <- replace(x, toupper(x) %in% c('TAXONUUID', 'SYNUUID', 'RIDENTIFIER'), 'TaxonUsageID')
-  x <- replace(x, toupper(x) %in% c('ACCTAXONID', 'ACCEPTEDTAXONFK'), 'TaxonConceptID')
-  x <- replace(x, toupper(x) %in% c('RANKABBREV'), 'TaxonRank')
-  x <- replace(x, toupper(x) %in% c('PARENTKEY'), 'IsChildTaxonOfID')
-  x <- replace(x, toupper(x) %in% c('AUTHORSTRING'), 'NameAuthor')
-
-## Veg-X
-  x <- replace(x, toupper(x) %in% c('PLOTNAME', 'RELEVE_NR'), 'PlotObservationID')
-  x <- replace(x, toupper(x) %in% c('ORGANISMIDENTITYNAME'), 'TaxonUsageID')
-  x <- replace(x, toupper(x) %in% c('STRATUMNAME'), 'LAYER')
-  x <- replace(x, toupper(x) %in% c('AGG_1_VALUE'), 'COVER_CODE')
-
-## APG IV, wfo / taxize(db)
-  x <- replace(x, toupper(x) %in% c('SCIENTIFICNAME'), 'TaxonName')
-  x <- replace(x, toupper(x) %in% c("TAXONRANK"), 'TaxonRank')
-  x <- replace(x, toupper(x) %in% c("PARENTNAMEUSAGE"), 'IsChildTaxonOf')
-
-  return(x)
-}
-
-#' Rename data.frame columns to match Turboveg 2 conventions
-#'
-#' @export
-#' @param x (character) string vector of column names
-#' @name TV.replace
-#'
-
-TV.replace <- function(x) {
-  ## Florkart Germany (BfN lists) and others
-  x <- replace(x, toupper(x) %in% c("TAXONUSAGE", 'TAXONUSAGEID', 'TAXNR', 'NAMNR', 'NAMEID', "NAME_ID"), 'SPECIES_NR')
-  x <- replace(x, toupper(x) %in% c('TAXONNAME','TAXON','TAXNAME',"WISS_NAME"), 'ABBREVIAT')
-  x <- replace(x, toupper(x) %in% c('TAXONCONCE', 'VALIDNAME', 'TAXONCONCEPT'), 'VALID_NAME')
-  x <- replace(x, toupper(x) %in% c('"TAXONCONC2"', 'TAXONCONCEPTID', 'SIPNR', 'SYNNAMEID','NAMNR_GUELT'), 'VALID_NR')
-  x <- replace(x, toupper(x) %in% c('ISCHILDTAX', 'AGGNR', 'NAMEPARENTID', 'ISCHILDTAXONOFID',"TAXON_CHILD_OF"), 'AGG')
-  x <- replace(x, toupper(x) %in% c( "ISCHILDTA2", 'ISCHILDTAXONOF'), 'AGG_NAME')
-  x <- replace(x, toupper(x) %in% c('ACCORDINGTO'), 'SECUNDUM')
-  x <- replace(x, toupper(x) %in% c("COMMONNAME", 'VERNACULAR', 'VERNACULARNAME'), 'NATIVENAME')
-  x <- replace(x, toupper(x) %in% c('CLASSIFICATION'), 'CLASSIFICA')
-  x <- replace(x, toupper(x) %in% c('RANK', 'TAXONOMICRANK', 'TAXONRANK'), 'RANG')
-  x <- replace(x, toupper(x) %in% c('NAMEAUTHOR', 'AUTHOR'), 'AUTHOR')
-
-  ## CDM & EuroMed
-  x <- replace(x, toupper(x) %in% c('SYNUUID', 'RIDENTIFIER'), 'SPECIES_NR')
-  x <- replace(x, toupper(x) %in% c('ACCTAXONID'), 'VALID_NR')
-  x <- replace(x, toupper(x) %in% c('AGGNAME'), 'PARNAME')
-  x <- replace(x, toupper(x) %in% c('PARENTKEY'), 'PARENT')
-
-  ## Veg-X
-  x <- replace(x, toupper(x) %in% c('PLOTNAME', 'PLOTOBSERVATIONID'), 'RELEVE_NR')
-  x <- replace(x, toupper(x) %in% c('ORGANISMIDENTITYNAME'), 'SPECIES_NR')
-  x <- replace(x, toupper(x) %in% c('STRATUMNAME'), 'LAYER')
-  x <- replace(x, toupper(x) %in% c('AGG_1_VALUE'), 'COVER_CODE')
-
-  return(x)
-}
-
-
 
 #' Remove name authors from taxon names
 #'
@@ -278,18 +193,62 @@ TV.replace <- function(x) {
 #' @name taxname.removeAuthors
 #'
 
+# taxname.removeAuthors <- function(x) {
+#     trimws(sapply(x, function(x) {
+#       UC <- unlist(gregexpr("[A-Z]", x, perl=TRUE))
+#       if(length(UC) == 0) stop(paste("Can not detect a valid taxon name in:", x))
+#       if(length(UC) == 1) x else {
+#       rest <- substr(x, UC[length(UC)], nchar(x))
+#       if(grepl('subsp.|nothosubsp.|nssp.|var.|f.|cv.|agg.', rest)) {
+#         paste(trimws(substr(x, 1, UC[2]-2)), trimws(sub(stringr::word(rest), '', rest)) )
+#       } else
+#       substr(x, 1, unlist(gregexpr("[A-Z]", x, perl=TRUE))[2]-2)
+#       }
+#     }
+#     ))
+# }
 taxname.removeAuthors <- function(x) {
-    trimws(sapply(x, function(x) {
-      UC <- unlist(gregexpr("[A-Z]", x, perl=TRUE))
-      if(length(UC) == 0) stop(paste("Can not detect a valid taxon name in:", x))
-      if(length(UC) == 1) x else
-         substr(x, 1, unlist(gregexpr("[A-Z]", x, perl=TRUE))[2]-2)
-      }
-    ))
+  trimws(sapply(x, function(x) {
+    UC <- unlist(gregexpr("[A-Z]", x, perl=TRUE))
+    if(length(UC) == 0) stop(paste("Can not detect a valid taxon name in:", x, '. No Uppercase word detected.'))
+    if(length(UC) == 1) x else {
+      if(grepl('[', x, fixed = TRUE))  x <- trimws(strsplit(x, '[', fixed = TRUE)[[1]][1])
+      RI <- gregexpr("\ subsp\\.?\ |nothosubsp\\.?\ |\ nssp\\.?\ |var\\.?\ |\ for\\.?|\ cv\\.?\ |\ agg\\.|\ sect\\.\ |\ subg\\.\ |\ x\ ", x)
+      rest <- substr(x, UC[length(UC)], nchar(x))
+      if(all(RI[[1]] > UC[length(UC)])) {
+        paste(trimws(substr(x, 1, UC[2]-2)), trimws(sub(stringr::word(rest), '', rest)) )
+      } else
+      if(all(RI[[1]] > UC[2])) {
+        species <- stringr::word(trimws(substr(x, RI[[1]], nchar(x))), 2)
+        paste(trimws(substr(x, 1, UC[2]-2)), trimws(substr(x, RI[[1]], (RI[[1]] + attr(RI[[1]], 'match.length')-1))), species, trimws(sub(stringr::word(rest), '', rest)) )
+    } else
+      substr(x, 1, unlist(gregexpr("[A-Z]", x, perl=TRUE))[2]-2)
+    }}
+  ))
 }
 
+# x <- 'Circaea x intermedia Ehrh. [alpina subsp. alpina x lutetiana subsp. lutetiana]'
+# x <- 'Anthriscus sylvestris (L.) Hoffm. subsp. sylvestris'
+# x <- 'Polycarpon polycarpoides subsp. catalaunicum O.Bolòs & Vigo'
+# x <- "Centaurium erythraea subsp. erythraea var. capitatum (Willd.) Melderis"
+# x <- 'xCalammophila'
+# gregexpr("f\\.?|cv\\.?\ |agg\\.?\ ", x, perl=TRUE)
+#
+# taxname.removeAuthors(x)
 
-
+# rest1 <- substr(x, UC[1], nchar(x))
+# rest2 <- substr(x, UC[2], nchar(x))
+# rest3 <- substr(x, UC[3]-2, nchar(x))
+# rest <- substr(x, UC[length(UC)], nchar(x))
+#
+# start1 <- substr(x, UC[1], UC[2])
+# start2 <- substr(x, UC[1], UC[3])
+# paste(trimws(substr(x, 1, UC[3]-2)), trimws(sub(stringr::word(rest), '', rest)) )
+# paste(trimws(substr(x, 1, UC[2]-2)), trimws(sub(stringr::word(rest), '', rest)) )
+#
+#
+# paste(trimws(substr(x, UC[2], UC[3]-2)), trimws(sub(stringr::word(rest), '', rest)) )
+#
 
 #' Parse taxon strings into genus part and epitheta
 #'
@@ -376,3 +335,101 @@ recode.species <- function(x, names = c('shortletters', 'Numbers', 'ScientificNa
 }
 
 # rename.species(veg, 'N')
+
+
+
+#' Standardise taxon list field names to match the Taxonomic Concept Transfer Schema (TCS)
+#'
+#' @name TCS.replace
+#' @description Applies Taxonomic Concept Transfer Schema (TCS) to the different name list conventions of different sources
+#'
+#' @export
+#' @param x (character) string of column names used in data.frames storing taxon lists
+#'
+#' @author Florian Jansen florian.jansen@uni-rostock.de
+#' @references Taxonomic Names and Concepts interest group. 2006. Taxonomic Concept Transfer Schema (TCS), version 1.01. Biodiversity Information Standards (TDWG) http://www.tdwg.org/standards/117
+
+TCS.replace <- function(x) {
+  ## Turboveg & ## Florkart Germany
+  x <- replace(x, toupper(x) %in% c('TAXONUSAGEID', 'SPECIES_NR', 'TAXNR', 'NAMNR', 'NAMEID', "NAME_ID", 'TAXONUSAGEID','TAXONID'), 'TaxonUsageID')
+  x <- replace(x, toupper(x) %in% c('TAXONNAME','ABBREVIAT','TAXONNAME','TAXON','TAXNAME',"WISS_NAME"), 'TaxonName')
+  x <- replace(x, toupper(x) %in% c('TAXONCONCEPTID','VALID_NR', 'SIPNR', 'NAMNR_GUELT', 'SYNNAMEID', 'TAXONCONCEPTID',"ACCEPTEDNAMEUSAGEID"), 'TaxonConceptID')
+  x <- replace(x, toupper(x) %in% c('TAXONCONCEPT', 'VALID_NAME', 'VALIDNAME', 'TAXONCONCEPT'), 'TaxonConcept')
+  x <- replace(x, toupper(x) %in% c('ISCHILDTAXONOFID', 'AGG', 'AGGNR', 'NAMEPARENTID', 'ISCHILDTAXONOFID', "PARENTNAMEUSAGEID"), 'IsChildTaxonOfID')
+  x <- replace(x, toupper(x) %in% c('ISCHILDTAXONOF', 'AGG_NAME', 'AGGNAME', 'ISCHILDTAXONOF'), 'IsChildTaxonOf')
+  x <- replace(x, toupper(x) %in% c('ACCORDINGTO', 'SECUNDUM'), 'AccordingTo')
+  x <- replace(x, toupper(x) %in% c('VERNACULARNAME', 'NATIVENAME', "COMMONNAME"), 'VernacularName')
+  x <- replace(x, toupper(x) %in% c('CLASSIFICATION','CLASSIFICA'), 'Classification')
+  x <- replace(x, toupper(x) %in% c('TAXONRANK', 'RANG', 'RANK', "TAXONOMICRANK"), 'TaxonRank')
+  x <- replace(x, toupper(x) %in% c('NAMEAUTHOR', 'AUTOR', 'AUTHOR',"SCIENTIFICNAMEAUTHORSHIP"), 'NameAuthor')
+  x <- replace(x, toupper(x) %in% c('REFERENCE', 'BIBLIO'), 'REFERENCE')
+
+  ## ESveg & FloraEuropaaea & sPlot
+  x <- replace(x, toupper(x) %in% c("TAXONCODE", 'ETAXON', 'SPECIESID'), 'TaxonUsageID')
+  x <- replace(x, toupper(x) %in% c('TAXON_NAME'), 'TaxonName')
+  x <- replace(x, toupper(x) %in% c('PARENT'), 'IsChildTaxonOfID')
+  x <- replace(x, toupper(x) %in% c('RANK_NAME'), 'TaxonRank')
+  x <- replace(x, toupper(x) %in% c('SYNONYM_OF'), 'TaxonConceptID')
+  x <- replace(x, toupper(x) %in% c('PLOTOBSERVATIONID', "OBSERVATIONCODE", "OBSERVATIONID","PLOTID", "RELEVE_NR"), "PlotObservationID")
+  x <- replace(x, toupper(x) %in% c("STRATUMCODE"), "LAYER_ID")
+  x <- replace(x, toupper(x) %in% c("STRATUM"), "LAYER")
+  x <- replace(x, toupper(x) %in% c("PERCENTAGE_MEAN", "COVERPERCENT"), "Cover_Perc")
+
+  ## CDM & EuroMed
+  x <- replace(x, toupper(x) %in% c('NAME', 'TAXON', 'NAMECACHE'), 'TaxonName')
+  x <- replace(x, toupper(x) %in% c('TAXONUUID', 'SYNUUID', 'RIDENTIFIER'), 'TaxonUsageID')
+  x <- replace(x, toupper(x) %in% c('ACCTAXONID', 'ACCEPTEDTAXONFK'), 'TaxonConceptID')
+  x <- replace(x, toupper(x) %in% c('RANKABBREV'), 'TaxonRank')
+  x <- replace(x, toupper(x) %in% c('PARENTKEY'), 'IsChildTaxonOfID')
+  x <- replace(x, toupper(x) %in% c('AUTHORSTRING'), 'NameAuthor')
+
+  ## Veg-X
+  x <- replace(x, toupper(x) %in% c('PLOTNAME', 'RELEVE_NR'), 'PlotObservationID')
+  x <- replace(x, toupper(x) %in% c('ORGANISMIDENTITYNAME'), 'TaxonUsageID')
+  x <- replace(x, toupper(x) %in% c('STRATUMNAME'), 'LAYER')
+  x <- replace(x, toupper(x) %in% c('AGG_1_VALUE'), 'COVER_CODE')
+
+  ## APG IV, wfo / taxize(db)
+  x <- replace(x, toupper(x) %in% c('SCIENTIFICNAME'), 'TaxonName')
+  x <- replace(x, toupper(x) %in% c("TAXONRANK"), 'TaxonRank')
+  x <- replace(x, toupper(x) %in% c("PARENTNAMEUSAGE"), 'IsChildTaxonOf')
+
+  return(x)
+}
+
+#' Rename data.frame columns to match Turboveg 2 conventions
+#'
+#' @export
+#' @param x (character) string vector of column names
+#' @name TV.replace
+#'
+
+TV.replace <- function(x) {
+  ## Florkart Germany (BfN lists) and others
+  x <- replace(x, toupper(x) %in% c("TAXONUSAGE", 'TAXONUSAGEID', 'TAXNR', 'NAMNR', 'NAMEID', "NAME_ID"), 'SPECIES_NR')
+  x <- replace(x, toupper(x) %in% c('TAXONNAME','TAXON','TAXNAME',"WISS_NAME"), 'ABBREVIAT')
+  x <- replace(x, toupper(x) %in% c('TAXONCONCE', 'VALIDNAME', 'TAXONCONCEPT'), 'VALID_NAME')
+  x <- replace(x, toupper(x) %in% c('"TAXONCONC2"', 'TAXONCONCEPTID', 'SIPNR', 'SYNNAMEID','NAMNR_GUELT'), 'VALID_NR')
+  x <- replace(x, toupper(x) %in% c('ISCHILDTAX', 'AGGNR', 'NAMEPARENTID', 'ISCHILDTAXONOFID',"TAXON_CHILD_OF"), 'AGG')
+  x <- replace(x, toupper(x) %in% c( "ISCHILDTA2", 'ISCHILDTAXONOF'), 'AGG_NAME')
+  x <- replace(x, toupper(x) %in% c('ACCORDINGTO'), 'SECUNDUM')
+  x <- replace(x, toupper(x) %in% c("COMMONNAME", 'VERNACULAR', 'VERNACULARNAME'), 'NATIVENAME')
+  x <- replace(x, toupper(x) %in% c('CLASSIFICATION'), 'CLASSIFICA')
+  x <- replace(x, toupper(x) %in% c('RANK', 'TAXONOMICRANK', 'TAXONRANK'), 'RANG')
+  x <- replace(x, toupper(x) %in% c('NAMEAUTHOR', 'AUTHOR'), 'AUTHOR')
+
+  ## CDM & EuroMed
+  x <- replace(x, toupper(x) %in% c('SYNUUID', 'RIDENTIFIER'), 'SPECIES_NR')
+  x <- replace(x, toupper(x) %in% c('ACCTAXONID'), 'VALID_NR')
+  x <- replace(x, toupper(x) %in% c('AGGNAME'), 'PARNAME')
+  x <- replace(x, toupper(x) %in% c('PARENTKEY'), 'PARENT')
+
+  ## Veg-X
+  x <- replace(x, toupper(x) %in% c('PLOTNAME', 'PLOTOBSERVATIONID'), 'RELEVE_NR')
+  x <- replace(x, toupper(x) %in% c('ORGANISMIDENTITYNAME'), 'SPECIES_NR')
+  x <- replace(x, toupper(x) %in% c('STRATUMNAME'), 'LAYER')
+  x <- replace(x, toupper(x) %in% c('AGG_1_VALUE'), 'COVER_CODE')
+
+  return(x)
+}
+

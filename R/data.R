@@ -9,7 +9,7 @@
 #'   \item{Euro.Med}{taxon level name in http://www.europlusmed.org/ database}
 #'   \item{description}{Explanation of level codes}
 #' }
-#'
+#' @export taxlevels
 "taxlevels"
 
 #' Layer combinations
@@ -22,6 +22,7 @@
 #'   \item{LAYER}{Layer code, i.e. 0:9 for Turboveg}
 #'   \item{COMB}{Combinations. Same integer means, they will be combined}
 #' }
+#' @export lc.0
 #'
 "lc.0"
 
@@ -35,6 +36,7 @@
 #'   \item{LAYER}{Layer code, i.e. 0:9 for Turboveg}
 #'   \item{COMB}{Combinations. Same integer means, they will be combined}
 #' }
+#' @export lc.1
 #'
 "lc.1"
 
@@ -47,6 +49,7 @@
 #'   \item{LAYER}{Layer code, i.e. 0:9 for Turboveg}
 #'   \item{COMB}{Combinations. Same integer means, they will be combined}
 #' }
+#' @export lc.all
 #'
 "lc.all"
 

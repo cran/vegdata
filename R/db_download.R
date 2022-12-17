@@ -83,8 +83,15 @@ db_download_germansl <- function(version = 'latest', verbose = TRUE, overwrite =
   # make home dir if not already present
   tdb_cache$mkdir()
   # download data
-  mssg(verbose, 'downloading...')
-  curl::curl_download(db_url, db_path, quiet = TRUE)
+  # evaluate internet connection
+  # if (httr::http_error(db_url) | !network) { # network is down = message (not an error anymore)
+  #   message("No internet connection or data source broken.")
+  #   return(NULL)
+  # } else { # network is up = proceed to download via curl
+    mssg(verbose, 'downloading...')
+    curl::curl_download(url = db_url, destfile = db_path, quiet = TRUE)
+  # } # /if - network up or down
+
   # unzip
   mssg(verbose, 'unzipping...')
   utils::unzip(db_path, exdir = db_path_file)

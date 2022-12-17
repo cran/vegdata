@@ -19,42 +19,27 @@ load.taxlist <- function(refl, detailed = TRUE, ...) {
         message(paste('Taxonomic reference list file', refl, 'does not exist. Search path was', reflist.path))
         if(tolower(substr(refl, 1, 8)) %in% c('germansl')) {
           message('Will try to downlaod reflist ', refl, ' (species.dbf) ...\n')
-          # if(interactive()) {
-          #   ANSWER <- readline("Should I use \n 1) a temporary directory,  or \n 2) the vedata package path (recommended, if you want to reuse the reflist repeatedly)? ")
-          #   tv_home <- switch(substr(ANSWER, 1, 1),
-          #                     "1" = tempdir(),
-          #                     "2" = file.path(path.package('vegdata'), 'tvdata'),
-          #                     tempdir())
-          #   options(tv_home = tv_home)
+          #   options(tv_home = tempdir())
              tfile <- tempfile(tmpdir = tv.home())
              version <- substr(refl, 10, nchar(refl))
             remote <- paste('https://germansl.infinitenature.org/GermanSL', version, 'GermanSL.zip',sep='/')
-            if(curl::has_internet())
-            if (httr::http_error(remote)) { # network is down = message (not an error anymore)
-              message("No internet connection or data source broken.")
-              return(NULL)
-            } else { # network is up = proceed to download via curl
-              message("Downloading remote dataset.")
-              status <- tryCatch(
-                RCurl::getURL(remote, ssl.verifypeer=FALSE, useragent="R"),
-                error = function(e) e
-              )
-              if(inherits(status,  "error", TRUE))
-              curl::curl_download(url = paste('https://germansl.infinitenature.org/GermanSL', version, 'GermanSL.zip',sep='/'), destfile = tfile, quiet = T)
-              else {
-                message("No internet connection.")
-                return(invisible(NULL))
-              }
-            } # /if - network up or down
-#            m <- try(download.file(paste('https://germansl.infinitenature.org/GermanSL', version, 'GermanSL.zip',sep='/'), tfile), silent=TRUE)
+            if(curl::has_internet()) {
+              if (httr::http_error(remote)) { # network is down = message (not an error anymore)
+                message("Data source broken.")
+              } else { # network is up = proceed to download via curl
+                message("Downloading remote dataset.")
+                  curl::curl_download(url = remote, destfile = tfile, quiet = T)
+                }
+            } else {
+              message("No internet connection. Will use package test reflist instead.")
+              return(invisible(NULL))
+            }
+            # /if - network up or down
+#            m <- try(download.file(remote, tfile), silent=TRUE)
             if(file.exists(tfile)) unzip(tfile, exdir= file.path(tv_home, refl.dir)) else {
-              message('Using example data instead.')
+              message('No internet connection or server down. Using example data instead.')
               unzip(file.path(path.package('vegdata'), 'tvdata', refl.dir, 'TaxrefExample.zip'), exdir = file.path(tv_home, refl.dir))
             }
-        #   } else {
-        #     message('Using example data instead.')
-        #     unzip(file.path(path.package('vegdata'), 'tvdata', refl.dir, 'TaxrefExample.zip'), exdir = file.path(tv_home, refl.dir))
-        # }
         message('Option "tv_home" is ', tv.home())
         } else stop('\nTaxonomic list ', refl, ' does not exist and is not supported for automatic download.\n')
       }

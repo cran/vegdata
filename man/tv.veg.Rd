@@ -46,10 +46,10 @@ an object of class matrix with (combined) cover values.
 }
 \description{
 Tabulates vegetation tables from Turboveg resp. VegetWeb database, including taxonomic emendation and layer combination. Using various default parameters for the included functions.
-It is a wrapper for \emph{tv.obs}, \emph{taxval}, \emph{tv.coverperc} and creating a vegetation matrix
+It is a wrapper for *tv.obs*, *taxval*, *tv.coverperc* and creating a vegetation matrix
 }
 \details{
-\code{layer} means, the different layers are combined assuming there independence (a species occurring in two layers with a cover of 50\\% will result in a overall cover of 75\\%. \code{sum} will sum up cover values of all layers With option \code{pseudo} you can decide, which layers should be combined. Give a list with a combination data.frame and second the name of the column for combination. The default is \code{pseudo = list(lc.1, c('LAYER'))}, where lc.1 is a data.frame \code{data(lc.1)}, which will combine all tree layers, all shrub layers and all layers below shrubs. An alternative would be data(lc.all), combining all layers. With option pseudo=NULL there will be no layer aggregation.
+\code{layer} means, the different layers are combined assuming there independence (a species occurring in two layers with a cover of 50\% will result in a overall cover of 75\%. \code{sum} will sum up cover values of all layers With option \code{pseudo} you can decide, which layers should be combined. Give a list with a combination data.frame and second the name of the column for combination. The default is \code{pseudo = list(lc.1, c('LAYER'))}, where lc.1 is a data.frame \code{data(lc.1)}, which will combine all tree layers, all shrub layers and all layers below shrubs. An alternative would be data(lc.all), combining all layers. With option pseudo=NULL there will be no layer aggregation.
 }
 \examples{
   \dontrun{
@@ -68,7 +68,7 @@ It is a wrapper for \emph{tv.obs}, \emph{taxval}, \emph{tv.coverperc} and creati
 }
 \seealso{
 {
-\code{\link{taxval}}, \code{\link{tv.coverperc}}, \code{\link{tv.obs}}, \code{\link{tv.site}}
+  \code{\link{taxval}}, \code{\link{tv.coverperc}}, \code{\link{tv.obs}}, \code{\link{tv.site}}
 }
 }
 \author{

@@ -15,7 +15,7 @@ tv.bib(x = "all", db, dict = tv.dict(db), quiet = FALSE, tv_home, ...)
 
 \item{quiet}{(logical) If you want to print the reference to the screen.}
 
-\item{tv_home}{(character) Turbowin installation path. If not specified function \code{\link[=tv.home]{tv.home()}} tries to discover.}
+\item{tv_home}{(character) Turbowin installation path. If not specified function [tv.home()] tries to discover.}
 
 \item{\dots}{additional arguments}
 }

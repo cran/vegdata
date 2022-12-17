@@ -7,18 +7,18 @@
 sql_collect(src, query, ...)
 }
 \arguments{
-\item{src}{(src) An \code{src} object, result of calling \code{\link[=src_germansl]{src_germansl()}},
-\code{\link[=src_eurosl]{src_eurosl()}}}
+\item{src}{(src) An `src` object, result of calling [src_germansl()],
+[src_eurosl()]}
 
 \item{query}{(character) A SQL query}
 
-\item{...}{further args passed on to \code{\link[dplyr:tbl]{dplyr::tbl()}}}
+\item{...}{further args passed on to [dplyr::tbl()]}
 }
 \description{
 Query and get data back into a data.frame
 }
 \details{
-we run \code{\link[dplyr:tbl]{dplyr::tbl()}}, then \code{\link[dplyr:compute]{dplyr::collect()}}
+we run [dplyr::tbl()], then [dplyr::collect()]
 }
 \examples{
 \dontrun{

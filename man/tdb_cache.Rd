@@ -7,23 +7,22 @@
 Manage cached vegdata files with \pkg{hoardr}
 }
 \details{
-\code{cache_delete} only accepts 1 file name, while
-\code{cache_delete_all} doesn't accept any names, but deletes all files.
-For deleting many specific files, use \code{cache_delete} in a \code{\link[=lapply]{lapply()}}
+`cache_delete` only accepts 1 file name, while
+`cache_delete_all` doesn't accept any names, but deletes all files.
+For deleting many specific files, use `cache_delete` in a [lapply()]
 type call
 }
 \section{Useful user functions}{
 
-\itemize{
-\item \code{tdb_cache$cache_path_get()} get cache path
-\item \code{tdb_cache$cache_path_set()} set cache path
-\item \code{tdb_cache$list()} returns a character vector of full
-path file names
-\item \code{tdb_cache$files()} returns file objects with metadata
-\item \code{tdb_cache$details()} returns files with details
-\item \code{tdb_cache$delete()} delete specific files
-\item \code{tdb_cache$delete_all()} delete all files, returns nothing
-}
+
+- `tdb_cache$cache_path_get()` get cache path
+- `tdb_cache$cache_path_set()` set cache path
+- `tdb_cache$list()` returns a character vector of full
+   path file names
+- `tdb_cache$files()` returns file objects with metadata
+- `tdb_cache$details()` returns files with details
+- `tdb_cache$delete()` delete specific files
+- `tdb_cache$delete_all()` delete all files, returns nothing
 }
 
 \examples{

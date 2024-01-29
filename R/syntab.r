@@ -6,7 +6,6 @@
 #' @description Calculate and display relative or absolute frequency tables with or without use of function multipatt from package indicspecies
 #'
 #' @usage syntab(veg, clust, type = c('rel','abs','mean.cover'), mupa, dec=0, refl, ...)
-#' @usage print.syntab(x, zero.print = ".", trait, limit = 1, minstat = 0, alpha = 0.05, ...)
 #'
 #' @export syntab
 #' @param veg Vegetation dataframe
@@ -100,8 +99,9 @@ type <- match.arg(type)
 #--------------
 
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("st"))
-
-
+#'
+#' @export
+#' @rdname syntab
 print.syntab <- function(x, zero.print='.', trait, limit = 1, minstat = 0, alpha = 0.05, ...) {
   clust <- x$clust
   ncl <- length(unique(clust))
@@ -143,11 +143,11 @@ print.syntab <- function(x, zero.print='.', trait, limit = 1, minstat = 0, alpha
 		x <- cbind(x, trait.df)
 #		names(x)[names(x)=='trait'] <- traitname
 	}
-  } else warning('NO species exceed the chosen significance threshold.')
+  } else warning('No species exceed the chosen significance threshold.')
   cat('Number of clusters: ', ncl, '\n\n')
 #  cat(' Cluster names           ', cll,'\n')
   cl <- t(data.frame(ntc)) #, matrix(nrow=2, ncol = (ncol(x)-ncl)))
-  dimnames(cl) <- list(c('Cluster frequency:  '), cll)
+  dimnames(cl) <- list(c('Cluster frequ:  '), cll)
   print(cl, row.names = FALSE, quote = FALSE)
   cat('\n')
   if(sum(select)>0) print.data.frame(x, ...)

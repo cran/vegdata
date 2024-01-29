@@ -1,3 +1,7 @@
+version 0.9.12 01 2024
+  * CRAN policy cleaning
+  * cwm for community weighted means
+
 version 0.9.11.4 Dec 2022
   * dies gracefully now if GermanSL server is down
   * improvements in parcing with taxname.abbr and taxname.removeAuthors

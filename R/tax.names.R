@@ -15,8 +15,12 @@
 taxname.abbr <- function(x, hybrid = TRUE, concept = FALSE, species = TRUE, cf = TRUE, ...) {
     #  loc <- Sys.getlocale(category='LC_CTYPE')
     #  Sys.setlocale("LC_ALL","C")
-    trim <- function (x) gsub("^\\s+|\\s+$", "", x)
-    x <- trim(x)
+    trim <- function (x, whitespace = "[ \t\r\n]") {
+      mysub <- function(re, x) sub(re, "", x, perl = TRUE)
+      mysub(paste0(whitespace, "+$"), mysub(paste0("^", whitespace, "+"), x))
+    }
+    squish <- function (x) gsub("[[:space:]]+", " ", x)
+    x <- squish(trim(x))
     x <- gsub('\"', '', x)
     x <- gsub("\\s+", " ", x)
     x <- gsub('\u00A0', ' ', x)
@@ -55,10 +59,9 @@ taxname.abbr <- function(x, hybrid = TRUE, concept = FALSE, species = TRUE, cf =
     x <- gsub('^x\ ', '\u00d7', x)
 
     x <- sub('\ nothovar\\.?' , '\ nvar.', x)
-    x <- sub('\ nothosubsp\\.?', '\ subsp.', x)
-    x <- sub('\ nssp\\.?', '\ subsp.', x)
-    x <- sub('\ nothossp\\.?' , '\ subsp.', x)
-    x <- sub('\ nvar\\.?', '\ var.', x)
+    x <- sub('\ nothosubsp\\.?', '\ nsubsp.', x)
+    x <- sub('\ nssp\\.?', '\ nsubsp.', x)
+    x <- sub('\ nothossp\\.?' , '\ nsubsp.', x)
 
     if(hybrid)  x <- gsub('\U00D7', '', x, fixed = TRUE)
 
@@ -190,10 +193,11 @@ taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, concept = TRUE, rank=T
 #'
 #' @export
 #' @param x (character) vector of taxon names
+#' @param sep (character) vector of rank indicators
 #' @name taxname.removeAuthors
 #'
 
-# taxname.removeAuthors <- function(x) {
+# taxname.removeAuthors <- function(x, sep) {
 #     trimws(sapply(x, function(x) {
 #       UC <- unlist(gregexpr("[A-Z]", x, perl=TRUE))
 #       if(length(UC) == 0) stop(paste("Can not detect a valid taxon name in:", x))
@@ -207,13 +211,14 @@ taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, concept = TRUE, rank=T
 #     }
 #     ))
 # }
-taxname.removeAuthors <- function(x) {
+taxname.removeAuthors <- function(x, sep) {
+  if(missing(sep)) sep = c("\ subsp\\.?\ |nothosubsp\\.?\ |\ nssp\\.?\ |var\\.?\ |\ for\\.?|\ cv\\.?\ |\ agg\\.|\ sect\\.\ |\ subg\\.\ |\ x\ ")
   trimws(sapply(x, function(x) {
     UC <- unlist(gregexpr("[A-Z]", x, perl=TRUE))
     if(length(UC) == 0) stop(paste("Can not detect a valid taxon name in:", x, '. No Uppercase word detected.'))
     if(length(UC) == 1) x else {
       if(grepl('[', x, fixed = TRUE))  x <- trimws(strsplit(x, '[', fixed = TRUE)[[1]][1])
-      RI <- gregexpr("\ subsp\\.?\ |nothosubsp\\.?\ |\ nssp\\.?\ |var\\.?\ |\ for\\.?|\ cv\\.?\ |\ agg\\.|\ sect\\.\ |\ subg\\.\ |\ x\ ", x)
+      RI <- gregexpr(sep, x)
       rest <- substr(x, UC[length(UC)], nchar(x))
       if(all(RI[[1]] > UC[length(UC)])) {
         paste(trimws(substr(x, 1, UC[2]-2)), trimws(sub(stringr::word(rest), '', rest)) )

@@ -35,15 +35,13 @@
 #'     traits <- tv.traits(db)
 #'
 #'     #' Mean indicator values of Ellenberg F values
-#'     mEIV_F <- isc(veg, trait.db = traits, ivname = 'OEK_F', method = 'mean')
+#'     mEIV_F <- cwm(veg, trait.db = traits, ivname = 'OEK_F', method = 'mean')
 #'     plot(site$MGL, mEIV_F, xlab = 'Mean groundwater level')
 #'
 #'     #' Mode (most frequent level) of Ellenberg F values
-#'     library(reshape)
-#'     traitmat <- cast(traits, LETTERCODE ~ OEK_F)
-#'     traitmat <- traitmat[,-14]
-#'     ilevel <- isc(veg, trait.db = traitmat, ivname = as.character(1:11), method = 'mode')
-#'     boxplot(site$MGL ~ ordered(ilevel, levels = levels(ilevel)[c(2,4,3,5,6:10,1)]))
+#'     ilevel <- cwm(veg, trait.db = traitmat, ivname = as.character(1:11), method = 'mode')
+#'     mode <- as.numeric(cwm(veg, trait.db = traits, ivname = 'OEK_F', method = 'mode'))
+#'     boxplot(site$MGL ~ mode)
 #'   }
 #'
 

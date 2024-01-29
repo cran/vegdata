@@ -113,7 +113,7 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, verbose = TR
     }
       }
   site <- site[order(site$PlotObservationID),]
-  if(file.access(file.path(tv_home, 'Data', db, 'tvwin.dbf')) == 0) attr(site, 'taxreflist') <- read.dbf(file.path(tv_home, 'Data', db, 'tvwin.dbf'), as.is = TRUE)$FLORA
+  if(file.access(file.path(tv_home, 'Data', db[1], 'tvwin.dbf')) == 0) attr(site, 'taxreflist') <- read.dbf(file.path(tv_home, 'Data', db, 'tvwin.dbf'), as.is = TRUE)$FLORA
   return(site)
 }
 

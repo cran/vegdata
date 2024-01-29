@@ -22,9 +22,7 @@ tv.coverperc(db, obs, RelScale, tv_home, tvscale, quiet = FALSE,  ...)
 \item{\dots}{Further options}
 }
 \value{
-data.frame of observations with additional column #' code{COVER_PERC}
-
-author{Florian Jansen #' email{florian.jansen@uni-rostock.de} }
+data.frame of observations with additional column COVER_PERC
 
 keywords Turboveg
 }

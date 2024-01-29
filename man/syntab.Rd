@@ -7,7 +7,7 @@
 \usage{
 syntab(veg, clust, type = c('rel','abs','mean.cover'), mupa, dec=0, refl, ...)
 
-print.syntab(x, zero.print = ".", trait, limit = 1, minstat = 0, alpha = 0.05, ...)
+\method{print}{syntab}(x, zero.print = ".", trait, limit = 1, minstat = 0, alpha = 0.05, ...)
 }
 \arguments{
 \item{veg}{Vegetation dataframe}

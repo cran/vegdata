@@ -456,21 +456,16 @@ clust[elbaue.env$MGL < -50 & elbaue.env$SDGL < 50] <- 1		# dry sites, low deviat
 clust[elbaue.env$MGL < -50 & elbaue.env$SDGL >= 50] <- 2	# dry sites, high deviation
 clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL >= 50] <- 3	# wet sites, high deviation
 clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL < 50] <- 4	# wet sites, low deviation
-levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
+#levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
 @
 
 We can e.g. look at the relative frequency of all species with more than 40\% at least in one column, according to the height of the groundwater table (low or high) and the amplitude of the groundwater table fluctuations (high or low deviations from the mean).
 Additionally you can use the affiliation of species to abiotic clusters with the help of package \texttt{indicspecies}, which calculates species indicator values for one or several cluster \citep{DeCaceres2010} to order the syntaxonical table. Together with Ellenberg indicator values with will get a comprehensive view into our data.
 
-
-
 <<syntab.mupa>>=
-require(indicspecies)
-synt <- syntab(elbaue, clust, mupa=TRUE)
-synt
+
+synt <- syntab(elbaue, clust, mupa = TRUE)
 @
-
-
 
 
 \section{Vegetation analyses}
@@ -490,8 +485,7 @@ if (requireNamespace('vegan', quietly = TRUE) ) {
   library(vegan)
 veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE,
                     noshare = 1, expand = TRUE, trace = 2)
-#eco <- tv.traits()
-#eco$OEK_F <- as.numeric(eco$OEK_F)
+# eco <- tv.traits()
 F <- cwm(veg = elbaue, trait.db = 'ecodbase.dbf', ivname = 'OEK_F', method = 'mean')
 N <- cwm(veg = elbaue, trait.db = 'ecodbase.dbf', ivname = 'OEK_N', method = 'mean')
 env <- envfit(veg.nmds, env = data.frame(F, N))
@@ -506,7 +500,7 @@ To show the result in comparison with environmental measurements in a nice graph
 \begin{center}
 <<nmdsplot, quiet=TRUE, results='hide', warning=FALSE, eval=TRUE>>=
 if (requireNamespace('interp', quietly = TRUE) & requireNamespace('labdsv', quietly = TRUE) & requireNamespace('vegan', quietly = TRUE) ) {
-  library(labdsv)
+  suppressPackageStartupMessages(library(labdsv))
   library(interp)
 color = function(x)rev(topo.colors(x))
 nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', env = NULL, ...) {
@@ -537,7 +531,7 @@ nmds.plot(veg.nmds, elbaue.env, disp='species', var1="MGL", var2="SDGL", env=env
 
 The first axis of our NMDS plot show the influence of mean groundwater level on the patterns of the dataset. \emph{Glyceria maxima} is marking the wet side of the gradient, whereas \emph{Cnidium dubium} \emph{Agrostis capillaris} or \emph{Galium verum agg,} occur only at low mean groundwater level. The second axis can be assigned to the fluctuation of water levels measured as standard deviation of mean groundwater level. Species indicating high water fluctuation are \emph{Agrostis stolonifera} or \emph{Alopecurus geniculatus} whereas \emph{Carex vesicaria} occurs only in more balanced situations.
 
-
+\newpage
 \bibliography{lib}
 
 \end{document}

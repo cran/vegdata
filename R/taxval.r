@@ -83,7 +83,8 @@ taxval <- function (obs, refl, db,
         else  obs <- tv.obs(db=db, tv_home)
   tv_home <- tv.home()
   if(missing(refl)) {
-    if(missing(db)) stop('If you do not give a taxonomic reference list name, you have to specify at least a name of a Turboveg database.') else
+    if('tv.refl' %in% names(options())) refl <- unlist(options('tv.refl'), use.names = FALSE) else
+      if(missing(db)) stop('If you do not give a taxonomic reference list name, you have to specify at least a name of a Turboveg database.') else
      refl <- tv.refl(db = db[1], tv_home = tv_home)
   }
   if(is.character(refl)) {

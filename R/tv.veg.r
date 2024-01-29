@@ -15,7 +15,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("lc.1"))
 #' @param lc Layer combination type. Possible values: layer (default), sum, mean or max, see details
 #' @param pseudo List used for layer combinations, see details
 #' @param values Name of the variable which should be used for the vegetations matrix.
-#' @param spcnames Should species numbers be replaced by shortletters or scientific species names? Layer information is appended with dot.
+#' @param spcnames Should species numbers be replaced by shortletters or ScientificNames? Layer information is appended with dot.
 #' @param dec Number of decimals for cover values in the resulting vegetation matrix.
 #' @param cover.transform If you want to transform the abundancce values within your samples
 #'     you can choose 'pa' for presence-absence or 'sqrt' for the \code{dec} rounded square root.
@@ -97,7 +97,7 @@ tv.veg <- function (db, taxval = TRUE, tv_home,  convcode = TRUE,
      	  obs <- tv.coverperc(db=db, obs=obs, RelScale = RelScale, tv_home = tv_home, ...)
     } else {
       if (!any(names(obs) == values)) stop(paste(values, " could not be found."))
-          obs[,values] <- type.convert(as.character(obs[,values]))
+          obs[,values] <- type.convert(as.character(obs[,values], as.is = TRUE))
           if(is.factor(obs[,values])) {
             lc='first'
             warning("Multiple occurrences of a species in one layer of a releve can not be supported without cover code conversion.

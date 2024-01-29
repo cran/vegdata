@@ -16,7 +16,7 @@ comb.species <- function (x, sel, newname, refl) {
   if (missing(newname))  newname <- sel[1]
   occtaxa <- sel[sel %in% names(x)]
   if (length(occtaxa) == 0) stop("Selected species do not occur in names of vegetation matrix.")
-  if (length(occtaxa) > 1) {
+  if (length(occtaxa) > 0) {
     cat("The following names are combined to the new name:", newname, "\n")
     print(occtaxa)
     n <- x[, names(x) %in% occtaxa]

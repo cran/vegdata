@@ -24,7 +24,7 @@ dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, site, refl, RelScale, ...
 
 \item{values}{Name of the variable which should be used for the vegetations matrix.}
 
-\item{spcnames}{Should species numbers be replaced by shortletters or scientific species names? Layer information is appended with dot.}
+\item{spcnames}{Should species numbers be replaced by shortletters or ScientificNames? Layer information is appended with dot.}
 
 \item{dec}{Number of decimals for cover values in the resulting vegetation matrix.}
 

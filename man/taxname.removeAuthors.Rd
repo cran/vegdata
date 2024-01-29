@@ -4,10 +4,12 @@
 \alias{taxname.removeAuthors}
 \title{Remove name authors from taxon names}
 \usage{
-taxname.removeAuthors(x)
+taxname.removeAuthors(x, sep)
 }
 \arguments{
 \item{x}{(character) vector of taxon names}
+
+\item{sep}{(character) vector of rank indicators}
 }
 \description{
 Remove name authors from taxon names

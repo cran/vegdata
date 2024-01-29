@@ -125,12 +125,11 @@ clust[elbaue.env$MGL < -50 & elbaue.env$SDGL < 50] <- 1		# dry sites, low deviat
 clust[elbaue.env$MGL < -50 & elbaue.env$SDGL >= 50] <- 2	# dry sites, high deviation
 clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL >= 50] <- 3	# wet sites, high deviation
 clust[elbaue.env$MGL >= -50 & elbaue.env$SDGL < 50] <- 4	# wet sites, low deviation
-levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
+#levels(clust) <- c('dry.ld','dry.hd', 'wet.hd','wet.ld')
 
 ## ----syntab.mupa--------------------------------------------------------------------------------------------
-require(indicspecies)
-synt <- syntab(elbaue, clust, mupa=TRUE)
-synt
+
+synt <- syntab(elbaue, clust, mupa = TRUE)
 
 ## ----nmds, quiet=TRUE, results='hide'-----------------------------------------------------------------------
 ## Data analyses
@@ -138,8 +137,7 @@ if (requireNamespace('vegan', quietly = TRUE) ) {
   library(vegan)
 veg.nmds <- metaMDS(elbaue, distance = "bray", trymax = 5, autotransform =FALSE,
                     noshare = 1, expand = TRUE, trace = 2)
-#eco <- tv.traits()
-#eco$OEK_F <- as.numeric(eco$OEK_F)
+# eco <- tv.traits()
 F <- cwm(veg = elbaue, trait.db = 'ecodbase.dbf', ivname = 'OEK_F', method = 'mean')
 N <- cwm(veg = elbaue, trait.db = 'ecodbase.dbf', ivname = 'OEK_N', method = 'mean')
 env <- envfit(veg.nmds, env = data.frame(F, N))
@@ -148,7 +146,7 @@ env <- envfit(veg.nmds, env = data.frame(F, N))
 
 ## ----nmdsplot, quiet=TRUE, results='hide', warning=FALSE, eval=TRUE-----------------------------------------
 if (requireNamespace('interp', quietly = TRUE) & requireNamespace('labdsv', quietly = TRUE) & requireNamespace('vegan', quietly = TRUE) ) {
-  library(labdsv)
+  suppressPackageStartupMessages(library(labdsv))
   library(interp)
 color = function(x)rev(topo.colors(x))
 nmds.plot <- function(ordi, site, var1, var2, disp, plottitle =  'NMDS', env = NULL, ...) {

@@ -14,9 +14,7 @@
 #' @param quiet Suppress messages
 #' @param \dots Further options
 #'
-#' @return data.frame of observations with additional column #' code{COVER_PERC}
-#'
-#' author{Florian Jansen #' email{florian.jansen@uni-rostock.de} }
+#' @return data.frame of observations with additional column COVER_PERC
 #'
 #' keywords Turboveg
 

@@ -3,23 +3,16 @@
 #' @name tv.site
 #' @description
 #'   Loading Turboveg header data and do basic data evaluation. Empty columns are eliminated and warnings about possibly wrong '0' values are performed
-#'
-#' @usage tv.site(db, tv_home, drop=TRUE, common.only = FALSE, verbose = TRUE, replace.names, ...)
-#'
 #' @export
 #' @param db (character) Name of your Turboveg database(s). Directory name containing tvabund.dbf, tvhabita.dbf and tvwin.set.
 #' @param tv_home (character) Turbowin installation path. Optional, if Turbowin is either on "C:/Turbowin" or "C:/Programme/Turbowin".
-#' @param tv_home (character) Turbowin installation path. Optional, if Turbowin is either on "C:/Turbowin" or "C:/Programme/Turbowin".
-#' @param tv_home (character) Turbowin installation path. Optional, if Turbowin is either on "C:/Turbowin" or "C:/Programme/Turbowin".
 #' @param drop (logical) Drop variables without values.
 #' @param common.only (logical) Import only header data with the same name in all databases.
-#' @param verbose (logical) print warnings and hints
+#' @param check.relevenumbers (logical) Are duplicate PlotObservationID's allowed. Default is FALSE.
 #' @param replace.names (data.frame) replace variable names. Useful if using multiple source databases. Data frame with names to be replaced in first and replacing names in second column.
 #' @param \dots Additional options like \code{dec} for type.convert
-#'
 #' @details
 #'   Please specify pathnames below but not above Turbowin/Data. Can be a single database or a character vector of multiple databases. In the latter case you have to assure, that all databases use the same taxonomic reference list.
-#'
 #'   You can use the example in the final output line to make a summary statistic for attributes with potentially misleading '0' values. Just delete the \" at beginning and end.
 #'
 #' @return data.frame of site variables.
@@ -27,9 +20,7 @@
 #'
 #' @keywords Turboveg
 
-
-
-tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, verbose = TRUE, replace.names, ...)
+tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, check.relevenumbers = TRUE, replace.names, ...)
 {
   if (missing(tv_home)) tv_home <- tv.home()
   site <- read.dbf(file.path(tv_home, "Data", db[1], "tvhabita.dbf"), as.is=TRUE)
@@ -44,7 +35,9 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, verbose = TR
 	    site.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvhabita.dbf'), as.is = TRUE)
 	    names(site.tmp) <- TCS.replace(names(site.tmp))
 	    if(!any(c('SURF_AREA','AREA_MIN') %in% names(site.tmp))) stop(db[i]) #' plot area must be present
-  	if(any(site$PlotObservationID %in% site.tmp$PlotObservationID)) stop('Found duplicate releve numbers in ', db[i] , ' aborting!')
+	    if(check.relevenumbers)
+  	    if(any(site$PlotObservationID %in% site.tmp$PlotObservationID))
+  	      stop('Found duplicate releve numbers in ', db[i] , ' aborting!')
   	cols1 <- names(site)
   	cols2 <- names(site.tmp)
   	if (common.only){
@@ -85,45 +78,29 @@ tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, verbose = TR
   fun <- function(x) all(is.na(x))
   na <- apply(site, 2, fun)
   if (drop & any(na)) {
-      if(verbose) {
-        message('Some columns contain no data and are omitted.')
-        print(names(site)[na], quote = FALSE)
-      }
-      site <- site[, !na]
+    message('Some columns contain no data and are omitted.')
+    print(names(site)[na], quote = FALSE)
+    site <- site[, !na]
   }
   fun.2 <- function(x) all(x == 0 | is.na(x))
   leer <- apply(site, 2, fun.2)
   if (drop & any(leer)) {
-      if(verbose) {
-        message('Some numeric columns contain only 0 values and are omitted.')
-  	    print(names(site)[leer], quote = FALSE)
-      }
+      message('Some numeric columns contain only 0 values and are omitted.')
+	    print(names(site)[leer], quote = FALSE)
 	    site <- site[, !leer]
   }
   fun.3 <- function(x) is.numeric(x) & any(x == 0, na.rm = TRUE)
   null <- logical()
   for (i in 1:length(site)) null[i] <- fun.3(site[, i])
   if (any(null) && getOption('warn') >= 0) {
-    if(verbose) {
-        message("Some numeric fields contain 0 values:")
-        print(names(site)[null], quote = FALSE)
-        message('Please check if these are really meant as 0 or if they are erroneously assigned because of DBase restrictions.')
-        message(paste("If so, use something like:"))
-        message("site$Column_name[site$Column_name==0] <- NA", '\n')
+      message("Some numeric fields contain 0 values:")
+      print(names(site)[null], quote = FALSE)
+      message('Please check if these are really meant as 0 or if they are erroneously assigned because of DBase restrictions.')
+      message(paste("If so, use something like:"))
+      message("site$Column_name[site$Column_name==0] <- NA", '\n')
     }
-      }
   site <- site[order(site$PlotObservationID),]
   if(file.access(file.path(tv_home, 'Data', db[1], 'tvwin.dbf')) == 0) attr(site, 'taxreflist') <- read.dbf(file.path(tv_home, 'Data', db, 'tvwin.dbf'), as.is = TRUE)$FLORA
   return(site)
 }
 
-
-
-#' This is an example vegetation dataset to be included in package vegdata
-#'
-#' @name elbaue
-#' @docType data
-#' @author Florian Jansen \email{florian.jansen@uni-rostock.de}
-#' @references \url{https://www.vegetweb.de}
-#' @keywords data
-NULL

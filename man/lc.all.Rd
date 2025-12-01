@@ -15,6 +15,6 @@ A data frame with rows and 2 variables:
 lc.all
 }
 \description{
-combine all layers
+A data.frame to combine all layers in a vegetation plot
 }
 \keyword{datasets}

@@ -4,7 +4,7 @@
 \alias{tv.coverperc}
 \title{Cover code translation}
 \usage{
-tv.coverperc(db, obs, RelScale, tv_home, tvscale, quiet = FALSE,  ...)
+tv.coverperc(db, obs, RelScale, tv_home, tvscale, ...)
 }
 \arguments{
 \item{db}{the name of the Turboveg database}
@@ -17,15 +17,12 @@ tv.coverperc(db, obs, RelScale, tv_home, tvscale, quiet = FALSE,  ...)
 
 \item{tvscale}{Cover scale}
 
-\item{quiet}{Suppress messages}
-
 \item{\dots}{Further options}
 }
 \value{
 data.frame of observations with additional column COVER_PERC
-
-keywords Turboveg
 }
 \description{
 Translate cover code into percentage cover values for Turboveg database observations.
 }
+\keyword{Turboveg}

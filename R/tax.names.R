@@ -5,14 +5,16 @@
 #' @param x (integer or character) Species number, lettercode or species name(s)
 #' @param hybrid (logical) remove hybrid markers for comparisons
 #' @param concept (logical) remove concept additions like "s. str.", "s. l.
-#' @param species (logical) remove "spec.", "sp.", or "species" for genus level taxa
 #' @param cf (logical) remove 'in doubt' marker
 #' @param \dots additional attributes
 #'
 #' @author Florian Jansen florian.jansen@uni-rostock.de
 #'
 
-taxname.abbr <- function(x, hybrid = TRUE, concept = FALSE, species = TRUE, cf = TRUE, ...) {
+taxname.abbr <- function(x,
+                         hybrid = TRUE,
+                         concept = FALSE,
+                         cf = TRUE, ...) {
     #  loc <- Sys.getlocale(category='LC_CTYPE')
     #  Sys.setlocale("LC_ALL","C")
     trim <- function (x, whitespace = "[ \t\r\n]") {
@@ -30,10 +32,10 @@ taxname.abbr <- function(x, hybrid = TRUE, concept = FALSE, species = TRUE, cf =
     x <- sub('\ ssp\\.?', ' subsp.', x)
     x <- sub('\ v\\.?\ ', ' var. ', x)
     x <- sub('\ sv\\.?\ ', ' subvar. ', x)
-    x <- sub('\ Sec\\.?\ ', ' sect. ', x)
-    x <- sub('\ sect\\.?[(]bot\\.?[)]\ ', ' sect. ', x)
+    x <- sub('\ Sec\\.?\ ', ' sectio ', x)
+    x <- sub('\ sect\\.?[(]bot\\.?[)]\ ', ' sectio ', x)
+    x <- sub('\ Subs\\.?\ ', ' subsectio ', x)
     x <- sub('\ Ser\\.?\ ', ' ser. ', x)
-    x <- sub('\ Subs\\.?\ ', ' subsect. ', x)
     ## in the wider sense
     # for(x in c('Genus species sens. lat.', 'Genus species sens lat', 'Genus species sens l.', 'Genus species s. lat.', 'Genus species s. l.', 'Genus species s.l.', 'Genus species sl'))  print(  sub('\ s(ens)?\\.?\\s?l(at)?\\.?($|\ )', ' sensulato', x))
     x <-  sub('\ s(ens)?\\.?\\s?l(at)?\\.?($|\ )', ' sensulato', x)
@@ -44,13 +46,13 @@ taxname.abbr <- function(x, hybrid = TRUE, concept = FALSE, species = TRUE, cf =
 
     x <- sub('\ f\\.?\ ', ' fo. ', x)
     x <- sub('\ species', ' spec.', x)
-    if(concept) {
+  if(concept) {
       x <- sub('\ sensulato', '', x)
       x <- sub('\ sensustricto', '', x)
     } else {
       x <- sub('\ sensulato($|\ )', ' s. l.', x)
       x <- sub('\ sensustricto($|\ )', ' s. str.', x)
-    }
+   }
     # Hybrids
     x <- gsub('^x ', ' \u00d7', x)
     x <- gsub(' x ',' \U00D7', x)
@@ -63,20 +65,10 @@ taxname.abbr <- function(x, hybrid = TRUE, concept = FALSE, species = TRUE, cf =
     x <- sub('\ nssp\\.?', '\ nsubsp.', x)
     x <- sub('\ nothossp\\.?' , '\ nsubsp.', x)
 
-    if(hybrid)  x <- gsub('\U00D7', '', x, fixed = TRUE)
+   if(hybrid)  x <- gsub('\U00D7', '', x, fixed = TRUE)
 
-    if(cf) x <- sub('cf.\ ', '', x, ignore.case=TRUE)
-		if(species)  {
-		  x <- sub('\ sp\\.?$' , '', x)
-		  x <- sub('\ sp$', '', x)
-		  x <- sub('\ spec\\.?$' , '', x)
-		  x <- sub('\ species$' , '', x)
-			} else {
-		  x <- sub('\ sp\\.?$', ' species', x)
-		  x <- sub('\ sp$', ' species', x)
-		  x <- trimws(sub('\ spec\\.?[\ $]', ' species\ ', x))
-		}
-#    x <- sub("\\s+$", "", x) # trim trailing leading spaces
+   if(cf) x <- sub('cf.\ ', '', x, ignore.case=TRUE)
+
     x <- trimws(x) # trim leading and trailing leading spaces
     #  Sys.setlocale(category='LC_CTYPE', locale=loc)
    return(x)
@@ -144,10 +136,10 @@ taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, concept = TRUE, rank=T
       x <- gsub('\U00D7 ', '\U00D7', x)
 
     if(rank) {
-      x <- gsub(' fo.', '', x, fixed = TRUE)
+      x <- gsub(' fo.|f.', '', x, fixed = TRUE)
       x <- gsub(' race', '', x, fixed = TRUE)
-      x <- gsub(' var.', '', x, fixed = TRUE)
-      x <- gsub(' subsp.', '', x, fixed = TRUE)
+      x <- gsub(' var.|v.', '', x, fixed = TRUE)
+      x <- gsub(' subsp.|ssp.', '', x, fixed = TRUE)
       x <- gsub(' [ranglos]', '', x, fixed = TRUE)
     }
 
@@ -193,7 +185,7 @@ taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, concept = TRUE, rank=T
 #'
 #' @export
 #' @param x (character) vector of taxon names
-#' @param sep (character) vector of rank indicators
+#' @param rankattr (character) vector of rank attributes used in the taxonname strings
 #' @name taxname.removeAuthors
 #'
 
@@ -211,14 +203,15 @@ taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, concept = TRUE, rank=T
 #     }
 #     ))
 # }
-taxname.removeAuthors <- function(x, sep) {
-  if(missing(sep)) sep = c("\ subsp\\.?\ |nothosubsp\\.?\ |\ nssp\\.?\ |var\\.?\ |\ for\\.?|\ cv\\.?\ |\ agg\\.|\ sect\\.\ |\ subg\\.\ |\ x\ ")
+taxname.removeAuthors <- function(x, rankattr) {
+  if(missing(rankattr)) rankattr = c("\ subsp\\.?\ |nothosubsp\\.?\ |\ nssp\\.?\ |var\\.?\ |\ for\\.?|\ cv\\.?\ |\ agg\\.|\ sect\\.\ |\ sectio\ |\ subg\\.\ |\ x\ ")
   trimws(sapply(x, function(x) {
-    UC <- unlist(gregexpr("[A-Z]", x, perl=TRUE))
+    #UC <-       gregexpr("(?<!\\bsect\\.\\s||-)(?=\\s(?:[A-Z]|d'))", x, perl = TRUE) # include " d'Urv
+    UC <- unlist(gregexpr("(?<!sect\\. |-)(d'|[A-Z])", x, perl = TRUE)) # Uppercase except after sect. or -
     if(length(UC) == 0) stop(paste("Can not detect a valid taxon name in:", x, '. No Uppercase word detected.'))
     if(length(UC) == 1) x else {
       if(grepl('[', x, fixed = TRUE))  x <- trimws(strsplit(x, '[', fixed = TRUE)[[1]][1])
-      RI <- gregexpr(sep, x)
+      RI <- gregexpr(rankattr, x)
       rest <- substr(x, UC[length(UC)], nchar(x))
       if(all(RI[[1]] > UC[length(UC)])) {
         paste(trimws(substr(x, 1, UC[2]-2)), trimws(sub(stringr::word(rest), '', rest)) )
@@ -227,20 +220,43 @@ taxname.removeAuthors <- function(x, sep) {
         species <- stringr::word(trimws(substr(x, RI[[1]], nchar(x))), 2)
         paste(trimws(substr(x, 1, UC[2]-2)), trimws(substr(x, RI[[1]], (RI[[1]] + attr(RI[[1]], 'match.length')-1))), species, trimws(sub(stringr::word(rest), '', rest)) )
     } else
-      substr(x, 1, unlist(gregexpr("[A-Z]", x, perl=TRUE))[2]-2)
+      substr(x, 1, unlist(gregexpr("[A-Z\U00E5\u00c1\u00c5\u010c\u00d6\u0160\u00dc\u017d]", x, perl=TRUE))[2]-2)
     }}
   ))
 }
-
-# x <- 'Circaea x intermedia Ehrh. [alpina subsp. alpina x lutetiana subsp. lutetiana]'
-# x <- 'Anthriscus sylvestris (L.) Hoffm. subsp. sylvestris'
-# x <- 'Polycarpon polycarpoides subsp. catalaunicum O.Bolòs & Vigo'
-# x <- "Centaurium erythraea subsp. erythraea var. capitatum (Willd.) Melderis"
-# x <- 'xCalammophila'
+# ÁÅČÖŠÜŽ
+# x <- c('Circaea x intermedia Ehrh. [alpina subsp. alpina x lutetiana subsp. lutetiana]', 'Anthriscus sylvestris (L.) Hoffm. subsp. sylvestris', 'Polycarpon polycarpoides subsp. catalaunicum O.Bolòs & Vigo', "Centaurium erythraea subsp. erythraea var. capitatum (Willd.) Melderis", "Eleocharis vulgaris Á. Löve & D. Löve 1975", 'xCalammophila')
 # gregexpr("f\\.?|cv\\.?\ |agg\\.?\ ", x, perl=TRUE)
 #
 # taxname.removeAuthors(x)
 
+#How to extent gregexpr("(?<!sect\\. |-)[A-Z]", x, perl = TRUE) so that it divides "Cyperus noanus Boiss." before " B" and "Taraxacum sect. Hamata H. Øllg." before " H." but "Crepis ramosissima d'Urv." before " d'Urv."?
+
+#' Extract name authors from taxon names
+#'
+#' @export
+#' @param x (character) vector of taxon names
+#' @param rankattr (character) vector of rank attributes used in the taxonname strings
+#' @name taxname.removeAuthors
+#'
+taxname.authors <- function(x, rankattr) {
+  if(missing(rankattr)) rankattr <- c("\ subsp\\.?\ |nothosubsp\\.?\ |\ nssp\\.?\ |var\\.?\ |\ for\\.?|\ cv\\.?\ |\ agg\\.|\ sect\\.\ |\ subg\\.\ |\ x\ ")
+  trimws(sapply(x, function(x) {
+    UC <- unlist(gregexpr("(?<!sect\\. |-)[A-Z]", x, perl = TRUE)) # Uppercase except after sect.
+    if(length(UC) == 0) stop(paste("Can not detect a valid taxon name in:", x, '. No Uppercase word detected.'))
+    if(length(UC) == 1) NA else {
+      # if(grepl('[', x, fixed = TRUE))
+      #   x <- trimws(strsplit(x, '[', fixed = TRUE)[[1]][1])
+      # RI <- gregexpr(sep, x)
+      # a <- if(stringr::word(x, 2, 2))
+      strsplit( substr(x, UC[2]-1, nchar(x)), split = paste0('\\[|', rankattr) )[[1]][1]
+    }
+    }))
+}
+
+# taxname.authors(df$name[1:10])
+# taxname.authors(x)
+# x <- df$name[3]
 # rest1 <- substr(x, UC[1], nchar(x))
 # rest2 <- substr(x, UC[2], nchar(x))
 # rest3 <- substr(x, UC[3]-2, nchar(x))
@@ -264,7 +280,7 @@ taxname.removeAuthors <- function(x, sep) {
 #'
 
 parse.taxa <- function(x, epis) {
-  warning('Function does not account for "Sect./Ser." etc., nor for intraspecific taxa without specifier ("subsp./var." etc. or aggregates ("agg.")')
+  warning('Function does not account for intraspecific taxa without specifier ("subsp./var." etc. or aggregates ("agg.")')
   if(length(x) <= 1) stop('Only for vectors of length > 1, i.e. more than one taxon name')
   simpleCap <- function(x) {
     s <- strsplit(x, " ")[[1]]
@@ -299,21 +315,22 @@ parse.taxa <- function(x, epis) {
 
 
 
-#' Recode species names, lettercodes or ID's
-#' @name recode.species
+#' Recode taxon names, lettercodes or ID's
+#'
 #' @export
 #' @param x vector of species
 #' @param names one of 7digit shortletter codes, species id's or scientific species names
 #' @param refl (character) name of taxon reference list
+#' @name recoding.taxa
 #'
-recode.species <- function(x, names = c('shortletters', 'Numbers', 'ScientificNames'), refl) {
+recoding.taxa <- function(x, names = c('shortletters', 'Numbers', 'ScientificNames'), refl) {
   if('veg' %in% class(x)) {
     message('Vegetation matrix detected.\n It is assumed that species identifier are given in column names and consist either of 7 character lettercodes, or integer species IDs, with or without appendices for layer "species.layer' )
     refl <- attr(x, 'taxreflist')
     x <- colnames(x)
-  } else  if(missing(refl)) refl <- tv.refl()
+  } else  if(missing(refl)) refl <- tax.refl()
   names <- match.arg(names)
-  taxonlist <- tax('all', refl, detailed = TRUE)
+  taxonlist <- tax('all', refl)
   sp <- strsplit(x, split = '.', fixed = TRUE)
   taxa <- sapply(sp, '[', 1)
   if(all(nchar(taxa) == 6 | nchar(taxa) == 7)) {
@@ -339,7 +356,7 @@ recode.species <- function(x, names = c('shortletters', 'Numbers', 'ScientificNa
     return(ifelse(df.names$layer == '0', df.names$TaxonName, paste(df.names$TaxonName, df.names$layer, sep='.')))
 }
 
-# rename.species(veg, 'N')
+# rename.taxa(veg, 'N')
 
 
 

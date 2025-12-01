@@ -18,6 +18,7 @@
   dbplyr::src_dbi(con, auto_disconnect=TRUE)
 }
 
+
 #' @export
 #' @rdname src_vegdata
 #'

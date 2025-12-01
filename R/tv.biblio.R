@@ -6,7 +6,6 @@
 #' @export
 #' @param x (character) Turboveg reference code(s), e.g. "000001"
 #' @param db (character) Database name. Needed to select appropriate TV Dictionary folder.
-#' @param quiet (logical) If you want to print the reference to the screen.
 #' @param tv_home (character) Turbowin installation path. If not specified function [tv.home()] tries to discover.
 #' @param dict (character) Name of Turboveg Dictionary (term lists for header data) if not the default one.
 #' @param \dots additional arguments
@@ -17,7 +16,7 @@
 #'
 #' @keywords Turboveg
 
-tv.bib <- function(x='all', db, dict = tv.dict(db), quiet=FALSE, tv_home, ...) {
+tv.bib <- function(x='all', db, dict = tv.dict(db), tv_home, ...) {
   if(missing(tv_home)) tv_home <- tv.home()
   if(missing(db) & missing(dict)) {
     message('Using tvrefenc.dbf from default dictionary.')
@@ -31,7 +30,7 @@ tv.bib <- function(x='all', db, dict = tv.dict(db), quiet=FALSE, tv_home, ...) {
   if(x[1] != 'all') {
     x <- as.numeric(unique(x))
     biblio <- biblio[match(x, as.numeric(biblio$REFERENCE)),]
-    if(!quiet) print(biblio)
+    if(nrow(biblio) == 1) print(biblio)
   }
   invisible(biblio)
 }

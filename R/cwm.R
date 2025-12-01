@@ -1,8 +1,6 @@
 #' Indicate site conditions with community weighted mean values of traits or with mode of gradient classes (sum of species amplitudes).
 #' @name cwm
 #' @aliases cwm
-#' @usage cwm(veg, refl, trait.db = 'ecodbase.dbf', ivname, keyname = 'LETTERCODE',
-#'       method, weight, db, ...)
 #' @export
 #' @param veg Vegetation matrix with plots in rows and species in columns
 #' @param refl Name of Turboveg taxonomic reference list
@@ -27,21 +25,10 @@
 #'     db <- 'elbaue'
 #'     veg <- tv.veg(db, cover.transform='sqrt', check.critical = FALSE)
 #'     site <- tv.site(db, verbose = FALSE)
-#'     #' Exclude plots with very high water level fluctuation
-#'     veg <- veg[site$SDGL < 60,]
-#'     veg <- veg[,colSums(veg) > 0]
-#'     site <- site[site$SDGL < 60,]
-#'     #' Load species trait value database
-#'     traits <- tv.traits(db)
 #'
 #'     #' Mean indicator values of Ellenberg F values
-#'     mEIV_F <- cwm(veg, trait.db = traits, ivname = 'OEK_F', method = 'mean')
+#'     mEIV_F <- cwm(veg, ivname = 'OEK_F', method = 'mean')
 #'     plot(site$MGL, mEIV_F, xlab = 'Mean groundwater level')
-#'
-#'     #' Mode (most frequent level) of Ellenberg F values
-#'     ilevel <- cwm(veg, trait.db = traitmat, ivname = as.character(1:11), method = 'mode')
-#'     mode <- as.numeric(cwm(veg, trait.db = traits, ivname = 'OEK_F', method = 'mode'))
-#'     boxplot(site$MGL ~ mode)
 #'   }
 #'
 
@@ -60,8 +47,10 @@ cwm <- function(veg,
   if(missing(refl) & missing(veg) & missing(db)) stop('Either refl, db, or a class "veg" object have to be provided.')
   if(!missing('refl'))
     if('veg' %in% class(veg)) refl <- attr(veg, 'taxreflist') else
-      refl = tv.refl()
-  species <- tax('all', refl = refl, quiet = TRUE, ...)
+      refl = tax.refl()
+  suppressMessages(
+    species <- tax('all', refl = refl, ...)
+  )
   if(is.character(trait.db)) iv <- tv.traits(trait.db = trait.db, refl = refl, ...) else iv = trait.db
   if(missing(veg)) veg <- tv.veg(db, ...) else if(!'data.frame' %in% class(veg)) veg <- as.data.frame(veg)
   if(!all(ivname %in% names(iv))) stop('Not all ivname in table of indicators.')
@@ -77,15 +66,16 @@ cwm <- function(veg,
     iv[,i] <- as.integer(as.character(iv[,i]))
   }
   if(!keyname %in% names(iv)) stop(paste(keyname, 'not in column names of trait dataframe.'))
-  if(ivname %in% c('OEK_F', 'OEK_L', 'OEK_K', 'OEK_N', 'OEK_T') & any(iv[,ivname] == 0 & !is.na(iv[,ivname]))) warning('Detecting 0 values, please check.')
+  if(ivname %in% c('OEK_F', 'OEK_L', 'OEK_K', 'OEK_N', 'OEK_T') & any(iv[,ivname] == 0 & !is.na(iv[,ivname])))
+    message('There are 0 values in the indicator list.')
   if(all(is.na(match(names(veg), iv[, keyname])))) stop('Taxon names in trait table and names in vegetation matrix do not match, please check.') else
   v <- as.matrix(iv[match(names(veg), iv[, keyname]), ivname])
   rownames(v) <- names(veg)
-  if(length(ivname) == 1) {
+#  if(length(ivname) == 1) {
 #    print(table(is.na(v)))
-    veg <- veg[,!is.na(v)] #?
-    v <- as.matrix(v[!is.na(v),]) #?
-  } else  v[is.na(v)] <- 0
+#    veg <- veg[,!is.na(v)] #?
+#    v <- as.matrix(v[!is.na(v),]) #?
+#  } else  v[is.na(v)] <- 0
   # Species * indicator Matrix of available Species
   w <- as.character(iv$weight[match(names(veg), iv[, keyname])])
   w[is.na(w)] <- "1"
@@ -110,7 +100,7 @@ cwm <- function(veg,
   IV <- apply(veg, 1, funMode)
   }
   if(any(IV == 0) & ivname != 'OEK_S') {
-    cat('The following plots might be without a single indicator species:\n')
+    message('The following plots might be without a single indicator species:\n')
     print(names(IV)[IV == 0])
   }
   return(IV)

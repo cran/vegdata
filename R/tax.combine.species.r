@@ -14,7 +14,7 @@ comb.species <- function (x, sel, newname, refl) {
   if (missing(refl)) refl <- attr(x, "taxreflist")
   if (is.null(refl)) stop("Please specify appropriate taxonomic reference list.")
   if (missing(newname))  newname <- sel[1]
-  occtaxa <- sel[sel %in% names(x)]
+  occtaxa <- sel[sel %in% colnames(x)]
   if (length(occtaxa) == 0) stop("Selected species do not occur in names of vegetation matrix.")
   if (length(occtaxa) > 0) {
     cat("The following names are combined to the new name:", newname, "\n")

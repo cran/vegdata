@@ -5,7 +5,7 @@
 \title{Standardisation of taxonomic names, especially taxon rank indicators and hybrid signs
 name taxname.abbr}
 \usage{
-taxname.abbr(x, hybrid = TRUE, concept = FALSE, species = TRUE, cf = TRUE, ...)
+taxname.abbr(x, hybrid = TRUE, concept = FALSE, cf = TRUE, ...)
 }
 \arguments{
 \item{x}{(integer or character) Species number, lettercode or species name(s)}
@@ -13,8 +13,6 @@ taxname.abbr(x, hybrid = TRUE, concept = FALSE, species = TRUE, cf = TRUE, ...)
 \item{hybrid}{(logical) remove hybrid markers for comparisons}
 
 \item{concept}{(logical) remove concept additions like "s. str.", "s. l.}
-
-\item{species}{(logical) remove "spec.", "sp.", or "species" for genus level taxa}
 
 \item{cf}{(logical) remove 'in doubt' marker}
 

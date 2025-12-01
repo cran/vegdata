@@ -3,8 +3,6 @@
 #' @name tv.readXML
 #' @description Reads Turboveg XML formatted files species-plot observations and site information into a list
 #'
-#' @usage tv.readXML(file)
-#'
 #' @export
 #' @param file (character) Path name of the Turboveg XML file
 #'
@@ -15,13 +13,6 @@
 #' @author Florian Jansen \email{florian.jansen@uni-rostock.de}
 #' @keywords Turboveg
 #'
-
-# library(vegdata)
-# library(xml2)
-# library(plyr)
-# # library(data.table)
-# require(doMC)
-# registerDoMC(detectCores()-1)
 
 tv.readXML <- function(file) {
   options(stringsAsFactors=FALSE)

@@ -3,12 +3,8 @@
 \name{tv.write}
 \alias{tv.write}
 \title{Write species-plot observations and site information to Turboveg database.}
-\usage{
-tv.write(x, site, name, tvadmin, remarks, dict = "", cover = c("code", "perc"),
-drop = FALSE, obl = TRUE, overwrite = FALSE, ...)
-}
 \arguments{
-\item{x}{(data.frame) Either observations data.frame with RELEVE_NR, TaxonUsageID and COVER_CODE (see \link{tv.obs}) columns or vegetation matrix of class "veg".}
+\item{x}{(data.frame) Either observations data.frame with PlotObservationID, TaxonUsageID and COVER_CODE (see \link{tv.obs}) columns or vegetation matrix of class "veg".}
 
 \item{site}{(character) Header data for plots.}
 

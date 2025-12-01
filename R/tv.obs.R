@@ -3,8 +3,6 @@
 #'
 #' @description{Dataframe of plot-species observations directly from Turboveg.}
 #'
-#' @usage tv.obs(db, tv_home, ...)
-#'
 #' @export
 #' @param db (character) Name of your Turboveg database. This is the directory name containing tvabund.dbf, tvhabita.dbf and tvwin.set. Please include pathnames below but not above Turbowin/Data.
 #' @param tv_home (character) Turbowin installation path. If not specified function \code{\link{tv.home}} tries to discover.
@@ -27,17 +25,18 @@
 
 
 "tv.obs" <- function(db, tv_home, ...) {
-    if(missing(tv_home)) tv_home <- tv.home() else if(tv_home != tv.home()) warning(paste("Given Turboveg root directory:", tv_home, "differs from the global root directory given by getOption('tv_home'):", getOption('tv_home')))
+    if(missing(tv_home)) tv_home <- tv.home() else
+      if(tv_home != tv.home()) warning(paste("Given Turboveg root directory:", tv_home, "differs from the global root directory given by getOption('tv_home'):", getOption('tv_home')))
     # Observations ####
     obs <- read.dbf(file.path(tv_home, 'Data', db[1],'tvabund.dbf'), as.is = TRUE)
     names(obs) <- TCS.replace(names(obs))
     ## Combine multiple databases ####
     # Would be more efficient with e.g. rbindlist but I am not sure if it is worth the new package dependency
-    if(length(db)>1) {
+    if(length(db) > 1) {
       cat('More than 1 database, trying to combine.\n')
-    refl.1 <- tv.refl(db = db[1])
+    refl.1 <- tax.refl(db = db[1])
       for(i in 2:length(db)) {
-      	refl.i <- tv.refl(db = db[i])
+      	refl.i <- tax.refl(db = db[i])
       	if(refl.1 != refl.i) {
           cat(db[1], 'vs.', db[i])
           stop('You are using different taxonomic reference lists in your databases!')
@@ -45,7 +44,7 @@
       	obs.tmp <- read.dbf(file.path(tv_home, 'Data', db[i],'tvabund.dbf'))
         names(obs.tmp) <- TCS.replace(names(obs.tmp))
         if(any(unique(obs$PlotObservationID) %in% unique(obs.tmp$PlotObservationID))) {
-        		print(db[i])
+        		warning(db[i])
             stop('Overlap of releve numbers between the databases!')
         	}
     	  if(any(!names(obs) %in%  names(obs.tmp) ) | any(!names(obs.tmp) %in% names(obs))) {

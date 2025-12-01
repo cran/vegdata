@@ -42,5 +42,5 @@ to sql file
 }
 }
 \seealso{
-[tdb_cache]
+[.my_cache]
 }

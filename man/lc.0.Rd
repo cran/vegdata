@@ -15,7 +15,7 @@ A data frame with rows and 2 variables:
 lc.0
 }
 \description{
-datasets with layer codes and how they should be combined
- in vegetation anlyses. lc.o: do not combine any layers
+Example tables with layer codes and how they should be combined
+ in vegetation analyses. lc.0: do not combine any layers
 }
 \keyword{datasets}

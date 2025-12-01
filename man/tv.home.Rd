@@ -2,7 +2,7 @@
 % Please edit documentation in R/tv.home.R
 \name{tv.home}
 \alias{tv.home}
-\title{Where is your Turboveg 2 installation path?}
+\title{Where is your Turboveg 2 installation path or the directory with Species, Data, and Popup you want to use?}
 \usage{
 tv.home(check = FALSE)
 }
@@ -10,7 +10,7 @@ tv.home(check = FALSE)
 \item{check}{(logical) reset even if option('tv_home') is already set}
 }
 \value{
-Reads and sets invisbly option('tv_home')
+Reads and sets invisibly option('tv_home')
 }
 \description{
 Reads and sets invisbly option('tv_home')

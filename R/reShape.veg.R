@@ -21,7 +21,7 @@ if(any(is.na(as.integer(row.names(veg))))) stop("Plot ID's must be integer numbe
       TaxonUsageID <- taxa$TaxonUsageID[match(code, taxa$LETTERCODE)]
     } else {
       TaxonUsageID <- integer(length(code))
-      taxa <- tax(code, syn = FALSE)
+      taxa <- tax(code, refl = refl, strict = TRUE, syn = FALSE)
       TaxonUsageID <- taxa$TaxonUsageID[match(code, taxa$TaxonName)]
     }
   } else TaxonUsageID <- as.integer(code)

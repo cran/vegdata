@@ -2,17 +2,20 @@
 % Please edit documentation in R/vegdata-package.R
 \docType{package}
 \name{vegdata-package}
-\alias{vegdata}
 \alias{vegdata-package}
 \title{Functions to access data from vegetation databases and evaluate taxon names}
 \description{
-Handling of vegetation data from different sources ( Turboveg 2.0 \url{https://www.synbiosys.alterra.nl/turboveg/}; the German national repository \url{https://www.vegetweb.de} and others. Taxonomic harmonization (given appropriate taxonomic lists, e.g. the German taxonomic standard list "GermanSL", \url{https://germansl.infinitenature.org}).
+Handling of vegetation data from different sources ( Turboveg 2.0 \url{https://www.synbiosys.alterra.nl/turboveg/}; the German national repository \url{https://www.vegetweb.de} and others. Taxonomic harmonization (given appropriate taxonomic lists, e.g. the Euro+Med list \url{https://eurosl.infinitenature.org}).
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://germansl.infinitenature.org}
+  \item \url{https://git.loe.auf.uni-rostock.de/jansen/vegdata.git}
 }
+
+}
+\author{
+\strong{Maintainer}: Florian Jansen \email{florian.jansen@uni-rostock.de}
 
 }
 \keyword{package}

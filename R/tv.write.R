@@ -3,11 +3,8 @@
 #' @name tv.write
 #' @description Write species-plot observations and site information to Turboveg database.
 #'
-#' @usage tv.write(x, site, name, tvadmin, remarks, dict = "", cover = c("code", "perc"),
-#' drop = FALSE, obl = TRUE, overwrite = FALSE, ...)
-#'
 #' @export
-#' @param x (data.frame) Either observations data.frame with RELEVE_NR, TaxonUsageID and COVER_CODE (see \link{tv.obs}) columns or vegetation matrix of class "veg".
+#' @param x (data.frame) Either observations data.frame with PlotObservationID, TaxonUsageID and COVER_CODE (see \link{tv.obs}) columns or vegetation matrix of class "veg".
 #' @param site (character) Header data for plots.
 #' @param name (character) Name of the new database.
 #' @param tvadmin (data.frame) Dataframe with plot UUID's and Turboveg columns from TvAdmin.dbf. A new file with new unique identifiers will be created if omitted.
@@ -52,7 +49,7 @@ tv.write <- function(x, site, name, tvadmin, remarks, dict = '', cover=c('code',
     X$"COVER_CODE"[X$"COVER_CODE" == '100'] <- '9X'
     names(X) <- TV.replace(names(X))
   }
-  refl <- if(!is.null(attr(X, "taxreflist"))) attr(X, "taxreflist") else tv.refl()
+  refl <- if(!is.null(attr(X, "taxreflist"))) attr(X, "taxreflist") else tax.refl()
 
   if(drop) {
     # Delete empty columns ####
@@ -84,6 +81,7 @@ tv.write <- function(x, site, name, tvadmin, remarks, dict = '', cover=c('code',
 
   ### Write Turboveg tvhabita and tvabund ####
   dir.create(file.path(options('tv_home'), 'Data', name), showWarnings = if(overwrite) FALSE else TRUE)
+  if("tbl" %in% class(X)) X <- as.data.frame(X)
   write.dbf(X, max_nchar = 250, file.path(options('tv_home'), 'Data', name, 'tvabund.dbf'))
   # write TvAdmin ####
   if(missing(tvadmin)) {
@@ -96,12 +94,14 @@ tv.write <- function(x, site, name, tvadmin, remarks, dict = '', cover=c('code',
   TvAdmin$MOD_USER[is.na(TvAdmin$MOD_USER)] <- Sys.getenv('USER')
   TvAdmin$MOD_DATE[is.na(TvAdmin$MOD_DATE)] <- format(Sys.Date())
   names(TvAdmin) <- TV.replace(names(TvAdmin))
+  if("tbl" %in% class(TvAdmin)) TvAdmin <- as.data.frame(TvAdmin)
   write.dbf(TvAdmin, max_nchar = 250, file.path(options('tv_home'), 'Data', name, 'TvAdmin.dbf'))
 
   # write Remarks ####
   if(missing(remarks)) remarks <- data.frame(PlotObservationID=numeric(), REMARKS=character()) else
     if(nrow(remarks) > 0) remarks <- remarks[remarks$PlotObservationID %in% site$PlotObservationID,]
   names(remarks) <- TV.replace(names(remarks))
+  if("tbl" %in% class(remarks)) remarks <- as.data.frame(remarks)
   suppressWarnings(
     write.dbf(remarks, max_nchar = 250, file.path(options('tv_home'), 'Data', name, 'remarks.dbf'))
     )
@@ -110,6 +110,7 @@ tv.write <- function(x, site, name, tvadmin, remarks, dict = '', cover=c('code',
   write.dbf(data.frame(FLORA=refl, MINALLOW=0, MAXALLOW=0, MINACTUAL= min(site$PlotObservationID),	MAXACTUAL=max(site$PlotObservationID), MAP='', DICTIONARY=dict, META=''), max_nchar = 250, file = file.path(options('tv_home'),'Data', name, 'tvwin.dbf'))
   # write tvhabita.dbf
   names(site) <- TV.replace(names(site))
+  if("tbl" %in% class(site)) site <- as.data.frame(site)
   write.dbf(site, max_nchar = 250, file.path(options('tv_home'), 'Data', name, 'tvhabita.dbf'))
 
     cat('Turboveg database', name, 'written to', file.path(options('tv_home'), 'Data', name),'\n')

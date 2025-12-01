@@ -5,7 +5,7 @@
 \alias{taxlevels}
 \title{Taxonomic hierarchy levels}
 \format{
-A data frame with rows and 3 variables:
+A data frame with rows and 4 variables:
 \describe{
   \item{rank}{Layer code, i.e. 0:9 for Turboveg}
   \item{level}{Combinations. Same integer means, they will be combined}

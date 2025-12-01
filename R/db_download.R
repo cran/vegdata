@@ -1,3 +1,18 @@
+#' database path
+#' @export
+#' @param db (character) db name. one of: eurosl, germansl
+db_path <- function(db) {
+  file <- switch(
+    db,
+    eurosl = "eurosl.sqlite",
+    germansl = "germansl.sqlite",
+    stop("must be one of eurosl, germansl",
+         call. = FALSE)
+  )
+  file.path(.my_cache$cache_path_get(), file)
+}
+
+
 #' Download taxonomic databases
 #'
 #' @export
@@ -9,7 +24,7 @@
 #' @return (character) path to the downloaded SQL database
 #' @details Downloads sql database, cleans up unneeded files, returns path
 #' to sql file
-#' @seealso [tdb_cache]
+#' @seealso [.my_cache]
 #' @examples \dontrun{
 #' # EuroSL
 #' # db_download_eurosl()
@@ -28,9 +43,9 @@ db_download_eurosl <- function(version = 'latest', verbose = TRUE, overwrite = F
   # set paths
     db_url <- paste('https://euromed.infinitenature.org/EuroSL', version, 'EuroSL.zip', sep='/')
     # https://euromed.infinitenature.org/EuroSL/latest/EuroSL.sqlite
-    db_path <- file.path(tdb_cache$cache_path_get(), 'euroslSqlite.zip')
-    db_path_file <- file.path(tdb_cache$cache_path_get(), 'euroslSqlite')
-    final_file <- file.path(tdb_cache$cache_path_get(), 'eurosl.sqlite')
+    db_path <- file.path(.my_cache$cache_path_get(), 'euroslSqlite.zip')
+    db_path_file <- file.path(.my_cache$cache_path_get(), 'euroslSqlite')
+    final_file <- file.path(.my_cache$cache_path_get(), 'eurosl.sqlite')
 
     assert(verbose, "logical")
     assert(overwrite, "logical")
@@ -41,7 +56,7 @@ db_download_eurosl <- function(version = 'latest', verbose = TRUE, overwrite = F
     unlink(final_file, force = TRUE)
 
     # make home dir if not already present
-    tdb_cache$mkdir()
+    .my_cache$mkdir()
     # download data
     mssg(verbose, 'downloading...')
     curl::curl_download(db_url, db_path, quiet = TRUE)
@@ -68,9 +83,9 @@ db_download_eurosl <- function(version = 'latest', verbose = TRUE, overwrite = F
 db_download_germansl <- function(version = 'latest', verbose = TRUE, overwrite = FALSE) {
   # paths
   db_url <- paste('https://germansl.infinitenature.org/GermanSL', version, 'GermanSL.zip', sep='/')
-  db_path <- file.path(tdb_cache$cache_path_get(), 'germanslSqlite.zip')
-  db_path_file <- file.path(tdb_cache$cache_path_get(), 'germanslSqlite')
-  final_file <- file.path(tdb_cache$cache_path_get(), 'germansl.sqlite')
+  db_path <- file.path(.my_cache$cache_path_get(), 'germanslSqlite.zip')
+  db_path_file <- file.path(.my_cache$cache_path_get(), 'germanslSqlite')
+  final_file <- file.path(.my_cache$cache_path_get(), 'germansl.sqlite')
 
   assert(verbose, "logical")
   assert(overwrite, "logical")
@@ -81,7 +96,7 @@ db_download_germansl <- function(version = 'latest', verbose = TRUE, overwrite =
   unlink(final_file, force = TRUE)
 
   # make home dir if not already present
-  tdb_cache$mkdir()
+  .my_cache$mkdir()
   # download data
   # evaluate internet connection
   # if (httr::http_error(db_url) | !network) { # network is down = message (not an error anymore)

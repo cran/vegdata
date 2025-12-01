@@ -4,17 +4,28 @@
 \alias{tv.veg}
 \title{Tabulates vegetation tables from Turboveg database}
 \usage{
-tv.veg(db, taxval=TRUE,tv_home,convcode=TRUE,
-lc = c("layer","mean","max","sum","first"),
-pseudo, values='COVER_PERC', spcnames=c('shortletters','ScientificNames','Numbers'),
-dec = 0, cover.transform = c('no', 'pa', 'sqrt'), obs, site, refl, RelScale, ...)
+tv.veg(
+  db,
+  taxval = TRUE,
+  convcode = TRUE,
+  lc = c("layer", "mean", "max", "sum", "first"),
+  pseudo,
+  values = "COVER_PERC",
+  spcnames = c("shortletters", "ScientificNames", "Numbers"),
+  dec = 0,
+  cover.transform = c("no", "pa", "sqrt"),
+  obs,
+  site,
+  refl = tax.refl(),
+  RelScale,
+  tv_home,
+  ...
+)
 }
 \arguments{
 \item{db}{Name of your Turboveg database. Directory name containing tvabund.dbf, tvhabita.dbf and tvwin.set. Please specify pathnames below (if you sorted your databases in subfolders) but not above Turbowin/Data.}
 
 \item{taxval}{Should taxonomic valuation (see \code{\link{taxval}}) be performed?}
-
-\item{tv_home}{Turbowin installation path.}
 
 \item{convcode}{Should cover code be converted to percentage values?}
 
@@ -38,6 +49,8 @@ you can choose 'pa' for presence-absence or 'sqrt' for the \code{dec} rounded sq
 \item{refl}{Taxonomic reference list, optional}
 
 \item{RelScale}{Vector with Cover Scale code per Releve.}
+
+\item{tv_home}{Turbowin installation path.}
 
 \item{...}{additional arguments for included functions}
 }

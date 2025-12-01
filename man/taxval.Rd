@@ -4,9 +4,20 @@
 \alias{taxval}
 \title{Handling of taxonomy in vegetation data.}
 \usage{
-taxval(obs, refl, db, ag = c('conflict', 'adapt', 'preserve'), rank,
-mono = c('species', 'higher', 'lower', 'preserve'), monolist = "monotypic-D",
-maxtaxlevel = 'AGG', check.critical = TRUE, interactive = FALSE, ...)
+taxval(
+  obs,
+  refl,
+  db,
+  ag = c("conflict", "adapt", "preserve"),
+  rank,
+  mono = c("species", "higher", "lower", "preserve"),
+  monolist = "monotypic-D",
+  maxtaxlevel = "AGG",
+  ranklevels = NULL,
+  check.critical = TRUE,
+  interactive = FALSE,
+  ...
+)
 }
 \arguments{
 \item{obs}{data.frame of observations in TURBOVEG format, for example loaded with \code{\link{tv.obs}}}
@@ -24,6 +35,8 @@ maxtaxlevel = 'AGG', check.critical = TRUE, interactive = FALSE, ...)
 \item{monolist}{Name of monotypic species list, must be in dBase format and in the same directory as the reference list, e.g. \code{"monotypic-D"} for the area of Germany.}
 
 \item{maxtaxlevel}{Maximum taxonomic levels to be used. See details.}
+
+\item{ranklevels}{Ordered factor of taxonomic ranks, see vegdata:taxlevels}
 
 \item{check.critical}{Check for critical names in your dataset and give warnings.'}
 

@@ -3,29 +3,35 @@
 #' @name tv.coverperc
 #' @description Translate cover code into percentage cover values for Turboveg database observations.
 #'
-#' @usage tv.coverperc(db, obs, RelScale, tv_home, tvscale, quiet = FALSE,  ...)
-#'
 #' @export
 #' @param db the name of the Turboveg database
 #' @param obs dataframe of observations, containing Cover Codes, coded in tvscale.dbf of Turboveg installation
 #' @param RelScale Dataframe of CoverScale codes per releve, if empty it is read from the database
 #' @param tv_home Path to Turboveg installation
 #' @param tvscale Cover scale
-#' @param quiet Suppress messages
 #' @param \dots Further options
 #'
 #' @return data.frame of observations with additional column COVER_PERC
 #'
-#' keywords Turboveg
+#' @keywords Turboveg
 
-
-tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
-{
+tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, ...) {
   if(missing(tv_home)) {
     tv_home <- tv.home()
   }
 
   if(missing(tvscale)) {
+    #########################################
+    # dat <- read.dbf(file.path(tv_home, "Popup", tv.dict('taxatest'), "tvscale.dbf"), as.is = TRUE)
+    # dat_longer <- dat %>%
+    #   tidyr::pivot_longer(
+    #     cols = starts_with("SCH") | starts_with("DEC"),
+    #     names_to = c(".value", "index"),
+    #     names_pattern = "(SCH|DEC)(\\d+)",
+    #     values_drop_na = TRUE
+    #   )
+    # tvscale <- dat_longer[!is.na(dat_longer$SCH), ]
+    #########################################
     tvscale <- read.dbf(file.path(tv_home, "Popup", tv.dict(db), "tvscale.dbf") )
   }
   tvscale <- tvscale[!is.na(tvscale$SCALE_NR),]
@@ -34,7 +40,9 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
   if (missing(RelScale)) {
       ow <- options('warn')
       options(warn = -1)
-      RelScale <- tv.site(db=db, tv_home=tv_home, verbose = quiet)[, c("PlotObservationID", "COVERSCALE")]
+      suppressMessages(
+        RelScale <- tv.site(db=db, tv_home=tv_home)[, c("PlotObservationID", "COVERSCALE")]
+      )
       options(ow)
       }
   if (missing(obs))
@@ -71,12 +79,10 @@ tv.coverperc <- function (db, obs, RelScale, tv_home, tvscale, quiet=FALSE, ...)
       code <- iconv(t(scala[seq(4,(p-1),2)]), from=getOption('tv.iconv'), to='')
       perc <- scala[seq(5,p,2)][1,]
       d.f <- data.frame(code=code[,1], perc = as.numeric(perc))
-      if(!quiet) {
-        cat('Cover code used: ',i , as.character(tvscale[i, 2]))
+      message('Cover code used: ',i , as.character(tvscale[i, 2]))
       #  write.table(t(d.f), col.names = FALSE, sep = "\t", quote = FALSE)
       #  print(table(t(d.f), col.names = FALSE, sep = "\t", quote = FALSE))
         print(as.table(t(d.f)), col.names = FALSE, sep = "\t", quote = FALSE)
-      }
       obs[[i]]["COVER_PERC"] <- d.f$perc[match(obs[[i]][,"COVER_CODE"], d.f$code)]
   }
   }

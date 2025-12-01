@@ -4,7 +4,15 @@
 \alias{tv.site}
 \title{Load site data from Turboveg Database}
 \usage{
-tv.site(db, tv_home, drop=TRUE, common.only = FALSE, verbose = TRUE, replace.names, ...)
+tv.site(
+  db,
+  tv_home,
+  drop = TRUE,
+  common.only = FALSE,
+  check.relevenumbers = TRUE,
+  replace.names,
+  ...
+)
 }
 \arguments{
 \item{db}{(character) Name of your Turboveg database(s). Directory name containing tvabund.dbf, tvhabita.dbf and tvwin.set.}
@@ -15,7 +23,7 @@ tv.site(db, tv_home, drop=TRUE, common.only = FALSE, verbose = TRUE, replace.nam
 
 \item{common.only}{(logical) Import only header data with the same name in all databases.}
 
-\item{verbose}{(logical) print warnings and hints}
+\item{check.relevenumbers}{(logical) Are duplicate PlotObservationID's allowed. Default is FALSE.}
 
 \item{replace.names}{(data.frame) replace variable names. Useful if using multiple source databases. Data frame with names to be replaced in first and replacing names in second column.}
 
@@ -29,7 +37,6 @@ Loading Turboveg header data and do basic data evaluation. Empty columns are eli
 }
 \details{
 Please specify pathnames below but not above Turbowin/Data. Can be a single database or a character vector of multiple databases. In the latter case you have to assure, that all databases use the same taxonomic reference list.
-
   You can use the example in the final output line to make a summary statistic for attributes with potentially misleading '0' values. Just delete the \" at beginning and end.
 }
 \author{

@@ -5,7 +5,7 @@
 \alias{tv.eco}
 \title{Load species traits from Turboveg reference list}
 \usage{
-tv.traits(db, trait.db = 'ecodbase.dbf', refl, ...)
+tv.traits(db, trait.db = "ecodbase.dbf", refl, ...)
 }
 \arguments{
 \item{db}{Path name to the Turboveg database directory}

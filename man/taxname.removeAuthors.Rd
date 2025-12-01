@@ -2,15 +2,20 @@
 % Please edit documentation in R/tax.names.R
 \name{taxname.removeAuthors}
 \alias{taxname.removeAuthors}
+\alias{taxname.authors}
 \title{Remove name authors from taxon names}
 \usage{
-taxname.removeAuthors(x, sep)
+taxname.removeAuthors(x, rankattr)
+
+taxname.authors(x, rankattr)
 }
 \arguments{
 \item{x}{(character) vector of taxon names}
 
-\item{sep}{(character) vector of rank indicators}
+\item{rankattr}{(character) vector of rank attributes used in the taxonname strings}
 }
 \description{
 Remove name authors from taxon names
+
+Extract name authors from taxon names
 }

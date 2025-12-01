@@ -4,7 +4,7 @@
 \alias{tv.bib}
 \title{Check bibliographic references from Turboveg codes}
 \usage{
-tv.bib(x = "all", db, dict = tv.dict(db), quiet = FALSE, tv_home, ...)
+tv.bib(x = "all", db, dict = tv.dict(db), tv_home, ...)
 }
 \arguments{
 \item{x}{(character) Turboveg reference code(s), e.g. "000001"}
@@ -12,8 +12,6 @@ tv.bib(x = "all", db, dict = tv.dict(db), quiet = FALSE, tv_home, ...)
 \item{db}{(character) Database name. Needed to select appropriate TV Dictionary folder.}
 
 \item{dict}{(character) Name of Turboveg Dictionary (term lists for header data) if not the default one.}
-
-\item{quiet}{(logical) If you want to print the reference to the screen.}
 
 \item{tv_home}{(character) Turbowin installation path. If not specified function [tv.home()] tries to discover.}
 

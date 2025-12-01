@@ -16,6 +16,6 @@ lc.1
 }
 \description{
 datasets with layer codes and how they should be combined
- in vegetation anlyses.
+ in vegetation analyses.
 }
 \keyword{datasets}

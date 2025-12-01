@@ -4,15 +4,12 @@
 \alias{tax}
 \title{Search taxonomic reference lists including concept synonomy and taxonomic hierarchy.}
 \usage{
-tax(x, refl, detailed = TRUE, syn = TRUE, concept = NULL, strict = FALSE,
-                        simplify = FALSE, quiet = FALSE, ...)
+tax(x, refl = tax.refl(), syn = TRUE, concept = NULL, strict = FALSE, idtype)
 }
 \arguments{
 \item{x}{Species number, lettercode or species name(s)}
 
 \item{refl}{Taxonomic reference list}
-
-\item{detailed}{In old Turboveg versions detailed taxonomic information could only be given in an extra file which was called tax.dbf in GermanSL. Compatibility mode.}
 
 \item{syn}{Return also synonym names}
 
@@ -20,11 +17,7 @@ tax(x, refl, detailed = TRUE, syn = TRUE, concept = NULL, strict = FALSE,
 
 \item{strict}{Exact match or partial matching with \code{\link{grep}}}
 
-\item{simplify}{Should taxname.simplify be applied to find species}
-
-\item{quiet}{Hide screen messages}
-
-\item{\dots}{additional attributes for taxname.abbr or taxname.simplify}
+\item{idtype}{is x of type 'is_id', 'is_shortletter', or 'is_scientific'}
 }
 \description{
 Input is either species number (integer), shortletter (7 characters) or full (exact!) species name.

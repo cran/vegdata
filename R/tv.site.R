@@ -18,8 +18,6 @@
 #' @return data.frame of site variables.
 #' @author Florian Jansen \email{florian.jansen@uni-rostock.de}
 #'
-#' @keywords Turboveg
-
 tv.site <- function (db, tv_home, drop = TRUE, common.only = FALSE, check.relevenumbers = TRUE, replace.names, ...)
 {
   if (missing(tv_home)) tv_home <- tv.home()

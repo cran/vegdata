@@ -45,8 +45,8 @@ taxname.abbr <- function(x,
     x <- sub('\ s(ens)?\\.?\\s*?s(tr)?\\.?($|\ )', ' sensustricto', x)
 
     x <- sub('\ f\\.?\ ', ' fo. ', x)
-    x <- sub('\ species', ' spec.', x)
-  if(concept) {
+    x <- sub("\\s(species|spec\\.|sp\\.)$", "", x)
+    if(concept) {
       x <- sub('\ sensulato', '', x)
       x <- sub('\ sensustricto', '', x)
     } else {
@@ -67,7 +67,8 @@ taxname.abbr <- function(x,
 
    if(hybrid)  x <- gsub('\U00D7', '', x, fixed = TRUE)
 
-   if(cf) x <- sub('cf.\ ', '', x, ignore.case=TRUE)
+   if(cf)
+         x <- gsub('cf\\.|c\\.f\\.', '', x)
 
     x <- trimws(x) # trim leading and trailing leading spaces
     #  Sys.setlocale(category='LC_CTYPE', locale=loc)
@@ -85,6 +86,7 @@ taxname.abbr <- function(x,
 #' @param genus (logical) simplify genus name part
 #' @param concept (logical) remove name parts which describe taxon concept size like "s. str.","s. l."
 #' @param rank (logical) remove rank specifications
+#' @param cf (logical) remove *cum dubio* "cf." remarks
 #' @param epithet (logical) simplify epithet(s)
 #' @param tax.status (logical) remove taxon status like 'nom. illeg.' or 'auct.'
 #' @param \dots additional attributes
@@ -94,8 +96,9 @@ taxname.abbr <- function(x,
 #' @author Florian Jansen florian.jansen@uni-rostock.de
 #'
 
-taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, concept = TRUE, rank=TRUE, tax.status=TRUE, ...) {
-  x <- taxname.abbr(x, ...)
+taxname.simplify <- function(x, genus = TRUE, epithet = TRUE, concept = TRUE,
+                                rank = TRUE, tax.status = TRUE, cf = TRUE, ...) {
+  x <- taxname.abbr(x, cf = cf, ...)
   if(tax.status) {
     x <- gsub(' nom\\.? illeg\\.?', '', x)
     x <- gsub(' nom\\.? inval\\.?', '', x)
@@ -180,6 +183,42 @@ taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, concept = TRUE, rank=T
  return(x)
 }
 
+#' @importFrom tibble tribble
+taxlevels <- tibble::tribble(
+  ~rank, ~level,   ~spec,        ~harmonized,            ~alternativeRank,
+  0,     "ORA",    "cv.",        "Subform",              "ORA|Subform|Grex (infraspec.)",
+  1,     "FOR",    "for.",       "Form",                 "FOR|Form",
+  2,     "VAR",    "var.",       "Variety",              "VAR|Variety",
+  3,     "ZUS",    NA,           "Addition",             "ZUS",
+  4,     "SSP",    "subsp.",     "Subspecies",           "SSP",
+  5,     "SGR",    NA,           "Subspecies group",     "SGR",
+  6,     "SPE",    NA,           "Species",              "SPE|hyb.-sp.|hyb.-sp. (formula)",
+  7,     "AGG",    "aggr.",      "Aggregate",            "AGG|aggr|Species Aggregate|Species Aggregate s.l.",
+  8,     "GRP",    NA,           "Gruppe",               "GRP",
+  9,     "SSE",    NA,           "Subseries",            "SSE",
+  10,    "SER",    NA,           "Series",               "SER",
+  11,    "SEC",    "sect.",      "Section",              "SEC|sect.|sect.-list",
+  12,    "SGE",    "subg.",      "Subgenus",             "SGE|Subgenus",
+  13,    "AG1",    NA,           "Aggregate",            "AG1",
+  14,    "GAT",    NA,           "Genus",                "GAT|Genus|genus s.l.|hyb.-g.|hyb.-g. (formula)",
+  15,    "AG2",    NA,           "Suprageneric Taxon",   "AG2",
+  16,    "SFA",    NA,           "Subfamily",            "SFA",
+  17,    "FAM",    NA,           "Family",               "FAM|Family",
+  18,    "ORD",    NA,           "Order",                "ORD|Order",
+  19,    "CL6",    NA,           "Superorder",           "CL6|Superorder",
+  20,    "CL5",    NA,           "Supraorder",           "CL5",
+  21,    "CL4",    NA,           "Supraorder",           "CL4",
+  22,    "CL3",    NA,           "Supraorder",           "CL3",
+  23,    "UKL",    NA,           "Subclass",             "UKL",
+  24,    "KLA",    NA,           "Class",                "KLA|Class",
+  25,    "CL2",    NA,           "Class",                "CL2",
+  26,    "UAB",    NA,           "Subdevision",          "UAB",
+  27,    "ABT",    NA,           "Devision",             "ABT",
+  28,    "CL1",    NA,           "Devision",             "CL1",
+  29,    "AG3",    NA,           "Phylum",               "AG3|Phylum",
+  30,    "ROOT",   NA,           "taxon root",           "ROOT"
+)
+# save(taxlevels, file = 'data/taxlevels.rda')
 
 #' Remove name authors from taxon names
 #'
@@ -188,26 +227,11 @@ taxname.simplify <- function(x, genus=TRUE, epithet=TRUE, concept = TRUE, rank=T
 #' @param rankattr (character) vector of rank attributes used in the taxonname strings
 #' @name taxname.removeAuthors
 #'
-
-# taxname.removeAuthors <- function(x, sep) {
-#     trimws(sapply(x, function(x) {
-#       UC <- unlist(gregexpr("[A-Z]", x, perl=TRUE))
-#       if(length(UC) == 0) stop(paste("Can not detect a valid taxon name in:", x))
-#       if(length(UC) == 1) x else {
-#       rest <- substr(x, UC[length(UC)], nchar(x))
-#       if(grepl('subsp.|nothosubsp.|nssp.|var.|f.|cv.|agg.', rest)) {
-#         paste(trimws(substr(x, 1, UC[2]-2)), trimws(sub(stringr::word(rest), '', rest)) )
-#       } else
-#       substr(x, 1, unlist(gregexpr("[A-Z]", x, perl=TRUE))[2]-2)
-#       }
-#     }
-#     ))
-# }
 taxname.removeAuthors <- function(x, rankattr) {
   if(missing(rankattr)) rankattr = c("\ subsp\\.?\ |nothosubsp\\.?\ |\ nssp\\.?\ |var\\.?\ |\ for\\.?|\ cv\\.?\ |\ agg\\.|\ sect\\.\ |\ sectio\ |\ subg\\.\ |\ x\ ")
   trimws(sapply(x, function(x) {
-    #UC <-       gregexpr("(?<!\\bsect\\.\\s||-)(?=\\s(?:[A-Z]|d'))", x, perl = TRUE) # include " d'Urv
-    UC <- unlist(gregexpr("(?<!sect\\. |-)(d'|[A-Z])", x, perl = TRUE)) # Uppercase except after sect. or -
+    UC <- unlist(gregexpr("(?<!sect\\. |-)(?:auct\\.?| sensu |d'|van\\b|[A-Z])", x, perl = TRUE)) # Uppercase
+    # or d' or van , except after sect. or -
     if(length(UC) == 0) stop(paste("Can not detect a valid taxon name in:", x, '. No Uppercase word detected.'))
     if(length(UC) == 1) x else {
       if(grepl('[', x, fixed = TRUE))  x <- trimws(strsplit(x, '[', fixed = TRUE)[[1]][1])
@@ -224,13 +248,10 @@ taxname.removeAuthors <- function(x, rankattr) {
     }}
   ))
 }
-# ÁÅČÖŠÜŽ
-# x <- c('Circaea x intermedia Ehrh. [alpina subsp. alpina x lutetiana subsp. lutetiana]', 'Anthriscus sylvestris (L.) Hoffm. subsp. sylvestris', 'Polycarpon polycarpoides subsp. catalaunicum O.Bolòs & Vigo', "Centaurium erythraea subsp. erythraea var. capitatum (Willd.) Melderis", "Eleocharis vulgaris Á. Löve & D. Löve 1975", 'xCalammophila')
-# gregexpr("f\\.?|cv\\.?\ |agg\\.?\ ", x, perl=TRUE)
-#
-# taxname.removeAuthors(x)
+#x <- c('Circaea x intermedia Ehrh. [alpina subsp. alpina x lutetiana subsp. lutetiana]', 'Anthriscus sylvestris (L.) Hoffm. subsp. sylvestris', 'Polycarpon polycarpoides subsp. catalaunicum O.Bolos & Vigo', "Centaurium erythraea subsp. erythraea var. capitatum (Willd.) Melderis", "Eleocharis vulgaris A. Love & D. Love 1975", 'xCalammophila', "Thalictrum minus subsp. minus auct. non L., 1753", "Thelidium olivaceum auct.")
+#taxname.removeAuthors(x)
 
-#How to extent gregexpr("(?<!sect\\. |-)[A-Z]", x, perl = TRUE) so that it divides "Cyperus noanus Boiss." before " B" and "Taraxacum sect. Hamata H. Øllg." before " H." but "Crepis ramosissima d'Urv." before " d'Urv."?
+#How to extend gregexpr("(?<!sect\\. |-)[A-Z]", x, perl = TRUE) so that it divides "Cyperus noanus Boiss." before " B" and "Taraxacum sect. Hamata H. Ollg." before " H." but "Crepis ramosissima d'Urv." before " d'Urv."?
 
 #' Extract name authors from taxon names
 #'
@@ -242,13 +263,9 @@ taxname.removeAuthors <- function(x, rankattr) {
 taxname.authors <- function(x, rankattr) {
   if(missing(rankattr)) rankattr <- c("\ subsp\\.?\ |nothosubsp\\.?\ |\ nssp\\.?\ |var\\.?\ |\ for\\.?|\ cv\\.?\ |\ agg\\.|\ sect\\.\ |\ subg\\.\ |\ x\ ")
   trimws(sapply(x, function(x) {
-    UC <- unlist(gregexpr("(?<!sect\\. |-)[A-Z]", x, perl = TRUE)) # Uppercase except after sect.
+    UC <- unlist(gregexpr("(?<!sect\\. |-)(?:auct\\.?| sensu |d'|van\\b|[A-Z])", x, perl = TRUE))
     if(length(UC) == 0) stop(paste("Can not detect a valid taxon name in:", x, '. No Uppercase word detected.'))
     if(length(UC) == 1) NA else {
-      # if(grepl('[', x, fixed = TRUE))
-      #   x <- trimws(strsplit(x, '[', fixed = TRUE)[[1]][1])
-      # RI <- gregexpr(sep, x)
-      # a <- if(stringr::word(x, 2, 2))
       strsplit( substr(x, UC[2]-1, nchar(x)), split = paste0('\\[|', rankattr) )[[1]][1]
     }
     }))
@@ -266,7 +283,6 @@ taxname.authors <- function(x, rankattr) {
 # start2 <- substr(x, UC[1], UC[3])
 # paste(trimws(substr(x, 1, UC[3]-2)), trimws(sub(stringr::word(rest), '', rest)) )
 # paste(trimws(substr(x, 1, UC[2]-2)), trimws(sub(stringr::word(rest), '', rest)) )
-#
 #
 # paste(trimws(substr(x, UC[2], UC[3]-2)), trimws(sub(stringr::word(rest), '', rest)) )
 #
@@ -369,12 +385,12 @@ recoding.taxa <- function(x, names = c('shortletters', 'Numbers', 'ScientificNam
 #' @param x (character) string of column names used in data.frames storing taxon lists
 #'
 #' @author Florian Jansen florian.jansen@uni-rostock.de
-#' @references Taxonomic Names and Concepts interest group. 2006. Taxonomic Concept Transfer Schema (TCS), version 1.01. Biodiversity Information Standards (TDWG) http://www.tdwg.org/standards/117
+#' @references Taxonomic Names and Concepts interest group. 2006. Taxonomic Concept Transfer Schema (TCS), version 1.01. Biodiversity Information Standards (TDWG) https://www.tdwg.org/standards/117
 
 TCS.replace <- function(x) {
   ## Turboveg & ## Florkart Germany
   x <- replace(x, toupper(x) %in% c('TAXONUSAGEID', 'SPECIES_NR', 'TAXNR', 'NAMNR', 'NAMEID', "NAME_ID", 'TAXONUSAGEID','TAXONID'), 'TaxonUsageID')
-  x <- replace(x, toupper(x) %in% c('TAXONNAME','ABBREVIAT','TAXONNAME','TAXON','TAXNAME',"WISS_NAME"), 'TaxonName')
+  x <- replace(x, toupper(x) %in% c('TAXONNAME','ABBREVIAT','TAXONNAME','TAXON','TAXNAME',"WISS_NAME","ART"), 'TaxonName')
   x <- replace(x, toupper(x) %in% c('TAXONCONCEPTID','VALID_NR', 'SIPNR', 'NAMNR_GUELT', 'SYNNAMEID', 'TAXONCONCEPTID',"ACCEPTEDNAMEUSAGEID"), 'TaxonConceptID')
   x <- replace(x, toupper(x) %in% c('TAXONCONCEPT', 'VALID_NAME', 'VALIDNAME', 'TAXONCONCEPT'), 'TaxonConcept')
   x <- replace(x, toupper(x) %in% c('ISCHILDTAXONOFID', 'AGG', 'AGGNR', 'NAMEPARENTID', 'ISCHILDTAXONOFID', "PARENTNAMEUSAGEID"), 'IsChildTaxonOfID')

@@ -52,7 +52,7 @@ vignette('vegdata')
 \end{abstract}
 
 \section{Preliminary notes}
-    Some \texttt{vegdata} functions expect an installation, or more precisely the main directory structure, of the vegetation database program Turboveg for Windows (see \url{http://www.synbiosys.alterra.nl/turboveg}. If the package can not find a Turboveg installation it will use the directory within the package installation path. If you want to use function \texttt{taxval} for taxonomic harmonization you will need to have GermanSL or an equally structured reference list. If you do not specify any, the most recent version of GermanSL will be used and if it can not be found within the specified path, it will be downloaded from \url{https://germansl.infinitenature.org/GermanSL/latest/GermanSL.zip}.
+    Some \texttt{vegdata} functions expect an installation, or more precisely the main directory structure, of the vegetation database program Turboveg for Windows (see \url{https://www.synbiosys.alterra.nl/turboveg/}. If the package can not find a Turboveg installation it will use the directory within the package installation path. If you want to use function \texttt{taxval} for taxonomic harmonization you will need to have GermanSL or an equally structured reference list. If you do not specify any, the most recent version of GermanSL will be used and if it can not be found within the specified path, it will be downloaded from \url{https://germansl.infinitenature.org/GermanSL/latest/GermanSL.zip}.
 
     Turboveg uses dBase database format for storage. The package tries to deal with the limitations of that format but it is essential, that you use "Database -- Reindex" in Turboveg every time you delete something in your Turboveg database. Otherwise it will not be deleted immediately in the dBase file, instead it is only marked for deletion, i.e. it is still there when you access this file with R and will not be recognized as deleted until you reindex your Turboveg database.
 
@@ -119,15 +119,15 @@ tv.db()
 @
 will give you a list of available Turboveg database names (directories within the Turboveg \textit{Data directory}).
 
+GermanSL is the default Taxonomic reference list in package \texttt{vegdata}.
+However, whenever you use a Turboveg database name in a function, the Reference list will be read from the database configuration file \texttt{tvwin.set} if possible.
+
 <<>>=
 tv.home()
 getOption('tv_home')
 list.dirs(path = file.path(getOption('tv_home'), "Species"), recursive = FALSE, full.names = FALSE)
 tax.refl('TaxRefExample')
 @
-
-GermanSL is the default Taxonomic reference list in package \texttt{vegdata}.
-However, whenever you use a Turboveg database name in a function, the Reference list will be read from the database configuration file \texttt{tvwin.set} if possible.
 
 If you want to change the default reference list:
 

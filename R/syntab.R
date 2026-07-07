@@ -58,10 +58,15 @@
 #' @export
 syntab.veg <- function (veg, clust, type = c('rel','abs','mean.cover'), mupa = FALSE, dec = 0, refl, ...) {
     type <- match.arg(type)
-    clust <- if (missing(clust)) as_factor(sample(c('one','two','three'), size = nrow(veg), replace = TRUE)) else
+    clust <- if (missing(clust))
+      as_factor(sample(c('one','two','three'), size = nrow(veg), replace = TRUE)) else
       as_factor(clust)
-    ncl <- fct_count(clust)
+    if(!missing('refl'))
+      if('veg' %in% class(veg)) refl <- attr(veg, 'taxreflist') else
+        tax.refl(refl)
+    refl = tax.refl()
 
+    ncl <- fct_count(clust)
     cat(' Number of clusters: ', nrow(ncl), '\n')
     nb.rel.clust <- as.numeric(table(clust))
     cat(' Cluster frequency', nb.rel.clust,'\n')
@@ -107,53 +112,165 @@ syntab.veg <- function (veg, clust, type = c('rel','abs','mean.cover'), mupa = F
 }
 
 #' @export
-syntab.data.table <- function (veg, clust, type = c('rel', 'relspec', 'abs', 'mean.cover'), mupa, dec = 0, refl, ...) {
+syntab.data.table <- function (veg, clust,
+                               type = c('rel', 'relspec', 'abs', 'mean.cover'),
+                               mupa = FALSE, dec = 0, refl, ...) {
   requireNamespace("data.table", quietly = TRUE)
   type <- match.arg(type)
-  N <- NULL
-  Total <- NULL
-  RelativeFreq <- NULL
-  TaxonName <- NULL
-  clust <- as.factor(clust)
-  if (missing(clust)) clust <- sample(1:2, size = nrow(veg), replace = TRUE)
-  ncl <- length(unique(clust))
-  cat(' Number of clusters: ', ncl, '\n')
-  nb.rel.clust <- as.numeric(table(clust))
-  cat(' Cluster frequency', nb.rel.clust,'\n')
-  if(any(nb.rel.clust == 0)) stop("All cluster levels must be represented by plots.")
-  if(is.null(levels(clust))) levels(clust) <- 1:length(table(clust))
-  if(any(table(veg$TaxonName)==0)) stop('Some species without occurrence.')
-  veg$clust <- clust[match(veg$RELEVE_NR, names(clust))]
-  if(type=='relspec') {
-    counts <- veg[, .N, by = .(TaxonName, clust)]  # Compute counts per TaxonName and type
-    counts[, Total := sum(N), by = TaxonName]   # Compute total counts per TaxonName
-    counts[, RelativeFreq := round(N / Total * 100, 1) ]   # Compute relative frequencies
-    st <- data.table::dcast(counts, TaxonName ~ clust, value.var = "RelativeFreq", fill = 0)   # Convert to wide format
-  } else
-    if(type=='rel') {
-      counts <- veg[, .N, by = .(TaxonName, clust)]  # Compute counts per TaxonName and type
-      counts[, Total := sum(N), by = clust]   # Compute total counts per type
-      counts[, RelativeFreq := round(N / Total * 100, 1) ]   # Compute relative frequencies
-      st <- data.table::dcast(counts, TaxonName ~ clust, value.var = "RelativeFreq", fill = 0)   # Convert to wide format
-  } else
-    if(type=='mean.cover') {
-      st <- data.table::dcast(veg, TaxonName ~ clust, fun.aggregate = mean)
-    } else
-      if(type=='abs')
-        st <- data.table::dcast(veg, TaxonName ~ clust, fun.aggregate = length)
 
-  out <- list(clust=clust, syntab=as.data.frame(st))
-  class(out) <- c('syntab', 'list')
+  # defensive checks
+  if (!inherits(veg, "data.table")) veg <- data.table::as.data.table(veg)
+  if (!("TaxonName" %in% names(veg))) stop("veg must have a column 'TaxonName'.")
+  if (!("RELEVE_NR" %in% names(veg))) stop("veg must have a column 'RELEVE_NR' (Plot-ID).")
+
+  clust <- as.factor(clust)
+  if (missing(clust)) clust <- sample(1:2, size = length(unique(veg$RELEVE_NR)), replace = TRUE)
+
+  # map cluster to plots (RELEVE_NR)
+  if (is.null(names(clust))) {
+    # fallback: assume clust is in the same order as unique plots
+    plots <- sort(unique(veg$RELEVE_NR))
+    if (length(clust) != length(plots)) {
+      stop("If clust has no names(), length(clust) must be == Number of RELEVE_NR.")
+    }
+    names(clust) <- plots
+  }
+
+  veg[, clust := clust[match(RELEVE_NR, names(clust))]]
+  if (any(is.na(veg$clust))) stop("Einige RELEVE_NR konnten keinem Cluster zugeordnet werden (names(clust) pr\u00fcfen).")
+
+  # ncl <- length(levels(veg$clust))
+  # cat(" Number of clusters: ", ncl, "\n")
+  # nb.rel.clust <- as.numeric(table(veg$clust))
+  # cat(" Cluster frequency", nb.rel.clust, "\n")
+  # if (any(nb.rel.clust == 0)) stop("All cluster levels must be represented by plots.")
+  rel_clust <- unique(veg[, .(RELEVE_NR, clust)])
+  ncl <- nlevels(rel_clust$clust)
+  cat("Number of clusters:", ncl, "\n")
+  nb.rel.clust <- rel_clust[, .N, by = clust][order(clust)]
+  cat("Cluster frequency:", nb.rel.clust$N, "\n")
+
+  # --- Build the basic syntab (cluster columns only) ---
+  if (type == "relspec") {
+    counts <- veg[, .N, by = .(TaxonName, clust)]
+    counts[, Total := sum(N), by = TaxonName]
+    counts[, RelativeFreq := round(N / Total * 100, dec)]
+    st <- data.table::dcast(counts, TaxonName ~ clust, value.var = "RelativeFreq", fill = 0)
+  } else if (type == "rel") {
+    pres <- unique(veg[, .(RELEVE_NR, TaxonName, clust)])
+    nplots_cl <- pres[, .(Nplots = data.table::uniqueN(RELEVE_NR)), by = clust]
+    counts <- pres[, .(NplotsWith = data.table::uniqueN(RELEVE_NR)), by = .(TaxonName, clust)]
+    counts <- merge(counts, nplots_cl, by = "clust", all.x = TRUE)
+    counts[, RelativeFreq := round(NplotsWith / Nplots * 100, dec)]
+    st <- data.table::dcast(counts, TaxonName ~ clust, value.var = "RelativeFreq", fill = 0)
+  } else if (type == "mean.cover") {
+    # try to find a cover/abundance column
+    valcol <- intersect(c("Cover", "COVER", "cover", "Abundance", "abundance", "value"), names(veg))
+    if (length(valcol) == 0) stop("F\u00fcr type='mean.cover' brauche ich eine Spalte wie Cover/COVER/value.")
+    valcol <- valcol[1]
+    st <- data.table::dcast(veg, TaxonName ~ clust, value.var = valcol, fun.aggregate = mean, fill = 0)
+  } else if (type == "abs") {
+    st <- data.table::dcast(veg, TaxonName ~ clust, fun.aggregate = length, fill = 0)
+  }
+
+  st_df <- as.data.frame(st)
+  rownames(st_df) <- st_df$TaxonName
+  st_df$TaxonName <- NULL
+
+  # --- Multipatt analysis (optional) ---
+  if (is.logical(mupa)) {
+    if (mupa) {
+      requireNamespace("indicspecies", quietly = TRUE)
+
+      # build community matrix: plots x taxa
+      # choose abundance if available, else presence/absence (1)
+      valcol <- intersect(c("Cover", "COVER", "Cover_Perc", "Abundance", "abundance", "value"), names(veg))
+      if (length(valcol) > 0) {
+        valcol <- valcol[1]
+        comm_dt <- data.table::dcast(
+          veg, RELEVE_NR ~ TaxonName, value.var = valcol,
+          fun.aggregate = sum, fill = 0
+        )
+      } else {
+        # presence/absence fallback
+        comm_dt <- data.table::dcast(
+          veg, RELEVE_NR ~ TaxonName,
+          fun.aggregate = length, fill = 0
+        )
+        comm_dt[, (names(comm_dt)[-1]) := lapply(.SD, function(x) as.numeric(x > 0)), .SDcols = names(comm_dt)[-1]]
+      }
+
+      plots <- comm_dt$RELEVE_NR
+      comm <- as.matrix(comm_dt[, -1, with = FALSE])
+      rownames(comm) <- plots
+
+      cl_plot <- clust[match(plots, names(clust))]
+      cl_plot <- as.factor(cl_plot)
+
+      mu <- indicspecies::multipatt(comm, cl_plot, ...)
+
+      # integrate: replace single-cluster membership columns (s.<level>) with our frequency table
+      sign <- mu$sign
+
+      # which columns correspond to single clusters?
+      lev <- levels(cl_plot)
+      s_cols <- paste0("s.", lev)
+      hit <- intersect(s_cols, colnames(sign))
+
+      # align species order and inject cluster frequencies
+      # st_df has taxa as rownames
+      common_taxa <- intersect(rownames(sign), rownames(st_df))
+      if (length(common_taxa) == 0) stop("Keine \u00dcberlappung zwischen multipatt taxa und syntab taxa (TaxonName pr\u00fcfen).")
+
+      sign2 <- sign[common_taxa, , drop = FALSE]
+
+      # inject only those single-cluster columns that exist
+      if (length(hit) > 0) {
+        # map hit columns to levels
+        lev_hit <- sub("^s\\.", "", hit)
+        for (j in seq_along(hit)) {
+          cl_name <- lev_hit[j]
+          if (cl_name %in% colnames(st_df)) {
+            sign2[, hit[j]] <- st_df[common_taxa, cl_name]
+          }
+        }
+      }
+
+      # nicer names: remove leading s.
+      colnames(sign2) <- gsub("^s\\.", "", colnames(sign2))
+
+      st_df <- as.data.frame(sign2)
+    }
+  } else if (inherits(mupa, "multipatt")) {
+    sign <- mupa$sign
+    colnames(sign) <- gsub("^s\\.", "", colnames(sign))
+    st_df <- as.data.frame(sign)
+  } else {
+    stop("Give multipatt object or set mupa to TRUE or FALSE.")
+  }
+
+  st_df[is.na(st_df)] <- 0
+
+  out <- list(clust = clust, syntab = st_df)
+  class(out) <- c("syntab", "list")
   invisible(out)
 }
 
-#--------------
-
-if(getRversion() >= "2.15.1")  utils::globalVariables(c("st"))
-#'
+#
+#' @param zero.print character to fill empty cells
+#' @param trait prints ecological indicators of species
+#' @param limit minimum frequency to display
+#' @param minstat minimum multipatt statistic
+#' @param alpha Significance level
 #' @export
 #' @rdname syntab
-print.syntab <- function(x, zero.print='.', trait, limit = 1, minstat = 0, alpha = 0.05, ...) {
+print.syntab <- function(x,
+                         zero.print='.',
+                         trait,
+                         limit = 1,
+                         minstat = 0,
+                         alpha = 0.05,
+                         ...) {
   clust <- x$clust
   ncl <- length(unique(clust))
   cll <- levels(factor(clust))
@@ -204,3 +321,168 @@ print.syntab <- function(x, zero.print='.', trait, limit = 1, minstat = 0, alpha
   invisible(x)
  }
 
+# ---- data.table version
+syntab.data.table <- function (veg, clust,
+                               type = c('rel', 'relspec', 'abs', 'mean.cover'),
+                               mupa = FALSE, dec = 0, refl, ...,
+                               dt_threads = NULL) {
+  stopifnot(requireNamespace("data.table", quietly = TRUE))
+  type <- match.arg(type)
+  if(length(unique(clust)) > 10 & mupa == TRUE) warning('Calculation time rises exponentially with the number of clusters!')
+  # data.table in place
+  data.table::setDT(veg)
+  # after setDT(veg) and before map_dt creation:
+  veg[, RELEVE_NR := as.character(RELEVE_NR)]
+
+  if (is.null(names(clust))) {
+    plots_u <- sort(unique(veg$RELEVE_NR))
+    if (!missing(clust) && length(clust) != length(plots_u)) stop(...)
+    names(clust) <- plots_u
+  } else {
+    names(clust) <- as.character(names(clust))
+  }
+
+  map_dt <- data.table::data.table(RELEVE_NR = names(clust), clust = as.factor(clust))
+  veg <- map_dt[veg, on="RELEVE_NR"]
+
+  # optional: set threads for data.table
+  old_threads <- NULL
+  if (!is.null(dt_threads)) {
+    old_threads <- data.table::getDTthreads()
+    data.table::setDTthreads(dt_threads)
+    on.exit(data.table::setDTthreads(old_threads), add = TRUE)
+  }
+
+  # defensive checks
+  if (!("TaxonName" %in% names(veg))) stop("veg must have a column 'TaxonName'.")
+  if (!("RELEVE_NR" %in% names(veg))) stop("veg must have a column 'RELEVE_NR' (Plot-ID).")
+
+  if (missing(clust)) {
+    plots_u <- sort(unique(veg$RELEVE_NR))
+    clust <- sample(1:2, size = length(plots_u), replace = TRUE)
+    names(clust) <- plots_u
+  } else {
+    clust <- as.factor(clust)
+    if (is.null(names(clust))) {
+      plots_u <- sort(unique(veg$RELEVE_NR))
+      if (length(clust) != length(plots_u)) {
+        stop("If clust has no names(), length(clust) must be == Number of RELEVE_NR.")
+      }
+      names(clust) <- plots_u
+    }
+  }
+
+  # map cluster to plots using a join (fast, avoids match per row)
+  map_dt <- data.table::data.table(RELEVE_NR = names(clust), clust = as.factor(clust))
+  veg <- map_dt[veg, on = "RELEVE_NR"]
+  if (anyNA(veg$clust)) stop("Einige RELEVE_NR konnten keinem Cluster zugeordnet werden (names(clust) pr\u00fcfen).")
+
+  rel_clust <- unique(veg[, .(RELEVE_NR, clust)])
+  ncl <- nlevels(rel_clust$clust)
+  cat("Number of clusters:", ncl, "\n")
+  nb.rel.clust <- rel_clust[, .N, by = clust][order(clust)]
+  cat("Cluster frequency (per RELEVE_NR):", nb.rel.clust$N, "\n")
+
+  # --- Build syntab (cluster columns only) ---
+  if (type == "relspec") {
+    counts <- veg[, .N, by = .(TaxonName, clust)]
+    counts[, Total := sum(N), by = TaxonName]
+    counts[, RelativeFreq := round(N / Total * 100, dec)]
+    st <- data.table::dcast(counts, TaxonName ~ clust, value.var = "RelativeFreq", fill = 0)
+
+  } else if (type == "rel") {
+    # number of plots per cluster (unique plots!)
+    nplots_cl <- veg[, .(Nplots = data.table::uniqueN(RELEVE_NR)), by = clust]
+
+    # plots-with-taxon per cluster: use unique plot-taxon pairs, then count plots
+    pt <- unique(veg[, .(RELEVE_NR, TaxonName, clust)])
+    counts <- pt[, .(NplotsWith = data.table::uniqueN(RELEVE_NR)), by = .(TaxonName, clust)]
+    counts <- nplots_cl[counts, on = "clust"]
+    counts[, RelativeFreq := round(NplotsWith / Nplots * 100, dec)]
+    st <- data.table::dcast(counts, TaxonName ~ clust, value.var = "RelativeFreq", fill = 0)
+
+  } else if (type == "mean.cover") {
+    valcol <- intersect(c("Cover", "COVER", "cover", "Abundance", "abundance", "value"), names(veg))
+    if (length(valcol) == 0) stop("F\u00fcr type='mean.cover' brauche ich eine Spalte wie Cover/COVER/value.")
+    valcol <- valcol[1]
+    st <- data.table::dcast(veg, TaxonName ~ clust, value.var = valcol, fun.aggregate = mean, fill = 0)
+
+  } else if (type == "abs") {
+    # counts of records per (TaxonName, clust)
+    st <- veg[, .N, by = .(TaxonName, clust)]
+    st <- data.table::dcast(st, TaxonName ~ clust, value.var = "N", fill = 0)
+  }
+
+  st_df <- as.data.frame(st)
+  rownames(st_df) <- st_df$TaxonName
+  st_df$TaxonName <- NULL
+
+  # --- Multipatt analysis (optional) ---
+  if (is.logical(mupa)) {
+    if (mupa) {
+      stopifnot(requireNamespace("indicspecies", quietly = TRUE))
+
+      # build community matrix: plots x taxa
+      valcol <- intersect(c("Cover", "COVER", "Cover_Perc", "Abundance", "abundance", "value"), names(veg))
+      if (length(valcol) > 0) {
+        valcol <- valcol[1]
+        comm_dt <- data.table::dcast(
+          veg, RELEVE_NR ~ TaxonName, value.var = valcol,
+          fun.aggregate = sum, fill = 0
+        )
+      } else {
+        comm_dt <- data.table::dcast(
+          veg, RELEVE_NR ~ TaxonName,
+          fun.aggregate = length, fill = 0
+        )
+        comm_dt[, (names(comm_dt)[-1]) := lapply(.SD, \(x) as.numeric(x > 0)),
+                .SDcols = names(comm_dt)[-1]]
+      }
+
+      plots <- comm_dt$RELEVE_NR
+      comm <- as.matrix(comm_dt[, -1, with = FALSE])
+      rownames(comm) <- plots
+
+      cl_plot <- clust[match(plots, names(clust))]
+      cl_plot <- as.factor(cl_plot)
+
+      mu <- indicspecies::multipatt(comm, cl_plot, ...)
+
+      sign <- mu$sign
+      lev <- levels(cl_plot)
+      s_cols <- paste0("s.", lev)
+      hit <- intersect(s_cols, colnames(sign))
+
+      common_taxa <- intersect(rownames(sign), rownames(st_df))
+      if (length(common_taxa) == 0) stop("Keine \u00dcberlappung zwischen multipatt taxa und syntab taxa (TaxonName pr\u00fcfen).")
+
+      sign2 <- sign[common_taxa, , drop = FALSE]
+
+      # inject cluster frequencies into single-cluster columns
+      if (length(hit) > 0) {
+        lev_hit <- sub("^s\\.", "", hit)
+        for (j in seq_along(hit)) {
+          cl_name <- lev_hit[j]
+          if (cl_name %in% colnames(st_df)) {
+            sign2[, hit[j]] <- st_df[common_taxa, cl_name]
+          }
+        }
+      }
+
+      colnames(sign2) <- gsub("^s\\.", "", colnames(sign2))
+      st_df <- as.data.frame(sign2)
+    }
+  } else if (inherits(mupa, "multipatt")) {
+    sign <- mupa$sign
+    colnames(sign) <- gsub("^s\\.", "", colnames(sign))
+    st_df <- as.data.frame(sign)
+  } else {
+    stop("Give multipatt object or set mupa to TRUE or FALSE.")
+  }
+
+  st_df[is.na(st_df)] <- 0
+
+  out <- list(clust = clust, syntab = st_df)
+  class(out) <- c("syntab", "list")
+  invisible(out)
+}

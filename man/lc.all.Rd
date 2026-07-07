@@ -12,7 +12,7 @@ A data frame with rows and 2 variables:
 }
 }
 \usage{
-lc.all
+data(lc.all)
 }
 \description{
 A data.frame to combine all layers in a vegetation plot

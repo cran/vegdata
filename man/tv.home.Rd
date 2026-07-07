@@ -4,9 +4,11 @@
 \alias{tv.home}
 \title{Where is your Turboveg 2 installation path or the directory with Species, Data, and Popup you want to use?}
 \usage{
-tv.home(check = FALSE)
+tv.home(path, check = FALSE)
 }
 \arguments{
+\item{path}{(character) path to your Turboveg installation root or a directory containing Species, Data and Popup}
+
 \item{check}{(logical) reset even if option('tv_home') is already set}
 }
 \value{

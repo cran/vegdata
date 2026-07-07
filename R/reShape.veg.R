@@ -3,7 +3,10 @@
 reShape.veg <- function (veg, crop = TRUE, refl) {
 if(!'veg' %in% class(veg)) stop('Only applicable for objects of class \"veg\".')
 if(any(is.null(dimnames(veg)))) stop('Only applicable if dimnames are present (Plot IDs as rownames, species IDs as colnames.')
-if(is.null(attr(veg, 'taxreflist')) & missing(refl)) stop('Set option refl because attribute \"taxreflist\" is not set for object \"veg\".')
+if(missing(refl))
+  if(is.null(attr(veg, 'taxreflist')))
+     stop('Set option refl because attribute \"taxreflist\" is not set for object \"veg\".') else
+       refl <- attr(veg, 'taxreflist')
 if(any(is.na(as.integer(row.names(veg))))) stop("Plot ID's must be integer numbers.")
   plots <- as.integer(as.character(dimnames(veg)[[1]][row(veg)]))
   perf <- as.vector(as.matrix(veg))

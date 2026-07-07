@@ -12,6 +12,7 @@ taxname.simplify(
   concept = TRUE,
   rank = TRUE,
   tax.status = TRUE,
+  cf = TRUE,
   ...
 )
 }
@@ -27,6 +28,8 @@ taxname.simplify(
 \item{rank}{(logical) remove rank specifications}
 
 \item{tax.status}{(logical) remove taxon status like 'nom. illeg.' or 'auct.'}
+
+\item{cf}{(logical) remove *cum dubio* "cf." remarks}
 
 \item{\dots}{additional attributes}
 }

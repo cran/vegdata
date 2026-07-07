@@ -5,7 +5,7 @@
 \alias{vegdata-package}
 \title{Functions to access data from vegetation databases and evaluate taxon names}
 \description{
-Handling of vegetation data from different sources ( Turboveg 2.0 \url{https://www.synbiosys.alterra.nl/turboveg/}; the German national repository \url{https://www.vegetweb.de} and others. Taxonomic harmonization (given appropriate taxonomic lists, e.g. the Euro+Med list \url{https://eurosl.infinitenature.org}).
+Handling of vegetation data from different sources but especially Turboveg 2.0 \url{https://www.synbiosys.alterra.nl/turboveg/}. Taxonomic harmonization (given appropriate taxonomic lists, e.g. GermanSL and EuroSL (Euro+Med extended) see \url{https://eurosl.infinitenature.org}).
 }
 \seealso{
 Useful links:
@@ -16,6 +16,11 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Florian Jansen \email{florian.jansen@uni-rostock.de}
+
+Authors:
+\itemize{
+  \item Florian Jansen \email{florian.jansen@uni-rostock.de}
+}
 
 }
 \keyword{package}

@@ -47,7 +47,8 @@ cwm <- function(veg,
   if(missing(refl) & missing(veg) & missing(db)) stop('Either refl, db, or a class "veg" object have to be provided.')
   if(!missing('refl'))
     if('veg' %in% class(veg)) refl <- attr(veg, 'taxreflist') else
-      refl = tax.refl()
+      tax.refl(refl)
+  refl = tax.refl()
   suppressMessages(
     species <- tax('all', refl = refl, ...)
   )

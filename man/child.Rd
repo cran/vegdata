@@ -4,7 +4,7 @@
 \alias{child}
 \title{Search taxonomic reference lists including concept synonomy and taxonomic hierarchy.}
 \usage{
-child(x, refl = tax.refl(), gen = 3, syn = FALSE, include.parent = FALSE, ...)
+child(x, refl, gen = 3, syn = FALSE, include.parent = FALSE, ...)
 }
 \arguments{
 \item{x}{Species number, lettercode or species name(s)}

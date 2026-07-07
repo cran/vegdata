@@ -12,7 +12,7 @@ A data frame with rows and 3 variables:
 }
 }
 \usage{
-lc.1
+data(lc.1)
 }
 \description{
 datasets with layer codes and how they should be combined

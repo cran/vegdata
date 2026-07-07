@@ -8,7 +8,7 @@
 #' \describe{
 #'   \item{rank}{Layer code, i.e. 0:9 for Turboveg}
 #'   \item{level}{Combinations. Same integer means, they will be combined}
-#'   \item{Euro.Med}{taxon level name in http://www.europlusmed.org/ database}
+#'   \item{Euro.Med}{taxon level name in https://www.europlusmed.org/ database}
 #'   \item{description}{Explanation of level codes}
 #' }
 #'

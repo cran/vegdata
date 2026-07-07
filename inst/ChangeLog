@@ -137,9 +137,9 @@ version 0.3.1 June 2011
 
 version 0.3 May 2011
   * directory permission of extdata changed
-  * Access to the German National Vegetation database "VegetWeb" (http://www.floraweb.de/vegetation) through new functions vw.obs, vw.site and vw.veg (alpha stage!)
+  * Access to the German National Vegetation database "VegetWeb" (https://www.floraweb.de/vegetation) through new functions vw.obs, vw.site and vw.veg (alpha stage!)
   * New tv.write function to write Turboveg databases
-  * the taxonomic reference list GermanSL has been outsourced, to be downloaded from http://www.botanik.uni-greifswald.de/germansl.html, if needed
+  * the taxonomic reference list GermanSL has been outsourced, to be downloaded from https://www.botanik.uni-greifswald.de/germansl.html, if needed
   * child and parent relationships through new functions child() and parents()
   * aggregation of taxa in taxval is now possible through all taxonomic ranks, see vignette
 

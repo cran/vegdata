@@ -30,7 +30,10 @@ tax <- function(x, refl = tax.refl(), syn = TRUE, concept = NULL, strict = FALSE
 	tv_home <- tv.home()
 	if(missing(refl)) {
 	  refl <- tax.refl(tv_home=tv_home)
-	    message('Reference list used: ', refl)
+	  if(is.null(refl)) {
+	    message('Reference list not specified or missing: ', refl)
+	    return(NULL)
+	  } else message('Reference list used: ', refl)
 	 }
 	if(is.character(refl))
 	  species <- load.refl(refl) else

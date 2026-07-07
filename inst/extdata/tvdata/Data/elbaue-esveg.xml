@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<ESVeg xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ESVeg-2.4.xsd">
+<ESVeg xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ESVeg-2.4.xsd">
 <userdefined>
 <userDefinedName>LONGITUDE</userDefinedName>
 <userDefinedType>float</userDefinedType>

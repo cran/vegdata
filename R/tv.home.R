@@ -3,6 +3,7 @@
 #' @export
 #' @description Reads and sets invisbly option('tv_home')
 #' @name tv.home
+#' @param path (character) path to your Turboveg installation root or a directory containing Species, Data and Popup
 #' @param check (logical) reset even if option('tv_home') is already set
 #'
 #' @return Reads and sets invisibly option('tv_home')
@@ -10,14 +11,17 @@
 #' @author Florian Jansen \email{florian.jansen@uni-rostock.de}
 #' @keywords Turboveg
 
-tv.home <- function(check = FALSE) {
+tv.home <- function(path, check = FALSE) {
+  if(missing(path)) {
   if(is.null(getOption('tv_home')) | check) {
     if(.Platform$OS.type == "unix") {
-     if('Turbowin' %in% list.dirs(path=paste(Sys.getenv('HOME'),'/.wine/drive_c', sep=''), full.names=FALSE, recursive = FALSE))
-        tv_home <- file.path(Sys.getenv('HOME'),'.wine/drive_c/Turbowin') else {
+     if(Sys.info()["sysname"] != "Darwin" & 'Turbowin' %in% list.dirs(path=paste(Sys.getenv('HOME'),'/.wine/drive_c', sep=''), full.names=FALSE, recursive = FALSE)) {
+          tv_home <- file.path(Sys.getenv('HOME'),'.wine/drive_c/Turbowin')
+     } else {
               message('\nNo Turbowin installation path found. \n')
-              options(tv_home = .my_cache$cache_path_get())
+              tv_home = .my_cache$cache_path_get()
               }
+      options(tv_home = tv_home)
     }
     if(.Platform$OS.type == "windows") {
     	if(file.access('C:/Turbowin/Popup/tvscale.dbf')==0) tv_home <- 'C:/Turbowin' else
@@ -26,8 +30,8 @@ tv.home <- function(check = FALSE) {
     	      if(file.access('D:/Programme/Turbowin/Popup/tvscale.dbf') ==0) tv_home <- 'D:/Programme/Turbowin' else {
     	        message('\nNo Turbowin installation path found. \n')
               tv_home <- .my_cache$cache_path_get()
-              options(tv_home = .my_cache$cache_path_get())
     	     }
+    	     options(tv_home = tv_home)
     }
     message('############################################################',
             '\nTurboveg root directory is set to "', getOption('tv_home'), '"',
@@ -38,6 +42,8 @@ tv.home <- function(check = FALSE) {
 #     "\n# This has been changed and Turboveg seems to use a country specific code page now.",
 #     "\n# Please change getOptions('tv.iconv') if you run into problems.")
   }
+  } else options(tv_home = path)
+
   if(is.null(getOption('tv.iconv'))) options(tv.iconv = 'CP437')
    if(getOption('tv_home') == path.package('vegdata'))
     if(!file.exists(file.path(getOption('tv_home'), 'tvdata', 'Popup', 'tvscale.dbf')))

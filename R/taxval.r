@@ -207,7 +207,7 @@ if(is.character(refl)) if(grepl('GermanSL', refl) & maxtaxlevel == 'AGG') maxtax
 if(maxtaxlevel %in% ranklevels) {
   fr$TaxlevelTooHigh <- species$TaxonRank[match(fr$NewTaxonID, species$TaxonUsageID)] %in% ranklevels[ranklevels > ranklevels[match(maxtaxlevel, ranklevels)]]
   if(sum(fr$TaxlevelTooHigh) > 0) {
-    message(sum(fr$TaxlevelTooHigh), "taxon observation id's higher than", maxtaxlevel, 'found. Deleted!')
+    message(sum(fr$TaxlevelTooHigh), " taxon observation id's higher than ", maxtaxlevel, ' found. Deleted!')
     obs <- obs[!obs$TaxonUsageID %in% fr$TaxonUsageID[fr$TaxlevelTooHigh], ]
   }
  } else stop(paste('The given rank code', maxtaxlevel, 'is not a known rank identifier:', paste(ranklevels, collapse=', ')))
@@ -297,14 +297,15 @@ if(check.critical) {
     message('Warning: Potential pseudonyms in dataset, please check.')
     print(auct[match(fr$TaxonUsageID, auct$check_No, nomatch = FALSE), ], row.names = FALSE)
   }
-
   ### Extent of taxon interpretation
   sl <- species[grep("\ s.\ l.", species$TaxonName, perl=TRUE), which(names(species) %in% c('TaxonUsageID','TaxonName','TaxonConceptID','TaxonConcept','TaxonRank','IsChildTaxonOfID','IsChildTaxonOf','AccordingTo')) ]
   sl$to_check <- sub("\ s.\ l.$", "", sl$TaxonName, perl=TRUE)
   sstr <- species[grep("\ s.\ str.$", species$TaxonName, perl=TRUE), which(names(species) %in% c('TaxonUsageID','TaxonName','TaxonConceptID','TaxonConcept','TaxonRank','IsChildTaxonOfID','IsChildTaxonOf','AccordingTo'))]
   sstr$to_check <- sub("\ s.\ str.$", "", sstr$TaxonName, perl=TRUE)
-  ext <- rbind(sl,sstr)
-
+  ext <- rbind(sl, sstr)
+  # synonyme rausnehmen
+  ext$SYNONYM <- species$SYNONYM[match(ext$TaxonUsageID, species$TaxonUsageID)]
+  ext <- ext[!ext$SYNONYM, ]
   ext$check_No <- species$TaxonUsageID[match(ext$to_check, species$TaxonName)]
   ext <- ext[!is.na(ext$check_No), which(names(ext) %in% c('to_check', 'check_No', 'TaxonName','TaxonUsageID', 'AccordingTo'))]
   names(ext)[3] <- "check against"

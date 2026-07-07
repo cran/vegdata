@@ -18,9 +18,13 @@
 #'
 #' @author Florian Jansen \email{florian.jansen@uni-rostock.de}
 #'
-child <- function (x, refl = tax.refl(), gen = 3, syn = FALSE, include.parent = FALSE, ...) {
+child <- function (x, refl, gen = 3, syn = FALSE, include.parent = FALSE, ...) {
   if(syn) stop('Integrating synonyms not yet implemented!')
   if(gen < 1) stop('At least one generation (positive integers) needs to be selected.')
+  if(!missing('refl')) {
+    if('veg' %in% class(refl)) refl <- attr(refl, 'taxreflist') else
+      if(is.character(refl)) tax.refl(refl) } else
+  refl = tax.refl()
   if(is.character(refl))
     suppressMessages(species <- tax("all", refl = refl, syn = TRUE, ...))
   else species <- refl
@@ -105,6 +109,11 @@ child <- function (x, refl = tax.refl(), gen = 3, syn = FALSE, include.parent = 
 parent <- function (x, refl = tax.refl(), rank, taxlevels, ...) {
   if(missing(taxlevels))
     taxonlevels <- factor(vegdata::taxlevels$level, levels= vegdata::taxlevels$level, ordered = TRUE) else taxonlevels <- taxlevels
+
+  if(!missing('refl')) {
+      if('veg' %in% class(refl)) refl <- attr(refl, 'taxreflist') else
+        if(is.character(refl)) tax.refl(refl) } else
+    refl <- tax.refl()
   if(is.character(refl))
     suppressMessages(species <- tax("all", refl = refl, syn = TRUE, ...))
   else species <- refl
@@ -200,8 +209,4 @@ syn <- function (x, refl = tax.refl(), ...) {
   invisible(s)
 }
 
-
-agg <- function(x, refl = 'GermanSL 1.2', species, ...) {
-  message('Deprecated function. Use child(x, gen=1, ...) instead.')
-}
 

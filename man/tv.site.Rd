@@ -41,8 +41,6 @@ Please specify pathnames below but not above Turbowin/Data. Can be a single data
 }
 \author{
 Florian Jansen \email{florian.jansen@uni-rostock.de}
+
+#'#' Survey Area
 }
-\keyword{#'#'}
-\keyword{Area}
-\keyword{Survey}
-\keyword{Turboveg}

@@ -34,15 +34,15 @@ syntab(
 
 \item{x}{Object from function syntab}
 
-\item{zero.print}{Replacement for zero values.}
+\item{zero.print}{character to fill empty cells}
 
-\item{trait}{Optional vector of trait values to be plotted behind the species.}
+\item{trait}{prints ecological indicators of species}
 
-\item{limit}{Minimum value to display.}
+\item{limit}{minimum frequency to display}
 
-\item{minstat}{Minimal indicator value}
+\item{minstat}{minimum multipatt statistic}
 
-\item{alpha}{Significance threshold.}
+\item{alpha}{Significance level}
 }
 \description{
 Calculate and display relative or absolute frequency tables with or without use of function multipatt from package indicspecies

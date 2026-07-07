@@ -50,5 +50,8 @@ assert <- function(x, y) {
 
 utils::globalVariables(c(
   ".", "multipatt", "write.dbf", "taxlevels",
-  "gwindow", "gtree", "addHandlerDoubleclick", "svalue"
+  "gwindow", "gtree", "addHandlerDoubleclick", "svalue",
+  # data.table columns used in syntab.data.table
+  "RELEVE_NR", "TaxonName", "Total", "N", "RelativeFreq",
+  "NplotsWith", "Nplots", ".SD"
 ))

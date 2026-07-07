@@ -13,7 +13,7 @@ TCS.replace(x)
 Applies Taxonomic Concept Transfer Schema (TCS) to the different name list conventions of different sources
 }
 \references{
-Taxonomic Names and Concepts interest group. 2006. Taxonomic Concept Transfer Schema (TCS), version 1.01. Biodiversity Information Standards (TDWG) http://www.tdwg.org/standards/117
+Taxonomic Names and Concepts interest group. 2006. Taxonomic Concept Transfer Schema (TCS), version 1.01. Biodiversity Information Standards (TDWG) https://www.tdwg.org/standards/117
 }
 \author{
 Florian Jansen florian.jansen@uni-rostock.de
